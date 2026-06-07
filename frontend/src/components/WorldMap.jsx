@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+
+const API = import.meta.env.VITE_API_URL || ''
 import { MapContainer, TileLayer, Marker, Popup, CircleMarker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -95,7 +97,7 @@ export default function WorldMap() {
   const loadAircraft = useCallback(async () => {
     setLoadingAc(true)
     try {
-      const r = await fetch('http://localhost:8000/api/live/aircraft')
+      const r = await fetch('${API}/api/live/aircraft')
       const d = await r.json()
       const planes = (d.states || [])
         .filter(s => s[5] != null && s[6] != null && !s[8])
@@ -118,7 +120,7 @@ export default function WorldMap() {
 
   const loadQuakes = useCallback(async () => {
     try {
-      const r = await fetch('http://localhost:8000/api/live/earthquakes')
+      const r = await fetch('${API}/api/live/earthquakes')
       const d = await r.json()
       const qs = d.features || []
       setQuakes(qs)
@@ -128,7 +130,7 @@ export default function WorldMap() {
 
   const loadEvents = useCallback(async () => {
     try {
-      const r = await fetch('http://localhost:8000/api/news/calendar')
+      const r = await fetch('${API}/api/news/calendar')
       const d = await r.json()
       const evs = (d.events || []).filter(e => CCY_POS[e.country])
       setEvents(evs)
