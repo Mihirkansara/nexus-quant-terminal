@@ -1,0 +1,49 @@
+name: Python Check
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Verify script executes without error
+        # Use a non-interactive matplotlib backend so plots don't open a window
+        env:
+          MPLBACKEND: Agg
+        run: |
+          cd src
+          python -c "
+          import sys, os
+          sys.path.insert(0, os.path.abspath('.'))
+          from config import *
+          from greeks import portfolio_greeks
+          from surface import risk_surface, pnl_surface
+          import numpy as np
+
+          S_range = np.linspace(SPOT_LOW, SPOT_HIGH, 10)
+          sigma_range = np.linspace(VOL_LOW, VOL_HIGH, 10)
+          D, G, V, Th = risk_surface(EXAMPLE_PORTFOLIO, S_range, sigma_range, DEFAULT_TIME_TO_EXPIRY, DEFAULT_RISK_FREE_RATE)
+          P = pnl_surface(EXAMPLE_PORTFOLIO, S_range, sigma_range, DEFAULT_TIME_TO_EXPIRY, DEFAULT_RISK_FREE_RATE, DEFAULT_SPOT, DEFAULT_VOLATILITY)
+          assert D.shape == (10, 10), 'Delta surface shape mismatch'
+          assert G.shape == (10, 10), 'Gamma surface shape mismatch'
+          assert V.shape == (10, 10), 'Vega surface shape mismatch'
+          assert Th.shape == (10, 10), 'Theta surface shape mismatch'
+          assert P.shape == (10, 10), 'PnL surface shape mismatch'
+          print('All checks passed.')
+          "
