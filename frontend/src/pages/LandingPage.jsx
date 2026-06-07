@@ -383,9 +383,9 @@ export default function LandingPage({ onEnter }) {
 
       {/* ── Footer ──────────────────────────────── */}
       <footer className="lp-footer">
-        <span className="lp-grad-text" style={{fontWeight:800,fontSize:12,letterSpacing:'0.06em'}}>QUANTRISK FX</span>
+        <span className="lp-grad-text" style={{fontWeight:800,fontSize:12,letterSpacing:'0.06em'}}>NEXUS TERMINAL</span>
         <span className="lp-footer-sep">·</span>
-        <span style={{fontSize:11,color:'#334155'}}>Professional Forex Options Analytics · Garman-Kohlhagen (1983)</span>
+        <span style={{fontSize:11,color:'#334155'}}>© 2026 Mihir Kansara · All Rights Reserved</span>
       </footer>
     </div>
   )
