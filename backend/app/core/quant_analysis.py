@@ -18,9 +18,14 @@ import pandas as pd
 from scipy import stats
 
 # GS-Quant timeseries — all work offline, no credentials required
-from gs_quant.timeseries import econometrics as gseco
-from gs_quant.timeseries import statistics  as gsstat
-from gs_quant.timeseries import technicals  as gstech
+try:
+    from gs_quant.timeseries import econometrics as gseco
+    from gs_quant.timeseries import statistics  as gsstat
+    from gs_quant.timeseries import technicals  as gstech
+    GS_QUANT_AVAILABLE = True
+except ImportError:
+    gseco = gsstat = gstech = None
+    GS_QUANT_AVAILABLE = False
 
 
 # ─── helpers ──────────────────────────────────────────────────────────────────
@@ -90,8 +95,8 @@ def compute_signals(prices: list, r_d: float = 0.05, r_f: float = 0.04) -> dict:
 
     # ── 1. Volatility  (gs-quant econometrics.volatility) ────────────────────
     # GS implementation: annualized realized vol over rolling window
-    hv20_s = gseco.volatility(px, w20)
-    hv60_s = gseco.volatility(px, w60)
+    hv20_s = gseco.volatility(px, w20) if GS_QUANT_AVAILABLE else None
+    hv60_s = gseco.volatility(px, w60) if GS_QUANT_AVAILABLE else None
     hv20   = _safe_last(hv20_s, np.std(rets_raw[-w20:]) * np.sqrt(252))
     hv60   = _safe_last(hv60_s, np.std(rets_raw[-w60:]) * np.sqrt(252))
     vol_regime = ("HIGH"   if hv20 > hv60 * 1.25 else
@@ -104,7 +109,7 @@ def compute_signals(prices: list, r_d: float = 0.05, r_f: float = 0.04) -> dict:
     ewma_vol = float(np.sqrt(ewma_var * 252))
 
     # GS max-drawdown (institutional risk metric)
-    dd_s    = gseco.max_drawdown(px, w60)
+    dd_s    = gseco.max_drawdown(px, w60) if GS_QUANT_AVAILABLE else None
     max_dd  = _safe_last(dd_s, -0.01)
 
     # ── 2. VaR / CVaR  (custom — Parametric Normal + Basel III) ─────────────
@@ -127,32 +132,47 @@ def compute_signals(prices: list, r_d: float = 0.05, r_f: float = 0.04) -> dict:
     ou_std  = ou["sigma"] / np.sqrt(max(ou["kappa"], 0.01) * 252)
 
     # Z-score via gs-quant statistics (institutional grade)
-    z_s     = gsstat.zscores(px, w20)
-    gs_z    = _safe_last(z_s, 0.0)
+    z_s     = gsstat.zscores(px, w20) if GS_QUANT_AVAILABLE else None
+    gs_z    = _safe_last(z_s, float((px_raw[-1] - np.mean(px_raw[-w20:])) / max(np.std(px_raw[-w20:]), 1e-9)))
     ou_z    = float((px_raw[-1] - ou["theta"]) / max(ou_std, 1e-9))
     ou_signal  = "SELL" if ou_z > 2 else ("BUY" if ou_z < -2 else "NEUTRAL")
     ou_conf    = min(92, 50 + int(abs(ou_z) * 15)) if ou_signal != "NEUTRAL" else 40
 
     # ── 5. RSI  (gs-quant technicals.relative_strength_index) ────────────────
-    rsi_s  = gstech.relative_strength_index(px, 14)
-    rsi    = _safe_last(rsi_s, 50.0)
+    if GS_QUANT_AVAILABLE:
+        rsi_s = gstech.relative_strength_index(px, 14)
+        rsi   = _safe_last(rsi_s, 50.0)
+    else:
+        d = np.diff(px_raw[-15:])
+        gain = np.mean(d[d > 0]) if np.any(d > 0) else 1e-9
+        loss = np.mean(-d[d < 0]) if np.any(d < 0) else 1e-9
+        rsi  = float(100 - 100 / (1 + gain / loss))
     rsi_signal = ("OVERBOUGHT" if rsi > 70 else
                   "OVERSOLD"   if rsi < 30 else "NEUTRAL")
     rsi_bias   = ("BEARISH" if rsi > 70 else
                   "BULLISH" if rsi < 30 else "NEUTRAL")
 
     # ── 6. MACD  (gs-quant technicals.macd) ──────────────────────────────────
-    macd_s  = gstech.macd(px)
-    macd    = _safe_last(macd_s, 0.0)
+    if GS_QUANT_AVAILABLE:
+        macd_s = gstech.macd(px)
+        macd   = _safe_last(macd_s, 0.0)
+    else:
+        ema12 = float(pd.Series(px_raw).ewm(span=12).mean().iloc[-1])
+        ema26 = float(pd.Series(px_raw).ewm(span=26).mean().iloc[-1])
+        macd  = ema12 - ema26
     macd_signal = "BULLISH" if macd > 0 else "BEARISH"
 
     # ── 7. Bollinger Bands  (gs-quant technicals.bollinger_bands) ────────────
-    bb_s = gstech.bollinger_bands(px, w20)
     current_px = float(px_raw[-1])
-    sma_s  = gstech.moving_average(px, w20)
-    sma    = _safe_last(sma_s, current_px)
-    std_s  = gsstat.std(px, w20)
-    gsstd  = _safe_last(std_s, float(np.std(px_raw[-w20:])))
+    if GS_QUANT_AVAILABLE:
+        bb_s  = gstech.bollinger_bands(px, w20)
+        sma_s = gstech.moving_average(px, w20)
+        sma   = _safe_last(sma_s, current_px)
+        std_s = gsstat.std(px, w20)
+        gsstd = _safe_last(std_s, float(np.std(px_raw[-w20:])))
+    else:
+        sma   = float(np.mean(px_raw[-w20:]))
+        gsstd = float(np.std(px_raw[-w20:]))
     bb_upper = sma + 2.0 * gsstd
     bb_lower = sma - 2.0 * gsstd
     bb_pct   = float((current_px - bb_lower) / max(bb_upper - bb_lower, 1e-9))  # 0=lower,1=upper
