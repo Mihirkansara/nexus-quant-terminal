@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { NexusIcon } from '../components/NexusLogo'
 
-const USER = 'mihir.kansara'
+const USER = 'nexus.quant'
 const PASS = 'nexus@2026'
 
 const PAIRS = [
