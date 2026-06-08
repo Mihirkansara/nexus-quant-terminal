@@ -17,7 +17,7 @@ const TickerItem = ({ item }) => {
   )
 }
 
-export default function Navbar() {
+export default function Navbar({ onLogout }) {
   const { pair, setPair, setS, toShareURL } = usePortfolioStore()
   const [rates, setRates]   = useState([])
   const [time, setTime]     = useState(new Date())
@@ -130,6 +130,11 @@ export default function Navbar() {
             {time.toLocaleTimeString('en-GB', { hour12:false })}
           </div>
           <div style={{ fontSize:9, color:'var(--text-muted)' }}>UTC</div>
+          <div style={{ width:1, height:20, background:'var(--border)' }}/>
+          <button className="btn-ghost" onClick={onLogout}
+            style={{ fontSize:10, color:'var(--red)', borderColor:'rgba(239,68,68,0.3)' }}>
+            ⏻ Logout
+          </button>
         </div>
       </div>
 

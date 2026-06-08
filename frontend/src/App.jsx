@@ -116,6 +116,13 @@ export default function App() {
     setAuthed(true)
   }
 
+  function handleLogout() {
+    sessionStorage.removeItem('qfx-auth')
+    sessionStorage.removeItem('qfx-v')
+    setAuthed(false)
+    setInApp(false)
+  }
+
   function enterApp() {
     sessionStorage.setItem('qfx-v', '1')
     setInApp(true)
@@ -126,7 +133,7 @@ export default function App() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', height:'100vh', overflow:'hidden' }}>
-      <Navbar />
+      <Navbar onLogout={handleLogout} />
 
       {/* Main layout: sidebar + content */}
       <div style={{ display:'flex', flex:1, overflow:'hidden' }}>
