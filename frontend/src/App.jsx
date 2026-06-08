@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import PortfolioBuilder from './components/PortfolioBuilder'
 import Dashboard from './pages/Dashboard'
 import LandingPage from './pages/LandingPage'
+import LoginPage from './pages/LoginPage'
 import { usePortfolioStore } from './store/portfolio'
 
 function useNexusFavicon() {
@@ -103,17 +104,24 @@ function useNexusFavicon() {
 
 export default function App() {
   const { fromURL } = usePortfolioStore()
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem('qfx-auth') === '1')
   const [inApp, setInApp] = useState(() => sessionStorage.getItem('qfx-v') === '1')
 
   useNexusFavicon()
 
   useEffect(() => { fromURL() }, [])
 
+  function handleLogin() {
+    sessionStorage.setItem('qfx-auth', '1')
+    setAuthed(true)
+  }
+
   function enterApp() {
     sessionStorage.setItem('qfx-v', '1')
     setInApp(true)
   }
 
+  if (!authed) return <LoginPage onLogin={handleLogin} />
   if (!inApp) return <LandingPage onEnter={enterApp}/>
 
   return (
