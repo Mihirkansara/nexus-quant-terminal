@@ -37,6 +37,7 @@ NEXUS TERMINAL is a Bloomberg-style web application for professional forex optio
 | **Scenario Analysis** | Stress tests across spot ±5%/±10% and vol ±1pp/±2pp shocks |
 | **Monte Carlo** | GBM path simulation — up to 5,000 paths, terminal P&L distribution, probability of profit |
 | **Strategy Library** | Pre-built multi-leg strategies: straddle, strangle, bull/bear spreads, iron condor, butterfly |
+| **Vol Smile (Vanna-Volga)** | Builds the FX smile from ATM / 25Δ risk reversal / 25Δ butterfly quotes (Castagna-Mercurio) and reprices each leg off the smile vs flat vol |
 
 ### Live Intelligence
 

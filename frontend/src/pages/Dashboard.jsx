@@ -8,6 +8,7 @@ import CandlestickChart from '../components/CandlestickChart'
 import QuantSignals from '../components/QuantSignals'
 import InstitutionalFlow from '../components/InstitutionalFlow'
 import EconomicCalendar from '../components/EconomicCalendar'
+import VolSmile from '../components/VolSmile'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -38,6 +39,7 @@ const TABS = [
   { id:'greeks',     icon:'Δ',  label:'Greeks',       component: GreeksDashboard },
   { id:'chart',      icon:'📈', label:'Chart',        component: CandlestickChart },
   { id:'signals',    icon:'⚡', label:'AI Signals',   component: QuantSignals },
+  { id:'smile',      icon:'〰', label:'Vol Smile',    component: VolSmile },
   { id:'surfaces',   icon:'🗻', label:'3D Surfaces',  component: SurfacePlot },
   { id:'breakeven',  icon:'🎯', label:'Breakeven',    component: BreakevenChart },
   { id:'scenarios',  icon:'⚠', label:'Scenarios',    component: ScenarioTable },

@@ -64,3 +64,15 @@ class ScenarioRequest(BaseModel):
         ScenarioShock(label="Sharp Rally",    dS_pct=0.015, dVol=-0.03),
         ScenarioShock(label="Breakout",       dS_pct=0.03,  dVol=-0.05),
     ])
+
+
+class SmileRequest(BaseModel):
+    S: float = Field(..., gt=0, description="Spot exchange rate")
+    T: float = Field(..., gt=0, description="Tenor in years")
+    r_d: float = Field(default=0.0525)
+    r_f: float = Field(default=0.0400)
+    atm: float = Field(..., gt=0, lt=5, description="ATM delta-neutral straddle vol")
+    rr25: float = Field(default=0.0, gt=-1, lt=1, description="25Δ risk reversal (call − put vol)")
+    bf25: float = Field(default=0.0, gt=-1, lt=1, description="25Δ butterfly")
+    sigma: float | None = Field(default=None, gt=0, lt=5, description="Flat vol to compare against (defaults to ATM)")
+    options: list[OptionLeg] = Field(default_factory=list)
