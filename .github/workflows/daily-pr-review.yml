@@ -1,0 +1,96 @@
+name: Daily PR Review
+
+# Approve or reject the daily Claude PRs by commenting (or replying to the
+# GitHub notification email):
+#   approve                 -> PR is merged into main
+#   reject: <reason>        -> PR is closed, labelled "rejected", reason kept
+# Only the repository owner's comments are acted on.
+
+on:
+  pull_request:
+    types: [opened, reopened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: daily-pr-review-${{ github.event.pull_request.number || github.event.issue.number }}
+
+jobs:
+  notify:
+    if: >-
+      github.event_name == 'pull_request' &&
+      startsWith(github.event.pull_request.head.ref, 'claude/daily-job-scheduling')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ask owner for a decision
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          gh pr comment "$PR" --repo "$REPO" --body "@$OWNER a new daily NEXUS Terminal update is ready for review.
+
+          Reply to this email (or comment here) with one of:
+
+          - \`approve\` to merge it into \`main\`
+          - \`reject: <reason>\` to close it; tomorrow's run will read your reason"
+
+  review:
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      github.event.comment.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply decision
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+          BODY: ${{ github.event.comment.body }}
+        run: |
+          set -euo pipefail
+
+          read -r HEAD_REF STATE < <(gh pr view "$PR" --repo "$REPO" \
+            --json headRefName,state --jq '"\(.headRefName) \(.state)"')
+          if [[ "$HEAD_REF" != claude/daily-job-scheduling* || "$STATE" != "OPEN" ]]; then
+            echo "Not an open daily PR; ignoring."
+            exit 0
+          fi
+
+          # First non-empty line decides; email replies may carry \r.
+          FIRST=$(printf '%s\n' "$BODY" | tr -d '\r' | sed '/^[[:space:]]*$/d' | head -n1)
+          WORD=$(printf '%s' "$FIRST" | awk '{print tolower($1)}' | tr -d ':/.,!')
+
+          case "$WORD" in
+            approve|approved|lgtm)
+              if gh pr merge "$PR" --repo "$REPO" --merge; then
+                gh pr comment "$PR" --repo "$REPO" --body "Approved and merged into \`main\`."
+              else
+                gh pr comment "$PR" --repo "$REPO" --body "Approval received, but the merge failed (conflict or failing checks). The next daily run will fix it, or merge it by hand."
+                exit 1
+              fi
+              ;;
+            reject|rejected)
+              REASON=$(printf '%s\n' "$BODY" | tr -d '\r' | sed '/^[[:space:]]*$/d' \
+                | sed -E '1s/^[[:space:]]*[Rr][Ee][Jj][Ee][Cc][Tt]([Ee][Dd])?[[:space:]]*[:.,-]?[[:space:]]*//')
+              [[ -z "${REASON//[[:space:]]/}" ]] && REASON="(no reason given)"
+              gh label create rejected --repo "$REPO" --color B60205 \
+                --description "Daily PR rejected by owner" --force
+              gh pr edit "$PR" --repo "$REPO" --add-label rejected
+              gh pr close "$PR" --repo "$REPO" --comment "Rejected. Reason:
+
+          > ${REASON//$'\n'/$'\n'> }
+
+          The next daily run will take this into account."
+              ;;
+            *)
+              echo "No approve/reject command; ignoring."
+              ;;
+          esac
