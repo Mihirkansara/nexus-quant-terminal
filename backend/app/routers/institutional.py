@@ -33,6 +33,9 @@ COT_MAP = {
     "GBPJPY": {"cot": "BRITISH POUND STERLING - CHICAGO MERCANTILE EXCHANGE", "sym": "GBPJPY=X"},
     "EURGBP": {"cot": "EURO FX - CHICAGO MERCANTILE EXCHANGE",                "sym": "EURGBP=X"},
     "XAUUSD": {"cot": "GOLD - COMMODITY EXCHANGE INC.",                       "sym": "GC=F"},
+    "XAGUSD": {"cot": "SILVER - COMMODITY EXCHANGE INC.",                     "sym": "SI=F"},
+    "BTCUSD": {"cot": "BITCOIN - CHICAGO MERCANTILE EXCHANGE",                "sym": "BTC-USD"},
+    "ETHUSD": {"cot": "ETHER CASH SETTLED - CHICAGO MERCANTILE EXCHANGE",     "sym": "ETH-USD"},
 }
 
 
