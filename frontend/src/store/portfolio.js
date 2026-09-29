@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 
-// Default interest rates per pair (r_d = domestic/quote, r_f = foreign/base)
+// Default interest rates per pair (r_d = domestic/quote, r_f = foreign/base).
+// Metals: r_f is the bullion lease rate. Crypto: r_f≈0, 24/7 so vols use 365 days.
+// sigma = typical ATM vol loaded on pair switch; strikeStep ≈ 1% of spot for templates.
 export const PAIR_META = {
   EURUSD: { r_d:0.0525, r_f:0.0400, pip:0.0001, defaultS:1.0850 },
   GBPUSD: { r_d:0.0525, r_f:0.0525, pip:0.0001, defaultS:1.2700 },
@@ -12,8 +14,14 @@ export const PAIR_META = {
   EURJPY: { r_d:0.0010, r_f:0.0400, pip:0.01,   defaultS:168.00 },
   GBPJPY: { r_d:0.0010, r_f:0.0525, pip:0.01,   defaultS:197.00 },
   EURGBP: { r_d:0.0525, r_f:0.0400, pip:0.0001, defaultS:0.8550 },
-  XAUUSD: { r_d:0.0525, r_f:0.0000, pip:0.01,   defaultS:2350.0 },
+  XAUUSD: { r_d:0.0525, r_f:0.0000, pip:0.01,   defaultS:4400.0, sigma:0.22, strikeStep:40,  dp:2, assetClass:'metal'  },
+  XAGUSD: { r_d:0.0390, r_f:0.0200, pip:0.001,  defaultS:64.50,  sigma:0.40, strikeStep:0.6, dp:3, assetClass:'metal'  },
+  BTCUSD: { r_d:0.0390, r_f:0.0000, pip:1,      defaultS:83000,  sigma:0.40, strikeStep:800, dp:0, assetClass:'crypto' },
+  ETHUSD: { r_d:0.0390, r_f:0.0000, pip:0.1,    defaultS:2650,   sigma:0.60, strikeStep:25,  dp:1, assetClass:'crypto' },
 }
+
+export const isCrypto = (pair) => PAIR_META[pair]?.assetClass === 'crypto'
+const strikeStep = (pair) => PAIR_META[pair]?.strikeStep ?? (PAIR_META[pair]?.pip ?? 0.0001) * 100
 
 const DEFAULT_PAIR = 'EURUSD'
 const meta = PAIR_META[DEFAULT_PAIR]
@@ -34,9 +42,17 @@ export const usePortfolioStore = create((set, get) => ({
   legs:   DEFAULT_LEGS,
   nextId: 3,
 
+  // Vol quotes (ATM / 25Δ RR / 25Δ BF, in vol points) handed from Vol Lab to Vol Smile.
+  smileQuotes: null,
+  setSmileQuotes: (smileQuotes) => set({ smileQuotes }),
+
   setPair: (pair) => {
     const m = PAIR_META[pair] || meta
-    set({ pair, S: m.defaultS, r_d: m.r_d, r_f: m.r_f })
+    // Keep each leg's moneyness (K/S) so strikes stay meaningful across very different price levels.
+    set(s => ({
+      pair, S: m.defaultS, r_d: m.r_d, r_f: m.r_f, sigma: m.sigma ?? s.sigma, smileQuotes: null,
+      legs: s.legs.map(l => ({ ...l, K: +(l.K / s.S * m.defaultS).toPrecision(6) })),
+    }))
   },
   setS:     (S)     => set({ S: parseFloat(S) }),
   setSigma: (sigma) => set({ sigma: parseFloat(sigma) }),
@@ -56,7 +72,7 @@ export const usePortfolioStore = create((set, get) => ({
   loadStrategy: (strategy) => set(s => ({
     legs: strategy.legs.map((leg, i) => ({
       id: i+1, type: leg.type,
-      K: parseFloat((s.S + (leg.K_offset || 0) * PAIR_META[s.pair]?.pip * 100 || 0).toFixed(5)),
+      K: parseFloat((s.S + (leg.K_offset || 0) * strikeStep(s.pair)).toFixed(5)),
       T: s.T, qty: leg.qty,
     })),
     nextId: strategy.legs.length + 1,

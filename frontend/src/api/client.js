@@ -21,6 +21,10 @@ export const computeSurface  = (p)             => api.post('/surface', p).then(r
 export const computeMonteCarlo = (p)           => api.post('/montecarlo', p).then(r=>r.data)
 export const computeScenarios  = (p)           => api.post('/scenarios', p).then(r=>r.data)
 export const computeSmile      = (p)           => api.post('/smile', p).then(r=>r.data)
+
+// Vol Lab
+export const fetchVolCone   = (pair)     => api.get(`/vol/cone/${pair}`).then(r=>r.data)
+export const fetchCryptoVol = (currency) => api.get(`/vol/crypto/${currency}`).then(r=>r.data)
 export const exportCSV         = (p)           => api.post('/export/csv', p, {responseType:'blob'}).then(r=>r.data)
 
 // Institutional flow

@@ -9,7 +9,10 @@ from ..core.quant_analysis import compute_signals
 
 router = APIRouter(prefix="/forex", tags=["forex"])
 
-# Supported pairs: yfinance symbol → display label + default rates
+# Supported pairs: yfinance symbol → display label + default rates.
+# asset_class drives conventions: "crypto" trades 24/7 (365 obs/year),
+# FX and metals trade 24/5 (252 obs/year). For metals r_f is the bullion
+# lease rate; for crypto r_f≈0 and the futures basis enters through r_d.
 PAIRS = {
     "EURUSD": {"sym": "EURUSD=X", "r_d": 0.0525, "r_f": 0.0400, "pip": 0.0001},
     "GBPUSD": {"sym": "GBPUSD=X", "r_d": 0.0525, "r_f": 0.0525, "pip": 0.0001},
@@ -21,8 +24,14 @@ PAIRS = {
     "EURJPY": {"sym": "EURJPY=X", "r_d": 0.0010, "r_f": 0.0400, "pip": 0.01},
     "GBPJPY": {"sym": "GBPJPY=X", "r_d": 0.0010, "r_f": 0.0525, "pip": 0.01},
     "EURGBP": {"sym": "EURGBP=X", "r_d": 0.0525, "r_f": 0.0400, "pip": 0.0001},
-    "XAUUSD": {"sym": "GC=F",     "r_d": 0.0525, "r_f": 0.0000, "pip": 0.01},
+    "XAUUSD": {"sym": "GC=F",     "r_d": 0.0525, "r_f": 0.0000, "pip": 0.01,  "asset_class": "metal"},
+    "XAGUSD": {"sym": "SI=F",     "r_d": 0.0390, "r_f": 0.0200, "pip": 0.001, "asset_class": "metal"},
+    "BTCUSD": {"sym": "BTC-USD",  "r_d": 0.0390, "r_f": 0.0000, "pip": 1.0,   "asset_class": "crypto"},
+    "ETHUSD": {"sym": "ETH-USD",  "r_d": 0.0390, "r_f": 0.0000, "pip": 0.1,   "asset_class": "crypto"},
 }
+for _meta in PAIRS.values():
+    _meta.setdefault("asset_class", "fx")
+    _meta["periods_per_year"] = 365 if _meta["asset_class"] == "crypto" else 252
 
 
 def _fetch_rate(sym: str) -> dict:
@@ -137,7 +146,8 @@ def get_signals(pair: str):
             except Exception:
                 pass
         closes = [float(v) for v in hist["Close"].dropna()]
-        signals = compute_signals(closes, r_d=meta["r_d"], r_f=meta["r_f"])
+        signals = compute_signals(closes, r_d=meta["r_d"], r_f=meta["r_f"],
+                                  periods_per_year=meta["periods_per_year"])
         signals["pair"] = pair
         signals["current_price"] = round(closes[-1], 5)
         return signals

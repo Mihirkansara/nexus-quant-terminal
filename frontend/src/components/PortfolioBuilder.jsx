@@ -68,7 +68,7 @@ export default function PortfolioBuilder() {
         background:'rgba(0,212,255,0.03)' }}>
         <div className="label-upper" style={{ marginBottom:4 }}>Spot Rate</div>
         <div className="font-mono neon-cyan" style={{ fontSize:22, fontWeight:700 }}>
-          {S.toFixed(meta.pip === 0.01 ? 3 : 5)}
+          {S.toFixed(meta.dp ?? (meta.pip === 0.01 ? 3 : 5))}
         </div>
         <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:2 }}>
           {pair.slice(0,3)} / {pair.slice(3)} · pip={meta.pip}

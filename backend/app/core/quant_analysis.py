@@ -59,8 +59,8 @@ def _hurst_exponent(prices: np.ndarray) -> float:
         return 0.5
 
 
-def _estimate_ou_params(prices: np.ndarray) -> dict:
-    """OLS AR(1) → OU parameters. (Uhlenbeck & Ornstein 1930)"""
+def _estimate_ou_params(prices: np.ndarray, ppy: int = 252) -> dict:
+    """OLS AR(1) → OU parameters, annualised with ppy observations/year. (Uhlenbeck & Ornstein 1930)"""
     X = np.array(prices, dtype=float)
     Xl, Xc = X[:-1], X[1:]
     n = len(Xl)
@@ -68,21 +68,25 @@ def _estimate_ou_params(prices: np.ndarray) -> dict:
     b_den = n * np.dot(Xl, Xl) - Xl.sum() ** 2
     b = float(np.clip(b_num / b_den if b_den else 0.999, 0.001, 0.9999))
     a = float(Xc.mean() - b * Xl.mean())
-    resid_sigma = float(np.std(Xc - (a + b * Xl)) * np.sqrt(252))
-    kappa     = float(-np.log(b) * 252)
+    resid_sigma = float(np.std(Xc - (a + b * Xl)) * np.sqrt(ppy))
+    kappa     = float(-np.log(b) * ppy)
     theta     = float(a / (1 - b))
-    half_life = float(np.log(2) / max(kappa, 1e-6) / 252 * 365)
+    half_life = float(np.log(2) / max(kappa, 1e-6) * 365)   # years → calendar days
     return {"kappa": round(kappa, 4), "theta": round(theta, 6),
             "sigma": round(resid_sigma, 6), "half_life_days": round(half_life, 1)}
 
 
 # ─── main signal engine ───────────────────────────────────────────────────────
 
-def compute_signals(prices: list, r_d: float = 0.05, r_f: float = 0.04) -> dict:
+def compute_signals(prices: list, r_d: float = 0.05, r_f: float = 0.04,
+                    periods_per_year: int = 252) -> dict:
     """
     Full quant signal suite — core analytics via gs-quant (Goldman Sachs),
     extended with OU, Hurst, VaR and carry trade signals.
+
+    periods_per_year: 252 for 24/5 FX & metals, 365 for 24/7 crypto.
     """
+    ppy = periods_per_year
     px_raw = np.array(prices, dtype=float)
     n = len(px_raw)
     if n < 10:
@@ -95,10 +99,13 @@ def compute_signals(prices: list, r_d: float = 0.05, r_f: float = 0.04) -> dict:
 
     # ── 1. Volatility  (gs-quant econometrics.volatility) ────────────────────
     # GS implementation: annualized realized vol over rolling window
-    hv20_s = gseco.volatility(px, w20) if GS_QUANT_AVAILABLE else None
-    hv60_s = gseco.volatility(px, w60) if GS_QUANT_AVAILABLE else None
-    hv20   = _safe_last(hv20_s, np.std(rets_raw[-w20:]) * np.sqrt(252))
-    hv60   = _safe_last(hv60_s, np.std(rets_raw[-w60:]) * np.sqrt(252))
+    # gs-quant returns percent annualised on 252 days; rescale for other calendars.
+    # The fallback is expressed in percent too, so hv_*_pct is consistent.
+    gs_scale = np.sqrt(ppy / 252)
+    hv20_s = gseco.volatility(px, w20) * gs_scale if GS_QUANT_AVAILABLE else None
+    hv60_s = gseco.volatility(px, w60) * gs_scale if GS_QUANT_AVAILABLE else None
+    hv20   = _safe_last(hv20_s, np.std(rets_raw[-w20:]) * np.sqrt(ppy) * 100)
+    hv60   = _safe_last(hv60_s, np.std(rets_raw[-w60:]) * np.sqrt(ppy) * 100)
     vol_regime = ("HIGH"   if hv20 > hv60 * 1.25 else
                   "LOW"    if hv20 < hv60 * 0.80 else "NORMAL")
 
@@ -106,7 +113,7 @@ def compute_signals(prices: list, r_d: float = 0.05, r_f: float = 0.04) -> dict:
     lam, ewma_var = 0.94, float(np.var(rets_raw[-w20:]))
     for r in rets_raw[-w20:]:
         ewma_var = lam * ewma_var + (1 - lam) * r ** 2
-    ewma_vol = float(np.sqrt(ewma_var * 252))
+    ewma_vol = float(np.sqrt(ewma_var * ppy))
 
     # GS max-drawdown (institutional risk metric)
     dd_s    = gseco.max_drawdown(px, w60) if GS_QUANT_AVAILABLE else None
@@ -128,8 +135,8 @@ def compute_signals(prices: list, r_d: float = 0.05, r_f: float = 0.04) -> dict:
                     "RANDOM WALK":    "No structural edge — vol strategies apply"}[hurst_regime]
 
     # ── 4. Ornstein-Uhlenbeck  (custom — Uhlenbeck & Ornstein 1930) ──────────
-    ou      = _estimate_ou_params(px_raw[-w60:])
-    ou_std  = ou["sigma"] / np.sqrt(max(ou["kappa"], 0.01) * 252)
+    ou      = _estimate_ou_params(px_raw[-w60:], ppy)
+    ou_std  = ou["sigma"] / np.sqrt(max(ou["kappa"], 0.01) * 2)
 
     # Z-score via gs-quant statistics (institutional grade)
     z_s     = gsstat.zscores(px, w20) if GS_QUANT_AVAILABLE else None

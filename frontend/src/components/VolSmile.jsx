@@ -12,8 +12,8 @@ const QUOTE_FIELDS = [
 ]
 
 export default function VolSmile() {
-  const { legs, S, sigma, T, r_d, r_f, pair } = usePortfolioStore()
-  const [quotes, setQuotes]   = useState({ atm: +(sigma * 100).toFixed(2), rr25: -0.40, bf25: 0.20 })
+  const { legs, S, sigma, T, r_d, r_f, pair, smileQuotes } = usePortfolioStore()
+  const [quotes, setQuotes]   = useState(() => smileQuotes ?? { atm: +(sigma * 100).toFixed(2), rr25: -0.40, bf25: 0.20 })
   // Each response is tagged with the request it answers, so "loading" is derived
   // (latest request != last answered one) instead of set inside the effect.
   const [response, setResponse] = useState({ key:null, data:null, error:null })
