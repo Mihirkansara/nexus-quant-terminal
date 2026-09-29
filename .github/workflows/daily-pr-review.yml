@@ -2,7 +2,7 @@ name: Daily PR Review
 
 # Approve or reject the daily Claude PRs by commenting (or replying to the
 # GitHub notification email):
-#   approve                 -> PR is merged into main
+#   approve                 -> PR is merged into main (quoted email text is ignored)
 #   reject: <reason>        -> PR is closed, labelled "rejected", reason kept
 # Only the repository owner's comments are acted on.
 
@@ -48,12 +48,41 @@ jobs:
       github.event.comment.user.login == github.repository_owner
     runs-on: ubuntu-latest
     steps:
+      - name: Parse decision
+        id: parse
+        env:
+          BODY: ${{ github.event.comment.body }}
+        shell: python
+        run: |
+          import os, re, uuid
+          body = os.environ["BODY"].replace("\r", "")
+          # Drop quoted email text. Mail apps (esp. on phones) may glue the quote
+          # header straight onto the reply, e.g. "ApproveOn 29 Sep 2026, at 10:48 AM, ... wrote:".
+          body = re.split(r"On\s+(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun|\d{1,2})\b.{0,200}?wrote:",
+                          body, maxsplit=1, flags=re.S)[0]
+          body = "\n".join(l for l in body.split("\n")
+                           if not l.lstrip().startswith(">")).strip()
+          head = body.lstrip("/*_` ").lower()
+          decision, reason = "none", ""
+          if head.startswith("reject"):
+              decision = "reject"
+              reason = re.sub(r"^[/*_`\s]*reject(?:ed)?[\s:.,-]*", "", body, flags=re.I).strip()
+          elif head.startswith(("approve", "lgtm")):
+              decision = "approve"
+          with open(os.environ["GITHUB_OUTPUT"], "a") as out:
+              out.write(f"decision={decision}\n")
+              eof = f"EOF_{uuid.uuid4().hex}"
+              out.write(f"reason<<{eof}\n{reason or '(no reason given)'}\n{eof}\n")
+          print("decision:", decision)
+
       - name: Apply decision
+        if: steps.parse.outputs.decision != 'none'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.issue.number }}
-          BODY: ${{ github.event.comment.body }}
+          DECISION: ${{ steps.parse.outputs.decision }}
+          REASON: ${{ steps.parse.outputs.reason }}
         run: |
           set -euo pipefail
 
@@ -64,33 +93,20 @@ jobs:
             exit 0
           fi
 
-          # First non-empty line decides; email replies may carry \r.
-          FIRST=$(printf '%s\n' "$BODY" | tr -d '\r' | sed '/^[[:space:]]*$/d' | head -n1)
-          WORD=$(printf '%s' "$FIRST" | awk '{print tolower($1)}' | tr -d ':/.,!')
-
-          case "$WORD" in
-            approve|approved|lgtm)
-              if gh pr merge "$PR" --repo "$REPO" --merge; then
-                gh pr comment "$PR" --repo "$REPO" --body "Approved and merged into \`main\`."
-              else
-                gh pr comment "$PR" --repo "$REPO" --body "Approval received, but the merge failed (conflict or failing checks). The next daily run will fix it, or merge it by hand."
-                exit 1
-              fi
-              ;;
-            reject|rejected)
-              REASON=$(printf '%s\n' "$BODY" | tr -d '\r' | sed '/^[[:space:]]*$/d' \
-                | sed -E '1s/^[[:space:]]*[Rr][Ee][Jj][Ee][Cc][Tt]([Ee][Dd])?[[:space:]]*[:.,-]?[[:space:]]*//')
-              [[ -z "${REASON//[[:space:]]/}" ]] && REASON="(no reason given)"
-              gh label create rejected --repo "$REPO" --color B60205 \
-                --description "Daily PR rejected by owner" --force
-              gh pr edit "$PR" --repo "$REPO" --add-label rejected
-              gh pr close "$PR" --repo "$REPO" --comment "Rejected. Reason:
+          if [[ "$DECISION" == approve ]]; then
+            if gh pr merge "$PR" --repo "$REPO" --merge; then
+              gh pr comment "$PR" --repo "$REPO" --body "Approved and merged into \`main\`."
+            else
+              gh pr comment "$PR" --repo "$REPO" --body "Approval received, but the merge failed (conflict or failing checks). The next daily run will fix it, or merge it by hand."
+              exit 1
+            fi
+          else
+            gh label create rejected --repo "$REPO" --color B60205 \
+              --description "Daily PR rejected by owner" --force
+            gh pr edit "$PR" --repo "$REPO" --add-label rejected
+            gh pr close "$PR" --repo "$REPO" --comment "Rejected. Reason:
 
           > ${REASON//$'\n'/$'\n'> }
 
           The next daily run will take this into account."
-              ;;
-            *)
-              echo "No approve/reject command; ignoring."
-              ;;
-          esac
+          fi
