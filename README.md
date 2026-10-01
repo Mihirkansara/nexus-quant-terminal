@@ -39,6 +39,7 @@ NEXUS TERMINAL is a Bloomberg-style web application for professional forex optio
 | **Strategy Library** | Pre-built multi-leg strategies: straddle, strangle, bull/bear spreads, iron condor, butterfly |
 | **Vol Smile (Vanna-Volga)** | Builds the FX smile from ATM / 25Δ risk reversal / 25Δ butterfly quotes (Castagna-Mercurio) and reprices each leg off the smile vs flat vol |
 | **Vol Lab** | Live Deribit BTC/ETH surface with a raw-SVI fit per expiry (Durrleman butterfly-arb check), ATM / 25Δ RR / 25Δ BF term structure, DVOL, vol risk premium, and a Burghardt-Lane realised-vol cone for every pair. Tests: `cd backend && python -m pytest tests` |
+| **Vol Forecast & Regime (AI)** | HAR-RV (weekend-aware for crypto), GJR-GARCH and gradient-boosting forecasts of 1D/1W/1M vol, rolling out-of-sample QLIKE leaderboard with an inverse-QLIKE ensemble, 2-state HMM regime detection, and a forecast-vs-Deribit-implied rich/cheap signal |
 
 ### Live Intelligence
 
