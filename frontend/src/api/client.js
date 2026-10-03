@@ -26,6 +26,9 @@ export const computeSmile      = (p)           => api.post('/smile', p).then(r=>
 export const fetchVolCone   = (pair)     => api.get(`/vol/cone/${pair}`).then(r=>r.data)
 export const fetchCryptoVol = (currency) => api.get(`/vol/crypto/${currency}`).then(r=>r.data)
 export const fetchVolForecast = (pair)   => api.get(`/vol/forecast/${pair}`).then(r=>r.data)
+
+// Hedge Lab
+export const simulateHedge = (p) => api.post('/hedge/simulate', p).then(r=>r.data)
 export const exportCSV         = (p)           => api.post('/export/csv', p, {responseType:'blob'}).then(r=>r.data)
 
 // Institutional flow
