@@ -76,3 +76,29 @@ class SmileRequest(BaseModel):
     bf25: float = Field(default=0.0, gt=-1, lt=1, description="25Δ butterfly")
     sigma: float | None = Field(default=None, gt=0, lt=5, description="Flat vol to compare against (defaults to ATM)")
     options: list[OptionLeg] = Field(default_factory=list)
+
+
+class JumpParams(BaseModel):
+    intensity: float = Field(default=12.0, ge=0, le=365, description="Jumps per year")
+    mean: float = Field(default=-0.01, gt=-0.5, lt=0.5, description="Mean log jump size")
+    sd: float = Field(default=0.05, ge=0, lt=1, description="Log jump size st. dev.")
+
+
+class HedgeSimRequest(BaseModel):
+    pair: str = Field(default="EURUSD", description="Selects the calendar (365 crypto / 252 otherwise) and bootstrap history")
+    options: list[OptionLeg]
+    S: float = Field(..., gt=0)
+    sigma_implied: float = Field(..., gt=0, lt=5, description="Vol the options are traded and hedged at")
+    sigma_realised: float = Field(..., gt=0, lt=5, description="Vol the market actually delivers")
+    r_d: float = Field(default=0.0525)
+    r_f: float = Field(default=0.0400)
+    model: Literal["gbm", "jump", "bootstrap"] = "gbm"
+    steps_per_day: Literal[1, 2, 4, 8, 24] = 1
+    rule: Literal["time", "band"] = "time"
+    band: float = Field(default=0.05, gt=0, le=1, description="No-trade band, delta per unit of option notional")
+    cost_bps: float = Field(default=0.0, ge=0, le=100, description="One-way cost, bps of traded notional")
+    n_paths: int = Field(default=2000, ge=200, le=5000)
+    jump: JumpParams = Field(default_factory=JumpParams)
+    weekend_gap: float = Field(default=0.0, ge=0, lt=0.5, description="Weekend-gap sd (fraction of spot), 24/5 assets")
+    rescale_bootstrap: bool = True
+    sweep: bool = True

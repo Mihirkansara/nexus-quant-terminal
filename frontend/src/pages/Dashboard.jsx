@@ -11,6 +11,7 @@ import EconomicCalendar from '../components/EconomicCalendar'
 import VolSmile from '../components/VolSmile'
 import VolLab from '../components/VolLab'
 import VolForecast from '../components/VolForecast'
+import HedgeLab from '../components/HedgeLab'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -43,6 +44,7 @@ const TABS = [
   { id:'signals',    icon:'⚡', label:'AI Signals',   component: QuantSignals },
   { id:'vollab',     icon:'🔬', label:'Vol Lab',      component: VolLab },
   { id:'volforecast', icon:'🤖', label:'Vol Forecast', component: VolForecast },
+  { id:'hedgelab',   icon:'⚖', label:'Hedge Lab',    component: HedgeLab },
   { id:'smile',      icon:'〰', label:'Vol Smile',    component: VolSmile },
   { id:'surfaces',   icon:'🗻', label:'3D Surfaces',  component: SurfacePlot },
   { id:'breakeven',  icon:'🎯', label:'Breakeven',    component: BreakevenChart },
