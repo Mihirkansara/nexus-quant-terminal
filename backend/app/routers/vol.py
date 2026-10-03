@@ -123,3 +123,81 @@ def get_crypto_vol(currency: str):
         _cache.pop(f"crypto:{currency}", None)
         raise HTTPException(503, f"Deribit data unavailable: {e}")
     return {"currency": currency, "source": "Deribit public API", **report}
+
+
+# ─── Vol forecast & regime engine ─────────────────────────────────────────────
+
+def _yf_ohlc(sym: str, period: str = "3y"):
+    hist = yf.download(sym, period=period, interval="1d", progress=False, auto_adjust=True)
+    if hist.empty:
+        return None
+    if hasattr(hist.columns, "droplevel"):
+        try:
+            hist.columns = hist.columns.droplevel(1)
+        except Exception:
+            pass
+    hist = hist[["Open", "High", "Low", "Close"]].dropna()
+    hist = hist[(hist > 0).all(axis=1)]
+    return {"dates": [d.date() for d in hist.index],
+            **{k: hist[col].to_numpy(dtype=float) for k, col in
+               (("o", "Open"), ("h", "High"), ("l", "Low"), ("c", "Close"))}}
+
+
+def _crypto_ohlc(currency: str):
+    """Daily OHLC of the Deribit perpetual (3y); falls back to yfinance spot."""
+    now = int(time.time() * 1000)
+    try:
+        res = _deribit("get_tradingview_chart_data", instrument_name=f"{currency}-PERPETUAL",
+                       start_timestamp=now - 1100 * _DAY_MS, end_timestamp=now, resolution="1D")
+        if res.get("status", "ok") == "ok" and len(res.get("close", [])) > 400:
+            from datetime import datetime, timezone
+            arr = {k: np.asarray(res[src], dtype=float) for k, src in
+                   (("o", "open"), ("h", "high"), ("l", "low"), ("c", "close"))}
+            ok = np.all([arr[k] > 0 for k in arr], axis=0)
+            return {"dates": [datetime.fromtimestamp(t / 1000, tz=timezone.utc).date()
+                              for t, keep in zip(res["ticks"], ok) if keep],
+                    **{k: a[ok] for k, a in arr.items()}}
+    except Exception:
+        pass
+    return _yf_ohlc(f"{currency}-USD")
+
+
+@router.get("/forecast/{pair}")
+def get_vol_forecast(pair: str):
+    """
+    HAR-RV / GJR-GARCH / gradient-boosting vol forecasts (1D, 1W, 1M) with a rolling
+    out-of-sample QLIKE backtest, inverse-QLIKE ensemble, 2-state HMM regime and,
+    for BTC/ETH, a comparison against Deribit implied vols.
+    """
+    from ..core.vol_forecast import forecast_report
+
+    pair = pair.upper()
+    if pair not in PAIRS:
+        raise HTTPException(404, f"Unknown pair '{pair}'.")
+    meta = PAIRS[pair]
+    crypto = meta["asset_class"] == "crypto"
+
+    def load():
+        data = _crypto_ohlc(pair[:3]) if crypto else _yf_ohlc(meta["sym"])
+        if not data or len(data["c"]) < 400:
+            raise ValueError("not enough daily OHLC history (need ~400 days)")
+        implied, dvol = None, None
+        if crypto:
+            try:
+                surf = get_crypto_vol(pair[:3])
+                ts = {r["tenor"]: r["atm_vol"] for r in surf.get("atm_term_structure", [])}
+                implied = {"1W": ts.get("1W"), "1M": surf.get("iv_30d")}
+                dvol = surf.get("dvol")
+            except HTTPException:
+                pass
+        rep = forecast_report(data["o"], data["h"], data["l"], data["c"], dates=data["dates"],
+                              ppy=meta["periods_per_year"], implied=implied)
+        return {**rep, "dvol": dvol, "last_price": float(data["c"][-1]),
+                "last_date": str(data["dates"][-1])}
+
+    try:
+        report = _cached(f"forecast:{pair}", 1800, load)
+    except Exception as e:
+        _cache.pop(f"forecast:{pair}", None)
+        raise HTTPException(503, f"Vol forecast unavailable: {e}")
+    return {"pair": pair, "asset_class": meta["asset_class"], **report}
