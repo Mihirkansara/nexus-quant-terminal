@@ -41,6 +41,7 @@ NEXUS TERMINAL is a Bloomberg-style web application for professional forex optio
 | **Vol Lab** | Live Deribit BTC/ETH surface with a raw-SVI fit per expiry (Durrleman butterfly-arb check), ATM / 25Δ RR / 25Δ BF term structure, DVOL, vol risk premium, and a Burghardt-Lane realised-vol cone for every pair. Tests: `cd backend && python -m pytest tests` |
 | **Vol Forecast & Regime (AI)** | HAR-RV (weekend-aware for crypto), GJR-GARCH and gradient-boosting forecasts of 1D/1W/1M vol, rolling out-of-sample QLIKE leaderboard with an inverse-QLIKE ensemble, 2-state HMM regime detection, and a forecast-vs-Deribit-implied rich/cheap signal |
 | **Hedge Lab** | Monte Carlo delta-hedging / gamma-scalping P&L of your portfolio: realised vs implied vol, GBM / Merton jumps / historical block bootstrap, weekend gaps for 24/5 markets, time or delta-band hedging, transaction costs and carry, with Derman-Kamal and Leland benchmarks and a hedge-frequency risk-vs-cost sweep |
+| **Cross-Asset Desk** | Gold · silver · BTC · ETH · EURUSD · DXY · US10Y · WTI correlation matrices (30D/90D/1Y/EWMA) with a correlation-break monitor; gold/silver ratio z-scores, OU half-life, Engle-Granger cointegration and Kalman hedge ratio; Margrabe outperformance-option pricer with correlation sensitivity |
 
 ### Live Intelligence
 

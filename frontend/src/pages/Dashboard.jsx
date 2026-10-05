@@ -12,6 +12,7 @@ import VolSmile from '../components/VolSmile'
 import VolLab from '../components/VolLab'
 import VolForecast from '../components/VolForecast'
 import HedgeLab from '../components/HedgeLab'
+import CrossAsset from '../components/CrossAsset'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -45,6 +46,7 @@ const TABS = [
   { id:'vollab',     icon:'🔬', label:'Vol Lab',      component: VolLab },
   { id:'volforecast', icon:'🤖', label:'Vol Forecast', component: VolForecast },
   { id:'hedgelab',   icon:'⚖', label:'Hedge Lab',    component: HedgeLab },
+  { id:'xasset',     icon:'🔗', label:'Cross-Asset',  component: CrossAsset },
   { id:'smile',      icon:'〰', label:'Vol Smile',    component: VolSmile },
   { id:'surfaces',   icon:'🗻', label:'3D Surfaces',  component: SurfacePlot },
   { id:'breakeven',  icon:'🎯', label:'Breakeven',    component: BreakevenChart },
