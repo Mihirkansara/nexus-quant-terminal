@@ -33,6 +33,10 @@ export const simulateHedge = (p) => api.post('/hedge/simulate', p).then(r=>r.dat
 // Cross-asset desk
 export const fetchCrossAsset = () => api.get('/xasset').then(r=>r.data)
 export const priceMargrabe   = (p) => api.post('/xasset/margrabe', p).then(r=>r.data)
+
+// Jump Lab
+export const calibrateJumps = (ccy) => api.get(`/jumps/calibrate/${ccy}`).then(r=>r.data)
+export const priceMerton    = (p)   => api.post('/jumps/merton', p).then(r=>r.data)
 export const exportCSV         = (p)           => api.post('/export/csv', p, {responseType:'blob'}).then(r=>r.data)
 
 // Institutional flow

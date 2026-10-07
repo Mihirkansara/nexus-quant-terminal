@@ -45,12 +45,15 @@ export const usePortfolioStore = create((set, get) => ({
   // Vol quotes (ATM / 25Δ RR / 25Δ BF, in vol points) handed from Vol Lab to Vol Smile.
   smileQuotes: null,
   setSmileQuotes: (smileQuotes) => set({ smileQuotes }),
+  // Jump parameters (intensity /yr, mean %, sd %) handed from Jump Lab to Hedge Lab.
+  hedgeJump: null,
+  setHedgeJump: (hedgeJump) => set({ hedgeJump }),
 
   setPair: (pair) => {
     const m = PAIR_META[pair] || meta
     // Keep each leg's moneyness (K/S) so strikes stay meaningful across very different price levels.
     set(s => ({
-      pair, S: m.defaultS, r_d: m.r_d, r_f: m.r_f, sigma: m.sigma ?? s.sigma, smileQuotes: null,
+      pair, S: m.defaultS, r_d: m.r_d, r_f: m.r_f, sigma: m.sigma ?? s.sigma, smileQuotes: null, hedgeJump: null,
       legs: s.legs.map(l => ({ ...l, K: +(l.K / s.S * m.defaultS).toPrecision(6) })),
     }))
   },

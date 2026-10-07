@@ -15,24 +15,24 @@ const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1e293b'
 const FREQS = [[1, 'Daily'], [2, '2× / day'], [4, '4× / day'], [8, '8× / day'], [24, 'Hourly']]
 const MODELS = [['gbm', 'Lognormal (GBM)'], ['jump', 'Jump-diffusion (Merton)'], ['bootstrap', 'Historical bootstrap']]
 
-const defaultsFor = (pair, sigma) => ({
+const defaultsFor = (pair, sigma, hedgeJump) => ({
   sigma_realised: +(sigma * 100).toFixed(2),
-  model: isCrypto(pair) ? 'jump' : 'gbm',
+  model: hedgeJump || isCrypto(pair) ? 'jump' : 'gbm',
   steps_per_day: isCrypto(pair) ? 4 : 1,
   rule: 'time', band: 0.05, cost_bps: isCrypto(pair) ? 3 : 1, n_paths: 2000,
-  jump: { intensity: 12, mean: -1, sd: 5 },                // % units in the UI
+  jump: hedgeJump ?? { intensity: 12, mean: -1, sd: 5 },   // % units in the UI; Jump Lab can supply it
   weekend_gap: PAIR_META[pair]?.assetClass === 'metal' ? 1.0 : 0.3,
   rescale_bootstrap: true,
 })
 
 export default function HedgeLab() {
-  const { legs, S, sigma, r_d, r_f, pair } = usePortfolioStore()
-  const [cfg, setCfg] = useState(() => ({ pair, ...defaultsFor(pair, sigma) }))
+  const { legs, S, sigma, r_d, r_f, pair, hedgeJump } = usePortfolioStore()
+  const [cfg, setCfg] = useState(() => ({ pair, ...defaultsFor(pair, sigma, hedgeJump) }))
   const [run, setRun] = useState(0)
   const [response, setResponse] = useState({ key:null, data:null, error:null })
   const [fcNote, setFcNote] = useState(null)
   // Reset scenario defaults when the instrument changes (derived, no effect needed).
-  const params = cfg.pair === pair ? cfg : { pair, ...defaultsFor(pair, sigma) }
+  const params = cfg.pair === pair ? cfg : { pair, ...defaultsFor(pair, sigma, hedgeJump) }
   const set = (k, v) => setCfg({ ...params, [k]: v })
   const crypto = isCrypto(pair)
   const maxT = legs.length ? Math.max(...legs.map(l => +l.T)) : 0
