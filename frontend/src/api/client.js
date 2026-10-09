@@ -46,3 +46,8 @@ export const fetchInstitutional = (pair, weeks) =>
 // Economic calendar (Forex Factory)
 export const fetchCalendar = () =>
   api.get('/news/calendar').then(r => r.data)
+
+// Exotics Desk
+export const priceBarriers    = (p) => api.post('/exotics/barrier', p).then(r=>r.data)
+export const priceDci         = (p) => api.post('/exotics/dci', p).then(r=>r.data)
+export const priceAccumulator = (p) => api.post('/exotics/accumulator', p).then(r=>r.data)
