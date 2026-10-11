@@ -15,6 +15,7 @@ import HedgeLab from '../components/HedgeLab'
 import CrossAsset from '../components/CrossAsset'
 import JumpLab from '../components/JumpLab'
 import ExoticsDesk from '../components/ExoticsDesk'
+import EventVol from '../components/EventVol'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -47,6 +48,7 @@ const TABS = [
   { id:'signals',    icon:'⚡', label:'AI Signals',   component: QuantSignals },
   { id:'vollab',     icon:'🔬', label:'Vol Lab',      component: VolLab },
   { id:'volforecast', icon:'🤖', label:'Vol Forecast', component: VolForecast },
+  { id:'eventvol',   icon:'📆', label:'Event Vol',    component: EventVol },
   { id:'hedgelab',   icon:'⚖', label:'Hedge Lab',    component: HedgeLab },
   { id:'jumps',      icon:'⚡', label:'Jump Lab',     component: JumpLab },
   { id:'exotics',    icon:'🧩', label:'Exotics Desk', component: ExoticsDesk },
