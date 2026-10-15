@@ -17,6 +17,7 @@ import JumpLab from '../components/JumpLab'
 import ExoticsDesk from '../components/ExoticsDesk'
 import EventVol from '../components/EventVol'
 import RiskDesk from '../components/RiskDesk'
+import TarfDesk from '../components/TarfDesk'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -54,6 +55,7 @@ const TABS = [
   { id:'risk',       icon:'🛡', label:'Risk Desk',    component: RiskDesk },
   { id:'jumps',      icon:'⚡', label:'Jump Lab',     component: JumpLab },
   { id:'exotics',    icon:'🧩', label:'Exotics Desk', component: ExoticsDesk },
+  { id:'tarf',       icon:'🎯', label:'TARF Desk',    component: TarfDesk },
   { id:'xasset',     icon:'🔗', label:'Cross-Asset',  component: CrossAsset },
   { id:'smile',      icon:'〰', label:'Vol Smile',    component: VolSmile },
   { id:'surfaces',   icon:'🗻', label:'3D Surfaces',  component: SurfacePlot },

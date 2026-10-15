@@ -60,3 +60,6 @@ export const priceEventVol         = (p)    => api.post('/eventvol/model', p).th
 // Risk Desk
 export const fetchBookRisk = (p) => api.post('/risk/book', p).then(r=>r.data)
 export const explainPnl    = (p) => api.post('/risk/explain', p).then(r=>r.data)
+
+// TARF Desk
+export const priceTarf = (p) => api.post('/tarf/price', p).then(r=>r.data)
