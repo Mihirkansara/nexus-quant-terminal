@@ -16,6 +16,9 @@ import CrossAsset from '../components/CrossAsset'
 import JumpLab from '../components/JumpLab'
 import ExoticsDesk from '../components/ExoticsDesk'
 import EventVol from '../components/EventVol'
+import RiskDesk from '../components/RiskDesk'
+import TarfDesk from '../components/TarfDesk'
+import AiHedger from '../components/AiHedger'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -50,8 +53,11 @@ const TABS = [
   { id:'volforecast', icon:'🤖', label:'Vol Forecast', component: VolForecast },
   { id:'eventvol',   icon:'📆', label:'Event Vol',    component: EventVol },
   { id:'hedgelab',   icon:'⚖', label:'Hedge Lab',    component: HedgeLab },
+  { id:'risk',       icon:'🛡', label:'Risk Desk',    component: RiskDesk },
+  { id:'aihedger',   icon:'🧠', label:'AI Hedger',    component: AiHedger },
   { id:'jumps',      icon:'⚡', label:'Jump Lab',     component: JumpLab },
   { id:'exotics',    icon:'🧩', label:'Exotics Desk', component: ExoticsDesk },
+  { id:'tarf',       icon:'🎯', label:'TARF Desk',    component: TarfDesk },
   { id:'xasset',     icon:'🔗', label:'Cross-Asset',  component: CrossAsset },
   { id:'smile',      icon:'〰', label:'Vol Smile',    component: VolSmile },
   { id:'surfaces',   icon:'🗻', label:'3D Surfaces',  component: SurfacePlot },
