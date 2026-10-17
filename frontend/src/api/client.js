@@ -63,3 +63,6 @@ export const explainPnl    = (p) => api.post('/risk/explain', p).then(r=>r.data)
 
 // TARF Desk
 export const priceTarf = (p) => api.post('/tarf/price', p).then(r=>r.data)
+
+// AI Hedger (deep hedging)
+export const trainDeepHedge = (p) => api.post('/deephedge/train', p, { timeout: 120000 }).then(r=>r.data)
