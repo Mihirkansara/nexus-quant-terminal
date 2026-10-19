@@ -19,6 +19,7 @@ import EventVol from '../components/EventVol'
 import RiskDesk from '../components/RiskDesk'
 import TarfDesk from '../components/TarfDesk'
 import AiHedger from '../components/AiHedger'
+import Positioning from '../components/Positioning'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -52,6 +53,7 @@ const TABS = [
   { id:'vollab',     icon:'🔬', label:'Vol Lab',      component: VolLab },
   { id:'volforecast', icon:'🤖', label:'Vol Forecast', component: VolForecast },
   { id:'eventvol',   icon:'📆', label:'Event Vol',    component: EventVol },
+  { id:'positioning', icon:'🧲', label:'Positioning',  component: Positioning },
   { id:'hedgelab',   icon:'⚖', label:'Hedge Lab',    component: HedgeLab },
   { id:'risk',       icon:'🛡', label:'Risk Desk',    component: RiskDesk },
   { id:'aihedger',   icon:'🧠', label:'AI Hedger',    component: AiHedger },
