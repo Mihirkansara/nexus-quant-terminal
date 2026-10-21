@@ -70,3 +70,7 @@ export const trainDeepHedge = (p) => api.post('/deephedge/train', p, { timeout: 
 // Positioning Desk (Deribit OI)
 export const fetchPositioning = (ccy, convention = 'classic', maxDays = 120) =>
   api.get(`/positioning/${ccy}`, { params: { convention, max_days: maxDays } }).then(r=>r.data)
+
+// Smile Dynamics (SABR / Bartlett)
+export const fetchSmileDynCrypto = ({ ccy, beta }) => api.get(`/smiledyn/crypto/${ccy}`, { params: { beta } }).then(r=>r.data)
+export const fetchSmileDynQuotes = (p) => api.post('/smiledyn/quotes', p).then(r=>r.data)

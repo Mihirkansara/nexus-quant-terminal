@@ -20,6 +20,7 @@ import RiskDesk from '../components/RiskDesk'
 import TarfDesk from '../components/TarfDesk'
 import AiHedger from '../components/AiHedger'
 import Positioning from '../components/Positioning'
+import SmileDynamics from '../components/SmileDynamics'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -62,6 +63,7 @@ const TABS = [
   { id:'tarf',       icon:'🎯', label:'TARF Desk',    component: TarfDesk },
   { id:'xasset',     icon:'🔗', label:'Cross-Asset',  component: CrossAsset },
   { id:'smile',      icon:'〰', label:'Vol Smile',    component: VolSmile },
+  { id:'smiledyn',   icon:'🌊', label:'Smile Dynamics', component: SmileDynamics },
   { id:'surfaces',   icon:'🗻', label:'3D Surfaces',  component: SurfacePlot },
   { id:'breakeven',  icon:'🎯', label:'Breakeven',    component: BreakevenChart },
   { id:'scenarios',  icon:'⚠', label:'Scenarios',    component: ScenarioTable },
