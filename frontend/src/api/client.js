@@ -56,3 +56,24 @@ export const priceAccumulator = (p) => api.post('/exotics/accumulator', p).then(
 export const fetchEventVolCrypto   = (ccy)  => api.get(`/eventvol/crypto/${ccy}`).then(r=>r.data)
 export const fetchEventVolRealised = (pair) => api.get(`/eventvol/realised/${pair}`).then(r=>r.data)
 export const priceEventVol         = (p)    => api.post('/eventvol/model', p).then(r=>r.data)
+
+// Risk Desk
+export const fetchBookRisk = (p) => api.post('/risk/book', p).then(r=>r.data)
+export const explainPnl    = (p) => api.post('/risk/explain', p).then(r=>r.data)
+
+// TARF Desk
+export const priceTarf = (p) => api.post('/tarf/price', p).then(r=>r.data)
+
+// AI Hedger (deep hedging)
+export const trainDeepHedge = (p) => api.post('/deephedge/train', p, { timeout: 120000 }).then(r=>r.data)
+
+// Positioning Desk (Deribit OI)
+export const fetchPositioning = (ccy, convention = 'classic', maxDays = 120) =>
+  api.get(`/positioning/${ccy}`, { params: { convention, max_days: maxDays } }).then(r=>r.data)
+
+// Smile Dynamics (SABR / Bartlett)
+export const fetchSmileDynCrypto = ({ ccy, beta }) => api.get(`/smiledyn/crypto/${ccy}`, { params: { beta } }).then(r=>r.data)
+export const fetchSmileDynQuotes = (p) => api.post('/smiledyn/quotes', p).then(r=>r.data)
+
+// Margin Desk
+export const fetchMarginBook = (p) => api.post('/margin/book', p, { timeout: 60000 }).then(r=>r.data)
