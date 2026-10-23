@@ -74,3 +74,6 @@ export const fetchPositioning = (ccy, convention = 'classic', maxDays = 120) =>
 // Smile Dynamics (SABR / Bartlett)
 export const fetchSmileDynCrypto = ({ ccy, beta }) => api.get(`/smiledyn/crypto/${ccy}`, { params: { beta } }).then(r=>r.data)
 export const fetchSmileDynQuotes = (p) => api.post('/smiledyn/quotes', p).then(r=>r.data)
+
+// Margin Desk
+export const fetchMarginBook = (p) => api.post('/margin/book', p, { timeout: 60000 }).then(r=>r.data)

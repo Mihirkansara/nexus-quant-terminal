@@ -21,6 +21,7 @@ import TarfDesk from '../components/TarfDesk'
 import AiHedger from '../components/AiHedger'
 import Positioning from '../components/Positioning'
 import SmileDynamics from '../components/SmileDynamics'
+import MarginDesk from '../components/MarginDesk'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -57,6 +58,7 @@ const TABS = [
   { id:'positioning', icon:'🧲', label:'Positioning',  component: Positioning },
   { id:'hedgelab',   icon:'⚖', label:'Hedge Lab',    component: HedgeLab },
   { id:'risk',       icon:'🛡', label:'Risk Desk',    component: RiskDesk },
+  { id:'margin',     icon:'🏦', label:'Margin Desk',  component: MarginDesk },
   { id:'aihedger',   icon:'🧠', label:'AI Hedger',    component: AiHedger },
   { id:'jumps',      icon:'⚡', label:'Jump Lab',     component: JumpLab },
   { id:'exotics',    icon:'🧩', label:'Exotics Desk', component: ExoticsDesk },
