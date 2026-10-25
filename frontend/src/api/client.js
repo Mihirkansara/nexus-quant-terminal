@@ -77,3 +77,6 @@ export const fetchSmileDynQuotes = (p) => api.post('/smiledyn/quotes', p).then(r
 
 // Margin Desk
 export const fetchMarginBook = (p) => api.post('/margin/book', p, { timeout: 60000 }).then(r=>r.data)
+
+// Carry & RV Scanner
+export const fetchRvScan = (ccy) => api.get(`/rvscan/${ccy}`).then(r=>r.data)
