@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { RefreshCw, Play } from 'lucide-react'
 import _Plot from 'react-plotly.js'
 const Plot = _Plot?.default ?? _Plot
 import { usePortfolioStore } from '../store/portfolio'
@@ -35,16 +36,16 @@ export default function MonteCarloChart() {
 
   const histData = result ? [{
     type:'histogram', x: result.pnl, nbinsx:60,
-    marker:{ color:'rgba(0,212,255,0.5)', line:{ color:'var(--cyan)', width:0.5 } },
+    marker:{ color:'rgba(169,154,255,0.5)', line:{ color:'var(--cyan)', width:0.5 } },
     name:'P&L Distribution',
   }] : []
 
   const bgLayout = {
-    paper_bgcolor:'transparent', plot_bgcolor:'#080d18',
-    font:{ color:'#94a3b8', size:11 },
+    paper_bgcolor:'transparent', plot_bgcolor:'#0a1511',
+    font:{ family:"'Geist Variable', sans-serif", color:'#9eab9f', size:11 },
     margin:{ l:52, r:16, t:32, b:50 },
-    xaxis:{ gridcolor:'#1e293b', color:'#475569', zeroline:false },
-    yaxis:{ gridcolor:'#1e293b', color:'#475569' },
+    xaxis:{ gridcolor:'#1c2e26', color:'#7e8f84', zeroline:false },
+    yaxis:{ gridcolor:'#1c2e26', color:'#7e8f84' },
     showlegend:false,
   }
 
@@ -52,16 +53,16 @@ export default function MonteCarloChart() {
     <div style={{ padding:16 }}>
       {/* Controls */}
       <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:14 }}>
-        <div className="section-title">Monte Carlo — GBM (Forex)</div>
+        <div className="section-title" style={{ color:'var(--text-muted)', letterSpacing:'0.08em' }}>Geometric Brownian motion · FX conventions</div>
         <div style={{ flex:1 }}/>
-        <span style={{ fontSize:10, color:'var(--text-muted)' }}>Paths:</span>
+        <span style={{ fontSize:11, color:'var(--text-muted)' }}>Paths:</span>
         <select className="input-field" style={{ width:80, fontSize:11, padding:'4px 8px' }}
           value={nPaths} onChange={e => setNPaths(+e.target.value)}>
           {[500, 1000, 2000, 5000].map(n => <option key={n} value={n}>{n.toLocaleString()}</option>)}
         </select>
         <button className="btn-primary" onClick={run} disabled={loading}
           style={{ padding:'6px 18px', fontSize:12 }}>
-          {loading ? '⟳ Simulating…' : '▶ Run'}
+          {loading ? <><RefreshCw size={13} aria-hidden="true" style={{ animation:'spin 0.9s linear infinite' }} />Simulating…</> : <><Play size={13} aria-hidden="true" />Run</>}
         </button>
       </div>
 
@@ -73,7 +74,7 @@ export default function MonteCarloChart() {
           { label:'Pair',   value:pair },
           { label:'σ',      value:`${(sigma*100).toFixed(1)}%` },
         ].map(({ label, value }) => (
-          <div key={label} className="glass" style={{ padding:'4px 10px', borderRadius:6, fontSize:9 }}>
+          <div key={label} className="glass" style={{ padding:'4px 10px', borderRadius:6, fontSize:10.5 }}>
             <span style={{ color:'var(--text-muted)' }}>{label}: </span>
             <span className="font-mono" style={{ color:'var(--cyan)' }}>{value}</span>
           </div>
@@ -101,7 +102,7 @@ export default function MonteCarloChart() {
               { label:'P(Profit)',   value: `${(result.prob_profit*100).toFixed(1)}%`, pos: result.prob_profit>=0.5 },
             ].map(({ label, value, pos }) => (
               <div key={label} className="glass" style={{ borderRadius:8, padding:'8px 10px', textAlign:'center' }}>
-                <div style={{ fontSize:9, color:'var(--text-muted)', marginBottom:3 }}>{label}</div>
+                <div style={{ fontSize:10.5, color:'var(--text-muted)', marginBottom:3 }}>{label}</div>
                 <div className="font-mono" style={{ fontSize:14, fontWeight:700,
                   color: pos ? 'var(--green)' : 'var(--red)' }}>
                   {typeof value === 'string' ? value : (value>=0?'+':'')+value.toFixed(4)}
@@ -112,7 +113,7 @@ export default function MonteCarloChart() {
 
           {/* View toggle */}
           <div style={{ display:'flex', gap:6, marginBottom:10 }}>
-            {[['paths','📈 Price Paths'],['histogram','📊 P&L Distribution']].map(([v,lbl]) => (
+            {[['paths','Price paths'],['histogram','P&L distribution']].map(([v,lbl]) => (
               <button key={v} className="btn-tab" onClick={() => setView(v)}
                 style={{ background: view===v?'var(--cyan)':'var(--bg3)',
                   color: view===v?'var(--bg)':'var(--text-muted)' }}>{lbl}</button>

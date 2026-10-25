@@ -1,0 +1,821 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-25T12:55:11.387Z",
+  "title": "Design System: Nexus Terminal",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Intaglio Ground",
+        "canonical": "oklch(17.5% 0.017 167.5)",
+        "tonalRamp": [
+          "#090c0b",
+          "#202724",
+          "#3a4540",
+          "#58645f",
+          "#798680",
+          "#9ba9a3",
+          "#c3ccc8",
+          "#ecefee"
+        ],
+        "cssVar": "--bg"
+      },
+      "ground-raised": {
+        "role": "neutral",
+        "displayName": "Raised Ground",
+        "canonical": "oklch(19.6% 0.019 171.3)",
+        "tonalRamp": [
+          "#090c0b",
+          "#1f2724",
+          "#384541",
+          "#576560",
+          "#778681",
+          "#9aa9a3",
+          "#c2ccc8",
+          "#ebefee"
+        ],
+        "cssVar": "--bg2"
+      },
+      "ground-3": {
+        "role": "neutral",
+        "displayName": "Third Layer",
+        "canonical": "oklch(21.9% 0.024 166.9)",
+        "tonalRamp": [
+          "#090c0b",
+          "#1e2823",
+          "#36463f",
+          "#55665e",
+          "#75877f",
+          "#98aaa2",
+          "#c0cdc7",
+          "#ebf0ed"
+        ],
+        "cssVar": "--bg3"
+      },
+      "ground-4": {
+        "role": "neutral",
+        "displayName": "Fourth Layer",
+        "canonical": "oklch(25.3% 0.029 165.5)",
+        "tonalRamp": [
+          "#080c0a",
+          "#1c2823",
+          "#33473e",
+          "#52675d",
+          "#72887e",
+          "#95aba1",
+          "#becdc6",
+          "#eaf0ed"
+        ],
+        "cssVar": "--bg4"
+      },
+      "well": {
+        "role": "neutral",
+        "displayName": "Well",
+        "canonical": "oklch(16.2% 0.016 165.7)",
+        "tonalRamp": [
+          "#0a0c0b",
+          "#202724",
+          "#3a4540",
+          "#59645f",
+          "#7a8680",
+          "#9ca8a2",
+          "#c3cbc7",
+          "#ecefee"
+        ],
+        "cssVar": "--well"
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel",
+        "canonical": "oklch(20.4% 0.021 168.1)",
+        "tonalRamp": [
+          "#090c0b",
+          "#1f2724",
+          "#374640",
+          "#56655f",
+          "#778780",
+          "#99aaa2",
+          "#c1ccc7",
+          "#ebf0ee"
+        ],
+        "cssVar": "--panel"
+      },
+      "panel-hover": {
+        "role": "neutral",
+        "displayName": "Panel Hover",
+        "canonical": "oklch(23.1% 0.026 164.8)",
+        "tonalRamp": [
+          "#090c0a",
+          "#1d2823",
+          "#35473e",
+          "#54665d",
+          "#75877e",
+          "#97aaa1",
+          "#c0cdc6",
+          "#ebf0ed"
+        ],
+        "cssVar": "--panel-hover"
+      },
+      "surface-2": {
+        "role": "neutral",
+        "displayName": "Surface Hover",
+        "canonical": "oklch(23.4% 0.028 158.7)",
+        "tonalRamp": [
+          "#090c0a",
+          "#1e2822",
+          "#36473c",
+          "#54665b",
+          "#75887c",
+          "#97ab9f",
+          "#c0cdc5",
+          "#ebf0ed"
+        ],
+        "cssVar": "--surface-2"
+      },
+      "bone": {
+        "role": "neutral",
+        "displayName": "Bone Ink",
+        "canonical": "oklch(92.2% 0.025 91.6)",
+        "tonalRamp": [
+          "#0c0b08",
+          "#28251c",
+          "#474233",
+          "#666151",
+          "#888272",
+          "#aba594",
+          "#cdc9bd",
+          "#f0eeea"
+        ],
+        "cssVar": "--ink"
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Bone Secondary",
+        "canonical": "oklch(82.5% 0.021 121.9)",
+        "tonalRamp": [
+          "#0b0c09",
+          "#24261f",
+          "#404437",
+          "#5f6356",
+          "#808577",
+          "#a3a799",
+          "#c7cbc1",
+          "#eeefeb"
+        ],
+        "cssVar": "--text-secondary"
+      },
+      "text-dim": {
+        "role": "neutral",
+        "displayName": "Bone Dim",
+        "canonical": "oklch(72.7% 0.022 147.5)",
+        "tonalRamp": [
+          "#0a0c0a",
+          "#202721",
+          "#3a453b",
+          "#59655a",
+          "#7a867b",
+          "#9ca99d",
+          "#c3ccc4",
+          "#ecefec"
+        ],
+        "cssVar": "--text-dim"
+      },
+      "text-muted": {
+        "role": "neutral",
+        "displayName": "Bone Muted",
+        "canonical": "oklch(65.1% 0.024 158.3)",
+        "tonalRamp": [
+          "#090c0a",
+          "#1f2722",
+          "#38463d",
+          "#56665c",
+          "#77877d",
+          "#99aaa0",
+          "#c1ccc5",
+          "#ebf0ed"
+        ],
+        "cssVar": "--text-muted"
+      },
+      "text-faint": {
+        "role": "neutral",
+        "displayName": "Bone Faint",
+        "canonical": "oklch(60.7% 0.025 159.8)",
+        "tonalRamp": [
+          "#090c0a",
+          "#1e2822",
+          "#37463d",
+          "#56665c",
+          "#76877d",
+          "#98aaa0",
+          "#c1cdc5",
+          "#ebf0ed"
+        ],
+        "cssVar": "--text-faint"
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline Rule",
+        "canonical": "oklch(28.3% 0.028 165.0)",
+        "tonalRamp": [
+          "#090c0a",
+          "#1d2823",
+          "#34473e",
+          "#53675d",
+          "#73887e",
+          "#96aba1",
+          "#bfcdc6",
+          "#eaf0ed"
+        ],
+        "cssVar": "--border"
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Rule",
+        "canonical": "oklch(35.3% 0.034 165.6)",
+        "tonalRamp": [
+          "#080c0a",
+          "#1b2922",
+          "#31483e",
+          "#4f685d",
+          "#70897d",
+          "#92aca0",
+          "#bccec6",
+          "#eaf0ed"
+        ],
+        "cssVar": "--border-md"
+      },
+      "rule-faint": {
+        "role": "neutral",
+        "displayName": "Faint Rule",
+        "canonical": "oklch(24.8% 0.026 165.2)",
+        "tonalRamp": [
+          "#090c0a",
+          "#1e2823",
+          "#35463f",
+          "#54665e",
+          "#75877f",
+          "#97aaa1",
+          "#c0cdc6",
+          "#ebf0ed"
+        ],
+        "cssVar": "--border-sub"
+      },
+      "uv": {
+        "role": "primary",
+        "displayName": "UV Ink",
+        "canonical": "oklch(74.0% 0.144 289.2)",
+        "tonalRamp": [
+          "#0b0819",
+          "#26194f",
+          "#432d87",
+          "#614fac",
+          "#8171d2",
+          "#a394f9",
+          "#c7c0ff",
+          "#eeecfe"
+        ],
+        "cssVar": "--uv"
+      },
+      "uv-light": {
+        "role": "primary",
+        "displayName": "UV Bright",
+        "canonical": "oklch(79.2% 0.114 290.9)",
+        "tonalRamp": [
+          "#0b0916",
+          "#261c46",
+          "#443379",
+          "#62539c",
+          "#8375c1",
+          "#a598e7",
+          "#c9c1f7",
+          "#eeecfe"
+        ],
+        "literalOnly": true
+      },
+      "uv-on": {
+        "role": "primary",
+        "displayName": "UV Counter-ink",
+        "canonical": "oklch(18.6% 0.058 286.9)",
+        "tonalRamp": [
+          "#0b0a11",
+          "#242237",
+          "#403d60",
+          "#5f5c81",
+          "#7f7da4",
+          "#a2a0c8",
+          "#c7c6e2",
+          "#ededf8"
+        ],
+        "literalOnly": true
+      },
+      "foil": {
+        "role": "secondary",
+        "displayName": "Foil Gold",
+        "canonical": "oklch(78.1% 0.117 81.8)",
+        "tonalRamp": [
+          "#110a00",
+          "#312203",
+          "#563d02",
+          "#7d5b08",
+          "#a57a1b",
+          "#ca9d46",
+          "#e2c590",
+          "#f8edd9"
+        ],
+        "cssVar": "--foil"
+      },
+      "pos": {
+        "role": "tertiary",
+        "displayName": "Gain Green",
+        "canonical": "oklch(74.5% 0.134 160.7)",
+        "tonalRamp": [
+          "#000f07",
+          "#012d1b",
+          "#074f33",
+          "#13734d",
+          "#0b9a67",
+          "#46be89",
+          "#95dbb6",
+          "#dcf6e7"
+        ],
+        "cssVar": "--pos"
+      },
+      "neg": {
+        "role": "tertiary",
+        "displayName": "Loss Red",
+        "canonical": "oklch(68.4% 0.165 29.1)",
+        "tonalRamp": [
+          "#190403",
+          "#4b0603",
+          "#800503",
+          "#ab2c22",
+          "#d35244",
+          "#fb7766",
+          "#fbb5aa",
+          "#fee9e6"
+        ],
+        "cssVar": "--neg"
+      },
+      "warn": {
+        "role": "tertiary",
+        "displayName": "Warning Orange",
+        "canonical": "oklch(74.3% 0.143 55.0)",
+        "tonalRamp": [
+          "#160700",
+          "#3b1b02",
+          "#643309",
+          "#944b02",
+          "#c26715",
+          "#e88a43",
+          "#fab98e",
+          "#feeadd"
+        ],
+        "cssVar": "--warn"
+      },
+      "intaglio-blue": {
+        "role": "tertiary",
+        "displayName": "Intaglio Blue",
+        "canonical": "oklch(73.9% 0.100 260.8)",
+        "tonalRamp": [
+          "#060b16",
+          "#112445",
+          "#214077",
+          "#3f609a",
+          "#5f82bf",
+          "#81a6e4",
+          "#b1caf5",
+          "#e6efff"
+        ],
+        "cssVar": "--blue"
+      },
+      "mauve": {
+        "role": "tertiary",
+        "displayName": "Mauve",
+        "canonical": "oklch(73.5% 0.106 338.4)",
+        "tonalRamp": [
+          "#12070f",
+          "#3a1630",
+          "#642855",
+          "#874776",
+          "#ab6898",
+          "#d08bbc",
+          "#e8b8d9",
+          "#fbe8f5"
+        ],
+        "cssVar": "--mauve"
+      },
+      "chart-bone": {
+        "role": "tertiary",
+        "displayName": "Chart Bone",
+        "canonical": "oklch(89.4% 0.034 92.3)",
+        "tonalRamp": [
+          "#0c0b07",
+          "#292518",
+          "#48422d",
+          "#68614b",
+          "#8a826b",
+          "#ada58d",
+          "#cec9b9",
+          "#f0eee8"
+        ],
+        "literalOnly": true
+      },
+      "chart-axis": {
+        "role": "neutral",
+        "displayName": "Chart Axis",
+        "canonical": "oklch(63.3% 0.025 157.2)",
+        "tonalRamp": [
+          "#090c0a",
+          "#1e2822",
+          "#37463d",
+          "#56665c",
+          "#76877c",
+          "#99aa9f",
+          "#c1cdc5",
+          "#ebf0ed"
+        ],
+        "literalOnly": true
+      },
+      "plot-well": {
+        "role": "neutral",
+        "displayName": "Plot Well",
+        "canonical": "oklch(18.4% 0.018 169.4)",
+        "tonalRamp": [
+          "#090c0b",
+          "#202724",
+          "#394540",
+          "#58655f",
+          "#788680",
+          "#9ba9a3",
+          "#c2ccc8",
+          "#ecefee"
+        ],
+        "literalOnly": true
+      },
+      "hover-plate": {
+        "role": "neutral",
+        "displayName": "Hover Plate",
+        "canonical": "oklch(21.6% 0.022 169.7)",
+        "tonalRamp": [
+          "#090c0b",
+          "#1e2724",
+          "#374640",
+          "#55655f",
+          "#768780",
+          "#98aaa3",
+          "#c1ccc8",
+          "#ebf0ee"
+        ],
+        "literalOnly": true
+      },
+      "note-ground": {
+        "role": "neutral",
+        "displayName": "Note Ground",
+        "canonical": "oklch(21.4% 0.025 168.0)",
+        "tonalRamp": [
+          "#090c0b",
+          "#1d2823",
+          "#35463f",
+          "#54665e",
+          "#74877f",
+          "#97aaa2",
+          "#c0cdc7",
+          "#ebf0ee"
+        ],
+        "literalOnly": true
+      },
+      "microtext-ink": {
+        "role": "neutral",
+        "displayName": "Microtext Ink",
+        "canonical": "oklch(38.1% 0.042 166.9)",
+        "tonalRamp": [
+          "#070d0a",
+          "#182922",
+          "#2b493d",
+          "#4a695c",
+          "#6b8b7d",
+          "#8dae9f",
+          "#b9cfc5",
+          "#e8f1ed"
+        ],
+        "literalOnly": true
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Landing hero headline only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Landing section heads and the sign-in heading."
+      },
+      "title": {
+        "displayName": "Desk Title",
+        "purpose": "The desk title above its method line; 22px under 820px."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Desk prose and labels at 12.5px over a 13px root."
+      },
+      "body-lede": {
+        "displayName": "Lede",
+        "purpose": "Entry-surface lede, max 58ch."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase rail groups, panel headers, book-panel sections, table headers."
+      },
+      "figure": {
+        "displayName": "Serial Figure",
+        "purpose": "KPI and Greek values, top-bar spot; tabular, right-aligned."
+      },
+      "figure-inline": {
+        "displayName": "Inline Figure",
+        "purpose": "Table cells, inputs, tape rates, row values."
+      },
+      "greek": {
+        "displayName": "Greek",
+        "purpose": "Every Greek letter, in labels, seal readouts and sliders."
+      },
+      "microtext": {
+        "displayName": "Microtext",
+        "purpose": "Ornamental repeated Greek names; aria-hidden."
+      }
+    },
+    "shadows": [
+      {
+        "name": "panel",
+        "value": "0 1px 0 rgba(235,229,211,0.025) inset, 0 6px 18px -10px rgba(0,0,0,0.6)",
+        "purpose": "Every desk panel."
+      },
+      {
+        "name": "button-primary",
+        "value": "0 1px 0 rgba(255,255,255,0.25) inset, 0 2px 6px -2px rgba(0,0,0,0.5)",
+        "purpose": "The UV primary action only."
+      },
+      {
+        "name": "toast",
+        "value": "0 10px 30px -8px rgba(0,0,0,0.7)",
+        "purpose": "Transient confirmations."
+      },
+      {
+        "name": "desk-index",
+        "value": "0 30px 80px -20px rgba(0,0,0,0.85)",
+        "purpose": "The Ctrl K palette, over a rgba(4,9,7,0.72) scrim."
+      },
+      {
+        "name": "book-drawer",
+        "value": "20px 0 40px -10px rgba(0,0,0,0.6)",
+        "purpose": "Off-canvas book panel under 820px."
+      },
+      {
+        "name": "note-frame",
+        "value": "0 0 0 6px var(--bg), 0 0 0 7px color-mix(in srgb, var(--foil) 18%, transparent), 0 40px 80px -40px rgba(0,0,0,0.85)",
+        "purpose": "Printed double frame of the landing and sign-in notes."
+      },
+      {
+        "name": "plate",
+        "value": "0 30px 60px -30px rgba(0,0,0,0.8)",
+        "purpose": "Landing proof plates (terminal captures)."
+      },
+      {
+        "name": "focus-ring",
+        "value": "outline: 1.5px solid var(--uv); outline-offset: 2px",
+        "purpose": "Global focus-visible outline."
+      },
+      {
+        "name": "input-focus",
+        "value": "0 0 0 3px color-mix(in srgb, var(--uv) 18%, transparent)",
+        "purpose": "Focused input ring; foil at 16% for leg inputs."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The single easing for every transition and entrance."
+      },
+      {
+        "name": "t-fast",
+        "value": "0.14s",
+        "purpose": "Buttons, inputs, icon buttons, rail items."
+      },
+      {
+        "name": "t-base",
+        "value": "0.2s",
+        "purpose": "Panels and cards on hover."
+      },
+      {
+        "name": "t-slow",
+        "value": "0.32s",
+        "purpose": "Slower reveals."
+      },
+      {
+        "name": "desk-in",
+        "value": "0.22s, opacity 0 to 1 with a 4px rise",
+        "purpose": "Desk entrance; also toast and palette."
+      },
+      {
+        "name": "seal-morph",
+        "value": "path d over 0.7s on ease-out (0.9s on entry seals)",
+        "purpose": "Book Seal redraws as the book changes."
+      },
+      {
+        "name": "engrave",
+        "value": "stroke-dashoffset 1 to 0 over 1.8s",
+        "purpose": "Entry-surface seals draw in on load."
+      },
+      {
+        "name": "uv-ring",
+        "value": "2.2s infinite, scale 1 to 2.6 while fading",
+        "purpose": "Live dot pulse."
+      },
+      {
+        "name": "ticker",
+        "value": "60s linear infinite (news strip 110s), paused on hover",
+        "purpose": "Market tape and news strip."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "all animation and transition durations 0.01ms",
+        "purpose": "Applied under the reduced-motion media query."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "kpi-mid",
+        "value": "1360px"
+      },
+      {
+        "name": "shell-compact",
+        "value": "1280px"
+      },
+      {
+        "name": "rail-icons",
+        "value": "1080px"
+      },
+      {
+        "name": "book-drawer",
+        "value": "820px"
+      },
+      {
+        "name": "kpi-two",
+        "value": "760px"
+      },
+      {
+        "name": "entry-phone",
+        "value": "720px"
+      },
+      {
+        "name": "greeks-two",
+        "value": "640px"
+      },
+      {
+        "name": "top-minimal",
+        "value": "480px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one UV action in a view.",
+      "html": "<button class='ds-btn-primary'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12h14'/><path d='m12 5 7 7-7 7'/></svg>Open the terminal</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;font:550 12px/1 var(--font-ui);border:1px solid transparent;border-radius:6px;background:var(--uv);color:#120d2b;box-shadow:0 1px 0 rgba(255,255,255,0.25) inset,0 2px 6px -2px rgba(0,0,0,0.5);cursor:pointer;transition:all .14s cubic-bezier(0.16,1,0.3,1)}.ds-btn-primary:hover{background:#bbaeff}.ds-btn-primary:active{transform:translateY(1px)}.ds-btn-primary:focus-visible{outline:1.5px solid var(--uv);outline-offset:2px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary actions and toggles; UV tint when hovered or pressed.",
+      "html": "<button class='ds-btn-ghost'><svg width='13' height='13' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round'><path d='M5 12h14'/><path d='M12 5v14'/></svg>Add leg</button>",
+      "css": ".ds-btn-ghost{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;font:550 12px/1 var(--font-ui);background:transparent;border:1px solid var(--border-md);border-radius:6px;color:var(--text-secondary);cursor:pointer;transition:all .14s cubic-bezier(0.16,1,0.3,1)}.ds-btn-ghost:hover,.ds-btn-ghost[aria-pressed=true]{border-color:color-mix(in srgb,var(--uv) 34%,transparent);background:color-mix(in srgb,var(--uv) 9%,transparent);color:var(--ink)}.ds-btn-ghost:focus-visible{outline:1.5px solid var(--uv);outline-offset:2px}"
+    },
+    {
+      "name": "Book Parameter Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Recessed mono numeric field with a Didot Greek label.",
+      "html": "<div class='ds-param'><label for='ds-vol'>Volatility <i>σ</i></label><input id='ds-vol' class='ds-input' type='text' value='7.00'><small>%</small></div>",
+      "css": ".ds-param{display:flex;align-items:center;gap:8px;width:280px;font:12.5px var(--font-ui);color:var(--text-secondary)}.ds-param label{flex:1}.ds-param i{font-style:normal;font-family:'GFS Didot',serif;color:var(--text-muted);margin-left:4px}.ds-param small{font-size:11px;color:var(--text-muted)}.ds-input{width:108px;text-align:right;background:var(--well);border:1px solid var(--border-md);border-radius:4px;color:var(--ink);font:12px var(--font-mono);font-variant-numeric:tabular-nums;padding:6px 8px;outline:none;transition:border-color .14s,box-shadow .14s}.ds-input:hover{border-color:var(--text-faint)}.ds-input:focus{border-color:var(--uv);box-shadow:0 0 0 3px color-mix(in srgb,var(--uv) 18%,transparent)}"
+    },
+    {
+      "name": "Desk Rail",
+      "kind": "nav",
+      "refersTo": "rail-item",
+      "description": "Grouped desk navigation; the active desk carries a UV wash, UV icon and an edge tick.",
+      "html": "<nav class='ds-rail'><div class='ds-rail-label'>Pricing</div><button class='ds-rail-item' aria-current='page'><svg width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7'><path d='M18 7V4H6l6 8-6 8h12v-3'/></svg>Greeks</button><button class='ds-rail-item'><svg width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7'><circle cx='12' cy='12' r='10'/><path d='M2 12h20'/></svg>Breakeven</button></nav>",
+      "css": ".ds-rail{width:220px;padding:10px;background:var(--bg2);border-right:1px solid var(--border);font-family:var(--font-ui)}.ds-rail-label{padding:0 8px 6px;font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}.ds-rail-item{position:relative;width:100%;display:flex;align-items:center;gap:10px;padding:6px 8px;border:0;border-radius:5px;background:transparent;color:var(--text-secondary);font-size:13px;text-align:left;cursor:pointer;transition:background .12s,color .12s}.ds-rail-item svg{color:var(--text-muted)}.ds-rail-item:hover{background:var(--bg4);color:var(--ink)}.ds-rail-item[aria-current=page]{background:color-mix(in srgb,var(--uv) 11%,var(--bg3));color:var(--ink)}.ds-rail-item[aria-current=page] svg{color:var(--uv)}.ds-rail-item[aria-current=page]::before{content:'';position:absolute;left:-10px;top:7px;bottom:7px;width:1.5px;background:var(--uv);border-radius:2px}.ds-rail-item:focus-visible{outline:1.5px solid var(--uv);outline-offset:2px}"
+    },
+    {
+      "name": "Badge",
+      "kind": "chip",
+      "refersTo": "badge",
+      "description": "Uppercase tinted tag; its ink follows the colour rules.",
+      "html": "<span class='ds-badge ds-badge-high'>High</span> <span class='ds-badge ds-badge-medium'>Medium</span> <span class='ds-badge ds-badge-low'>Low</span> <span class='ds-badge ds-badge-uv'>Live</span>",
+      "css": ".ds-badge{display:inline-flex;align-items:center;padding:2px 6px;border-radius:4px;font:600 10px/1.4 var(--font-ui);letter-spacing:.07em;text-transform:uppercase}.ds-badge-high{background:color-mix(in srgb,var(--neg) 9%,transparent);color:var(--neg);border:1px solid color-mix(in srgb,var(--neg) 35%,transparent)}.ds-badge-medium{background:color-mix(in srgb,var(--warn) 9%,transparent);color:var(--warn);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}.ds-badge-low{background:var(--bg3);color:var(--text-muted);border:1px solid var(--border)}.ds-badge-uv{background:color-mix(in srgb,var(--uv) 9%,transparent);color:var(--uv);border:1px solid color-mix(in srgb,var(--uv) 35%,transparent)}"
+    },
+    {
+      "name": "Desk Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Ruled panel with an uppercase header and hairline rows; book legs in foil.",
+      "html": "<section class='ds-panel'><div class='ds-panel-head'>Greeks by leg</div><div class='ds-row'><span>+1 CALL K=1.09</span><b>+0.80624</b></div><div class='ds-row'><span>−1 PUT K=1.08</span><b>+0.12234</b></div></section>",
+      "css": ".ds-panel{width:340px;background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:0 1px 0 rgba(235,229,211,0.025) inset,0 6px 18px -10px rgba(0,0,0,0.6);overflow:hidden;font-family:var(--font-ui)}.ds-panel-head{padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary)}.ds-row{display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--border-sub);font-size:12px;transition:background .12s}.ds-row:last-child{border-bottom:0}.ds-row:hover{background:color-mix(in srgb,var(--ink) 2.5%,transparent)}.ds-row span{color:var(--foil);font-family:var(--font-mono)}.ds-row b{font:500 12.5px var(--font-mono);color:var(--ink);font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "KPI Strip",
+      "kind": "custom",
+      "refersTo": "kpi-cell",
+      "description": "The engraved band every desk leads with: labels top-left, serial figures right-aligned on one baseline.",
+      "html": "<div class='ds-kpis'><div class='ds-kpi'><div class='ds-kpi-l'>Book value</div><div class='ds-kpi-v'>−20,522</div><div class='ds-kpi-s'>Δ 0.775</div></div><div class='ds-kpi'><div class='ds-kpi-l'>Daily P&amp;L</div><div class='ds-kpi-v ds-neg'>−1,284</div><div class='ds-kpi-s'>quote ccy</div></div><div class='ds-kpi'><div class='ds-kpi-l'>Vega / vol pt</div><div class='ds-kpi-v'>−142</div><div class='ds-kpi-s'>θ/day 23.7</div></div></div>",
+      "css": ".ds-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:520px;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden;font-family:var(--font-ui)}.ds-kpi{padding:11px 14px 10px;box-shadow:1px 0 0 var(--border);cursor:help}.ds-kpi-l{font-size:11.5px;line-height:1.3;color:var(--text-secondary)}.ds-kpi-v{padding-top:8px;font:500 19px/1.15 var(--font-mono);letter-spacing:.05em;font-variant-numeric:tabular-nums;color:var(--ink);text-align:right}.ds-kpi-v.ds-neg{color:var(--neg)}.ds-kpi-s{padding-top:3px;font:11px/1.35 var(--font-mono);color:var(--text-muted);text-align:right}"
+    },
+    {
+      "name": "Book Seal Card",
+      "kind": "custom",
+      "refersTo": "book-seal-card",
+      "description": "The guilloche Book Seal beside the foil book value and a Didot Greek readout. The live seal is computed from the book's Greeks; this snippet is a static approximation.",
+      "html": "<div class='ds-seal'><svg width='84' height='84' viewBox='-48 -48 96 96' fill='none'><circle r='46.5' stroke='var(--foil)' stroke-width='0.6' opacity='0.55'/><circle r='38.5' stroke='var(--foil)' stroke-width='0.35' opacity='0.4'/><path d='M0-36 L6-24 L18-30 L18-18 L31-18 L24-6 L36 0 L24 6 L31 18 L18 18 L18 30 L6 24 L0 36 L-6 24 L-18 30 L-18 18 L-31 18 L-24 6 L-36 0 L-24-6 L-31-18 L-18-18 L-18-30 L-6-24Z' stroke='var(--foil)' stroke-width='0.55'/><circle r='12' stroke='var(--ink)' stroke-width='0.35' opacity='0.6'/><circle r='3.2' fill='var(--foil)'/><circle r='1.2' fill='var(--bg)'/></svg><div><div class='ds-seal-t'>Book · EURUSD</div><div class='ds-seal-v'>+0.0351</div><dl><dt>Δ</dt><dd>+0.929</dd><dt>Γ</dt><dd>+0.0179</dd><dt>ν</dt><dd>+0.00035</dd></dl></div></div>",
+      "css": ".ds-seal{display:flex;align-items:center;gap:14px;padding:12px;width:290px;border:1px solid color-mix(in srgb,var(--foil) 20%,var(--border));border-radius:10px;background:radial-gradient(120% 140% at 0% 0%,color-mix(in srgb,var(--foil) 6%,transparent),transparent 60%),var(--bg3)}.ds-seal>div{flex:1}.ds-seal-t{font:600 10px/1 var(--font-ui);letter-spacing:.16em;text-transform:uppercase;color:var(--foil)}.ds-seal-v{margin-top:4px;font:500 17px/1.2 var(--font-mono);letter-spacing:.05em;color:var(--foil)}.ds-seal dl{margin:8px 0 0;display:grid;grid-template-columns:auto auto;gap:3px 10px;font-size:11.5px}.ds-seal dt{font-family:'GFS Didot',serif;color:var(--text-muted)}.ds-seal dd{margin:0;text-align:right;font-family:var(--font-mono);color:var(--ink)}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "custom",
+      "refersTo": "segmented-active",
+      "description": "Horizon and mode toggles in a recessed tray.",
+      "html": "<div class='ds-seg'><button aria-pressed='true'>1 day</button><button aria-pressed='false'>10 days</button></div>",
+      "css": ".ds-seg{display:inline-flex;padding:2px;gap:2px;border:1px solid var(--border-md);border-radius:6px;background:var(--well)}.ds-seg button{padding:5px 10px;font:12px var(--font-mono);border:0;border-radius:4px;background:transparent;color:var(--text-dim);cursor:pointer;transition:all .14s cubic-bezier(0.16,1,0.3,1)}.ds-seg button:hover{color:var(--ink)}.ds-seg button[aria-pressed=true]{background:var(--bg4);color:var(--ink);box-shadow:0 0 0 1px var(--border-md) inset}.ds-seg button:focus-visible{outline:1.5px solid var(--uv);outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Intaglio Note",
+    "overview": "Nexus is printed, not lit. The whole terminal reads as a security note: a deep green-black ground laid in close tonal layers, text in warm bone ink, and the hallmarks of banknote engraving put to work as interface — guilloche rosettes, microtext rules, serial-set numerals, hairline frames. Nothing glows. Depth comes from tone and 1px rules, and colour is spent like a scarce ink: each hue has one job and is not borrowed for another.\n\nThe density is a trading desk's. Root type is 13px, desk content sits at 12.5px, and every figure is set in tabular mono so columns align without effort through a long session. Desks open on a Bodoni title with a one-line method under it, then a ruled KPI band of right-aligned figures, then the panels. The trader's own book (its legs, value and Greeks) is the only thing ever inked in foil gold, so the eye can find \"mine\" on any screen in one glance.\n\nThe one signature object is the Book Seal: a guilloche rosette computed from the book's delta, gamma and vega, which redraws with a 0.7s morph as legs change. It appears in the book panel, as the NEXUS mark, and large on the landing and sign-in notes, where it engraves itself in on load.",
+    "keyCharacteristics": [
+      "Green-black intaglio ground in tinted layers; flat, tone-separated surfaces with 1px rules.",
+      "Bone ink text on a five-step ramp, every step at or above 4.5:1 on the ground.",
+      "One UV-violet ink for selection, focus, active navigation and live state.",
+      "Foil gold reserved for the trader's book; green and red only for sign; orange only for warnings.",
+      "Geist for interface, Geist Mono tabular numerals for every figure, Bodoni Moda for titles, GFS Didot for Greek symbols.",
+      "Security-print devices as structure: microtext rules, guilloche seals, foil edge strips, serial numerals."
+    ],
+    "rules": [
+      {
+        "name": "The One Live Ink Rule",
+        "body": "UV is the only colour that means \"selected, focused, active or live\". Never paint state in green, gold or blue. Inside desk bodies the legacy `--cyan` token resolves to bone, so old emphasis code cannot leak UV into content.",
+        "section": "colors"
+      },
+      {
+        "name": "The Foil Is Mine Rule",
+        "body": "Foil gold marks the trader's own book: legs, book value, book Greeks, the book's series in a chart. Market data, other models and decoration never take it, apart from the seal and the note frames that are the book's emblem.",
+        "section": "colors"
+      },
+      {
+        "name": "The Sign-Only Rule",
+        "body": "Green and red say whether a number is up or down, a gain or a loss. They are not brand colours, not section accents, not success/failure chrome beyond notices. Orange only warns.",
+        "section": "colors"
+      },
+      {
+        "name": "The Serial Numeral Rule",
+        "body": "Every number a trader acts on is set in Geist Mono with tabular figures and right-aligned in its cell. Signs use a true minus (−), not a hyphen.",
+        "section": "typography"
+      },
+      {
+        "name": "The Didot Greek Rule",
+        "body": "Greek glyphs are always set in GFS Didot, never in Bodoni Moda, whose math-subset Δ loses its hairline base at interface sizes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Titles-Only Serif Rule",
+        "body": "Bodoni Moda sets desk titles and entry-surface headlines only. It never sets body copy, labels or figures.",
+        "section": "typography"
+      },
+      {
+        "name": "The No-Glow Rule",
+        "body": "Nothing emits light. No neon edges, coloured drop shadows or blurred halos; focus is a crisp 1.5px UV outline and inputs take a 3px 18% UV ring.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do lead every desk with its title, method line and a KPI strip before any chart.",
+      "Do set every actionable figure in Geist Mono tabular numerals, right-aligned, with a true minus sign.",
+      "Do keep UV for selection, focus, active navigation and live state, and nothing else.",
+      "Do ink the trader's own book in foil gold wherever it appears, including its series in charts.",
+      "Do separate surfaces with ground-layer tone and 1px rules; reserve real shadows for floating layers.",
+      "Do set Greek letters in GFS Didot.",
+      "Do honour `prefers-reduced-motion`; the build collapses all animation and transition to 0.01ms.",
+      "Do use the standard ease (cubic-bezier(0.16, 1, 0.3, 1)) at 0.14s for controls, 0.2s for panels and 0.22s for the desk entrance (fade plus 4px rise)."
+    ],
+    "donts": [
+      "Don't use foil gold for market data, other models, headings or decoration unrelated to the book.",
+      "Don't use green or red for anything but sign, or orange for anything but warnings.",
+      "Don't add glows, neon edges, coloured shadows or thick left accent bars on panels; panel edges are 1px hairlines.",
+      "Don't set body copy, labels or figures in Bodoni Moda, or Greek glyphs in Bodoni Moda.",
+      "Don't colour uppercase labels; they stay `text-muted` or `text-secondary`, except the book's own title in foil.",
+      "Don't set readable text in `microtext-ink`; microtext is ornament and stays `aria-hidden`."
+    ]
+  }
+}

@@ -3,18 +3,19 @@ import _Plot from 'react-plotly.js'
 const Plot = _Plot?.default ?? _Plot
 import { usePortfolioStore, isCrypto, PAIR_META } from '../store/portfolio'
 import { fetchSmileDynCrypto, fetchSmileDynQuotes } from '../api/client'
+import KpiStrip from './KpiStrip'
 
 const LAYOUT = {
-  paper_bgcolor:'transparent', plot_bgcolor:'#080d18',
-  font:{ color:'#94a3b8', size:11 },
+  paper_bgcolor:'transparent', plot_bgcolor:'#0a1511',
+  font:{ family:"'Geist Variable', sans-serif", color:'#9eab9f', size:11 },
   margin:{ l:56, r:16, t:12, b:42 },
-  legend:{ bgcolor:'transparent', font:{ size:9 }, orientation:'h', x:0, y:-0.22 },
-  hoverlabel:{ bgcolor:'#0f172a', font:{ color:'#e2e8f0' }, bordercolor:'rgba(0,212,255,0.15)' },
+  legend:{ bgcolor:'transparent', font:{ size:10.5 }, orientation:'h', x:0, y:-0.22 },
+  hoverlabel:{ bgcolor:'#0f1d18', font:{ color:'#ebe5d3' }, bordercolor:'rgba(169,154,255,0.15)' },
 }
 const CFG = { responsive:true, displayModeBar:false }
-const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1e293b', color:'#475569', zeroline:false, ...extra })
-const RULES = [['bs_sticky_strike', 'Sticky strike (BS)', '#94a3b8'], ['sticky_delta', 'Sticky delta', '#ffd700'],
-  ['sabr', 'SABR (α fixed)', '#c084fc'], ['bartlett', 'Bartlett (SABR, ρ-adjusted)', '#00d4ff']]
+const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1c2e26', color:'#7e8f84', zeroline:false, ...extra })
+const RULES = [['bs_sticky_strike', 'Sticky strike (BS)', '#9eab9f'], ['sticky_delta', 'Sticky delta', '#e4dcc3'],
+  ['sabr', 'SABR (α fixed)', '#d58fc0'], ['bartlett', 'Bartlett (SABR, ρ-adjusted)', '#86abea']]
 const REGIME_NAME = { sticky_strike:'Sticky strike', sticky_delta:'Sticky delta', bartlett:'SABR / Bartlett' }
 
 function useLoad(fn, key, enabled = true) {
@@ -33,8 +34,8 @@ function useLoad(fn, key, enabled = true) {
 }
 
 const Chip = ({ active, onClick, children }) => (
-  <button onClick={onClick} className="font-mono" style={{ padding:'3px 9px', borderRadius:4, fontSize:9, cursor:'pointer',
-    border:'1px solid ' + (active ? 'var(--cyan)' : 'var(--border)'), background: active ? 'rgba(0,212,255,0.1)' : 'transparent',
+  <button onClick={onClick} className="font-mono" style={{ padding:'3px 9px', borderRadius:4, fontSize:10.5, cursor:'pointer',
+    border:'1px solid ' + (active ? 'var(--cyan)' : 'var(--border)'), background: active ? 'rgba(169,154,255,0.1)' : 'transparent',
     color: active ? 'var(--cyan)' : 'var(--text-muted)' }}>{children}</button>
 )
 
@@ -42,7 +43,7 @@ function Card({ title, right, children }) {
   return (
     <div className="glass" style={{ borderRadius:8, padding:8 }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', margin:'2px 6px 4px', gap:8, flexWrap:'wrap' }}>
-        <span className="section-title" style={{ fontSize:10 }}>{title}</span>{right}
+        <span className="section-title" style={{ fontSize:11 }}>{title}</span>{right}
       </div>
       {children}
     </div>
@@ -51,15 +52,7 @@ function Card({ title, right, children }) {
 
 function Kpis({ items }) {
   return (
-    <div style={{ display:'flex', gap:8, marginBottom:12, flexWrap:'wrap' }}>
-      {items.map(k => (
-        <div key={k.label} className="glass" title={k.hint} style={{ padding:'6px 12px', borderRadius:6, fontSize:11 }}>
-          <div style={{ color:'var(--text-muted)', fontSize:9, letterSpacing:'0.05em' }}>{k.label}</div>
-          <div className="font-mono" style={{ color: k.color ?? 'var(--cyan)', fontWeight:700, fontSize:14 }}>{k.value}</div>
-          {k.sub && <div className="font-mono" style={{ fontSize:9, color:'var(--text-muted)' }}>{k.sub}</div>}
-        </div>
-      ))}
-    </div>
+    <KpiStrip items={items} />
   )
 }
 
@@ -68,7 +61,7 @@ const inputStyle = { background:'var(--bg3)', border:'1px solid var(--border)', 
 
 function Field({ label, value, onChange, step }) {
   return (
-    <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>{label}
+    <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>{label}
       <input type="number" value={value} step={step} onChange={e => onChange(+e.target.value)} style={inputStyle} />
     </label>
   )
@@ -98,8 +91,8 @@ function Desk({ pair }) {
     <div style={{ padding:16 }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:12, marginBottom:12, flexWrap:'wrap' }}>
         <div>
-          <div className="section-title">Smile Dynamics — SABR, smile-consistent deltas &amp; spot-vol regime ({pair})</div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:2 }}>
+          <div className="section-title" style={{ color:'var(--text-muted)', letterSpacing:'0.08em' }}>{pair}</div>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:2 }}>
             How the smile moves when spot moves decides your hedge ratio · Bartlett delta is the variance-optimal hedge under SABR
           </div>
         </div>
@@ -107,7 +100,7 @@ function Desk({ pair }) {
           {crypto && <Chip active={mode === 'live'} onClick={() => setMode('live')}>Live Deribit smiles</Chip>}
           <Chip active={!live} onClick={() => setMode('quotes')}>ATM / RR / BF quotes</Chip>
           <span style={{ width:8 }} />
-          <span style={{ fontSize:9, color:'var(--text-muted)' }}>β</span>
+          <span style={{ fontSize:10.5, color:'var(--text-muted)' }}>β</span>
           {[1, 0.5, 0].map(b => <Chip key={b} active={beta === b} onClick={() => setBeta(b)}>{b}</Chip>)}
         </div>
       </div>
@@ -119,12 +112,12 @@ function Desk({ pair }) {
             <Field label="25Δ RR (vol pts)" value={q.rr25} onChange={setF('rr25')} step={0.1} />
             <Field label="25Δ BF (vol pts)" value={q.bf25} onChange={setF('bf25')} step={0.1} />
           </div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:6 }}>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:6 }}>
             {smileQuotes ? 'Pre-filled from Vol Smile / Vol Lab. ' : ''}A vanna-volga smile is built from the quotes, then SABR is fitted to it.
           </div>
         </div>
       )}
-      {res.error && <div style={{ padding:8, borderRadius:6, fontSize:11, marginBottom:10, background:'rgba(255,61,90,0.1)', border:'1px solid #ff3d5a', color:'#ff3d5a' }}>{res.error}</div>}
+      {res.error && <div style={{ padding:8, borderRadius:6, fontSize:11, marginBottom:10, background:'rgba(238,107,91,0.1)', border:'1px solid #ee6b5b', color:'#ee6b5b' }}>{res.error}</div>}
       {!d && !res.error && <div style={{ fontSize:11, color:'var(--text-muted)', padding:12 }}>Fitting SABR…</div>}
       {d && <Body key={d.reference + beta} d={d} loading={res.loading} />}
     </div>
@@ -148,20 +141,20 @@ function Body({ d, loading }) {
       <Kpis items={[
         { label:'SABR ATM vol', value:`${(bb.atm_vol * 100).toFixed(1)}%`, sub:`α ${p.alpha.toPrecision(3)} · β ${p.beta}` },
         { label:'ρ (spot-vol corr.)', value:p.rho.toFixed(2), color: p.rho < 0 ? 'var(--red)' : 'var(--green)' },
-        { label:'ν (vol of vol)', value:p.nu.toFixed(2), color:'#c084fc' },
+        { label:'ν (vol of vol)', value:p.nu.toFixed(2), color:'#d58fc0' },
         { label:'Fit RMSE', value:`${(p.rmse_vol * 100).toFixed(2)} vol`, sub:`max ${(p.max_err_vol * 100).toFixed(2)}` },
         { label:'ATM Δ: Bartlett vs BS', value:`${((atmRow.bartlett - atmRow.bs_sticky_strike) * 100).toFixed(1)}% notional`,
-          color:'#00d4ff', hint:'Hedge-ratio correction for the ATM call' },
+          color:'#86abea', hint:'Hedge-ratio correction for the ATM call' },
         ...(emp ? [{ label:`Realised spot-vol β (${emp.window}d)`, value:`${emp.volpts_per_1pct_recent >= 0 ? '+' : ''}${emp.volpts_per_1pct_recent.toFixed(2)} vol / +1%`,
           sub:`corr ${emp.corr_recent.toFixed(2)} · ${emp.index}`, color: emp.volpts_per_1pct_recent < 0 ? 'var(--red)' : 'var(--green)' }] : []),
-        ...(d.regime ? [{ label:'Market behaves like', value:REGIME_NAME[d.regime.closest], color:'#ffd700',
+        ...(d.regime ? [{ label:'Market behaves like', value:REGIME_NAME[d.regime.closest], color:'#e4dcc3',
           sub:`${d.regime.distance_volpts.toFixed(2)} vol pts from model (${d.reference})` }] : []),
       ]} />
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(420px, 1fr))', gap:12 }}>
         <Card title={`SABR fit · ${e.label}`}>
           <Plot data={[
-              { x:e.market.strikes, y:e.market.iv.map(v => v * 100), type:'scatter', mode:'markers', name:'Market', marker:{ color:'#ffd700', size:6 } },
-              { x:e.fit.strikes, y:e.fit.iv.map(v => v * 100), type:'scatter', mode:'lines', name:`SABR β=${p.beta}`, line:{ color:'#00d4ff', width:2 } },
+              { x:e.market.strikes, y:e.market.iv.map(v => v * 100), type:'scatter', mode:'markers', name:'Market', marker:{ color:'#e4dcc3', size:6 } },
+              { x:e.fit.strikes, y:e.fit.iv.map(v => v * 100), type:'scatter', mode:'lines', name:`SABR β=${p.beta}`, line:{ color:'#86abea', width:2 } },
             ]}
             layout={{ ...LAYOUT, xaxis:axis('Strike'), yaxis:axis('Implied vol (%)'),
               shapes:[{ type:'line', x0:e.forward, x1:e.forward, yref:'paper', y0:0, y1:1, line:{ color:'rgba(255,255,255,0.3)', dash:'dot' } }] }}
@@ -175,25 +168,25 @@ function Body({ d, loading }) {
         <Card title="Backbone — ATM vol change per +1% spot move">
           <Plot data={[
               { x:['Sticky strike', 'Sticky delta', 'SABR (α fixed)', 'Bartlett'], y:[bb.sticky_strike, bb.sticky_delta, bb.sabr, bb.bartlett], type:'bar',
-                name:'Model', marker:{ color:['#94a3b8', '#ffd700', '#c084fc', '#00d4ff'] } },
+                name:'Model', marker:{ color:['#9eab9f', '#e4dcc3', '#d58fc0', '#86abea'] } },
               ...(emp ? [{ x:['Sticky strike', 'Sticky delta', 'SABR (α fixed)', 'Bartlett'], y:Array(4).fill(emp.volpts_per_1pct_recent), type:'scatter',
-                mode:'lines', name:`Realised (${emp.index}, ${emp.window}d)`, line:{ color:'#ff3d5a', dash:'dash', width:2 } }] : []),
+                mode:'lines', name:`Realised (${emp.index}, ${emp.window}d)`, line:{ color:'#ee6b5b', dash:'dash', width:2 } }] : []),
             ]}
-            layout={{ ...LAYOUT, xaxis:axis('', { type:'category' }), yaxis:axis('Vol points', { zeroline:true, zerolinecolor:'#334155' }) }}
+            layout={{ ...LAYOUT, xaxis:axis('', { type:'category' }), yaxis:axis('Vol points', { zeroline:true, zerolinecolor:'var(--text-faint)' }) }}
             config={CFG} style={{ width:'100%', height:290 }} />
-          <div style={{ fontSize:9, color:'var(--text-muted)', padding:'0 8px 4px' }}>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'0 8px 4px' }}>
             The rule whose backbone matches the realised spot-vol beta is the one your delta should assume.
           </div>
         </Card>
         {emp ? (
           <Card title={`Rolling ${emp.window}-day spot-vol relationship (${emp.index})`}>
             <Plot data={[
-                { x:emp.rolling.map(r => r.date), y:emp.rolling.map(r => r.corr), type:'scatter', mode:'lines', name:'Correlation', line:{ color:'#00d4ff', width:1.8 } },
+                { x:emp.rolling.map(r => r.date), y:emp.rolling.map(r => r.corr), type:'scatter', mode:'lines', name:'Correlation', line:{ color:'#86abea', width:1.8 } },
                 { x:emp.rolling.map(r => r.date), y:emp.rolling.map(r => r.beta), type:'scatter', mode:'lines', name:'β (d ln IV / d ln S)', yaxis:'y2',
-                  line:{ color:'#c084fc', width:1.2 } },
+                  line:{ color:'#d58fc0', width:1.2 } },
               ]}
-              layout={{ ...LAYOUT, hovermode:'x unified', xaxis:axis('', { type:'date' }), yaxis:axis('Correlation', { range:[-1, 1], zeroline:true, zerolinecolor:'#334155' }),
-                yaxis2:{ overlaying:'y', side:'right', showgrid:false, zeroline:false, color:'#c084fc' } }}
+              layout={{ ...LAYOUT, hovermode:'x unified', xaxis:axis('', { type:'date' }), yaxis:axis('Correlation', { range:[-1, 1], zeroline:true, zerolinecolor:'var(--text-faint)' }),
+                yaxis2:{ overlaying:'y', side:'right', showgrid:false, zeroline:false, color:'#d58fc0' } }}
               config={CFG} style={{ width:'100%', height:290 }} />
           </Card>
         ) : (
@@ -207,7 +200,7 @@ function Body({ d, loading }) {
         <Card title={`Delta table · ${e.label} · F ${e.forward.toLocaleString(undefined, { maximumFractionDigits:2 })}`}>
           <div style={{ overflowX:'auto' }}>
             <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
-              <thead><tr style={{ color:'var(--text-muted)', fontSize:9, textAlign:'right' }}>
+              <thead><tr style={{ color:'var(--text-muted)', fontSize:10.5, textAlign:'right' }}>
                 {['Option', 'Strike', 'Vol', 'Sticky strike', 'Sticky delta', 'SABR', 'Bartlett', 'Bartlett − BS'].map((h, i) =>
                   <th key={h} style={{ padding:'4px 8px', textAlign: i ? 'right' : 'left' }}>{h}</th>)}</tr></thead>
               <tbody>{e.deltas.map(r => (
@@ -216,17 +209,17 @@ function Body({ d, loading }) {
                   <td style={{ padding:'5px 8px' }}>{r.strike.toLocaleString(undefined, { maximumFractionDigits: r.strike > 100 ? 0 : 4 })}</td>
                   <td style={{ padding:'5px 8px' }}>{(r.vol * 100).toFixed(2)}%</td>
                   {RULES.map(([k, , c]) => <td key={k} style={{ padding:'5px 8px', color:c }}>{r[k].toFixed(3)}</td>)}
-                  <td style={{ padding:'5px 8px', color: Math.abs(r.bartlett_minus_bs) > 0.03 ? '#ffd700' : undefined }}>
+                  <td style={{ padding:'5px 8px', color: Math.abs(r.bartlett_minus_bs) > 0.03 ? '#e4dcc3' : undefined }}>
                     {r.bartlett_minus_bs >= 0 ? '+' : ''}{(r.bartlett_minus_bs * 100).toFixed(1)}%</td>
                 </tr>))}</tbody>
             </table>
           </div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', padding:'6px 8px' }}>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'6px 8px' }}>
             Bartlett − BS is the extra hedge per unit notional: with ρ &lt; 0, spot rallies come with lower vol, so you need less delta on calls and more on puts.
           </div>
         </Card>
       </div>
-      <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
+      <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
         {d.source}. SABR: Hagan, Kumar, Lesniewski &amp; Woodward (2002) with Obłój (2008) leading term. Bartlett (2006), &quot;Hedging under SABR&quot;;
         variance-optimality: Keller-Ressel (2022). Realised β: OLS of daily d ln IV on d ln S (DVOL / GVZ / VXSLV).
       </div>
@@ -237,11 +230,11 @@ function Body({ d, loading }) {
 function TermChart({ d }) {
   return (
     <Plot data={[
-        { x:d.expiries.map(e => e.days), y:d.expiries.map(e => e.params.rho), type:'scatter', mode:'lines+markers', name:'ρ', line:{ color:'#ff3d5a', width:2 } },
-        { x:d.expiries.map(e => e.days), y:d.expiries.map(e => e.params.nu), type:'scatter', mode:'lines+markers', name:'ν', yaxis:'y2', line:{ color:'#c084fc', width:2 } },
+        { x:d.expiries.map(e => e.days), y:d.expiries.map(e => e.params.rho), type:'scatter', mode:'lines+markers', name:'ρ', line:{ color:'#ee6b5b', width:2 } },
+        { x:d.expiries.map(e => e.days), y:d.expiries.map(e => e.params.nu), type:'scatter', mode:'lines+markers', name:'ν', yaxis:'y2', line:{ color:'#d58fc0', width:2 } },
       ]}
       layout={{ ...LAYOUT, hovermode:'x unified', xaxis:axis('Days to expiry'), yaxis:axis('ρ', { range:[-1, 1] }),
-        yaxis2:{ overlaying:'y', side:'right', showgrid:false, zeroline:false, color:'#c084fc', title:{ text:'ν' } } }}
+        yaxis2:{ overlaying:'y', side:'right', showgrid:false, zeroline:false, color:'#d58fc0', title:{ text:'ν' } } }}
       config={CFG} style={{ width:'100%', height:260 }} />
   )
 }

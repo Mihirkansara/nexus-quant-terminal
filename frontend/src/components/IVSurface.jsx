@@ -40,7 +40,7 @@ export default function IVSurface() {
     y: strikes,
     z: Z,
     colorscale: 'RdYlGn_r',
-    colorbar: { title: 'IV (%)', tickfont: { color: '#e2e8f0' } },
+    colorbar: { title: 'IV (%)', tickfont: { color: '#ebe5d3' } },
     contours: { z: { show: true, usecolormap: true, project: { z: true } } },
   }] : []
 
@@ -61,7 +61,7 @@ export default function IVSurface() {
         </div>
         <button onClick={load} disabled={loading}
           className="px-4 py-1.5 text-sm rounded font-medium"
-          style={{ background: 'var(--accent)', color: '#0a0e1a' }}>
+          style={{ background: 'var(--accent)', color: '#09130f' }}>
           {loading ? 'Loading...' : '📡 Fetch Live Data'}
         </button>
         {data && (
@@ -80,14 +80,14 @@ export default function IVSurface() {
       {data ? (
         <Plot data={plotData}
           layout={{
-            paper_bgcolor: 'transparent', plot_bgcolor: '#111827',
+            paper_bgcolor: 'transparent', plot_bgcolor: '#0f1d18',
             scene: {
-              xaxis: { title: 'Expiry', color: '#64748b', gridcolor: '#1f2937' },
-              yaxis: { title: 'Strike', color: '#64748b', gridcolor: '#1f2937' },
-              zaxis: { title: 'IV (%)', color: '#64748b', gridcolor: '#1f2937' },
-              bgcolor: '#0a0e1a',
+              xaxis: { title: 'Expiry', color: '#7a8a80', gridcolor: '#1c2e26' },
+              yaxis: { title: 'Strike', color: '#7a8a80', gridcolor: '#1c2e26' },
+              zaxis: { title: 'IV (%)', color: '#7a8a80', gridcolor: '#1c2e26' },
+              bgcolor: '#09130f',
             },
-            font: { color: '#e2e8f0' },
+            font: { color: '#ebe5d3' },
             margin: { l: 0, r: 0, t: 20, b: 0 },
           }}
           config={{ responsive: true, displayModeBar: true, displaylogo: false }}

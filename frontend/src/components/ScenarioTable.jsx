@@ -40,7 +40,7 @@ export default function ScenarioTable() {
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
         <div>
           <div className="section-title">Scenario Shock Analysis</div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:2 }}>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:2 }}>
             Garman-Kohlhagen repricing · {pair} · r_d={r_d} r_f={r_f}
           </div>
         </div>
@@ -51,11 +51,11 @@ export default function ScenarioTable() {
       </div>
 
       <div style={{ overflowX:'auto', borderRadius:8, border:'1px solid var(--border)' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
+        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
           <thead>
             <tr style={{ background:'var(--bg3)' }}>
               {['Scenario','ΔSpot','ΔVol','New Spot','New Vol','P&L','P&L %','Bar'].map(h => (
-                <th key={h} style={{ padding:'8px 10px', fontWeight:600, fontSize:9,
+                <th key={h} style={{ padding:'8px 10px', fontWeight:600, fontSize:10.5,
                   color:'var(--text-muted)', letterSpacing:'0.05em',
                   textAlign: h==='Scenario'?'left':'right', whiteSpace:'nowrap' }}>{h}</th>
               ))}
@@ -69,12 +69,12 @@ export default function ScenarioTable() {
                 <tr key={i} style={{
                   borderTop:'1px solid var(--border)',
                   background: isBase
-                    ? 'rgba(0,212,255,0.06)'
+                    ? 'rgba(169,154,255,0.06)'
                     : i%2===0?'transparent':'rgba(255,255,255,0.01)',
                 }}>
                   <td style={{ padding:'7px 10px',
                     color: isBase ? 'var(--cyan)' : 'var(--text-dim)', fontWeight: isBase?600:400 }}>
-                    {isBase && <span style={{ marginRight:4 }}>●</span>}{s.label}
+                    {isBase && <span aria-hidden="true" style={{ display:'inline-block', width:6, height:6, borderRadius:'50%', background:'var(--uv)', marginRight:7, verticalAlign:'1px' }} />}{s.label}
                   </td>
                   <td className="font-mono" style={{ padding:'7px 10px', textAlign:'right',
                     color: s.dS_pct<0?'var(--red)':s.dS_pct>0?'var(--green)':'var(--text-muted)' }}>
@@ -105,7 +105,7 @@ export default function ScenarioTable() {
                         width:`${(Math.abs(s.pnl)/maxAbs)*100}%`,
                         background: isProfit
                           ? 'linear-gradient(90deg,var(--green),var(--cyan))'
-                          : 'linear-gradient(90deg,var(--red),#ff0040)',
+                          : 'linear-gradient(90deg,var(--red),#ee6b5b)',
                         transition:'width 0.4s ease',
                       }}/>
                     </div>

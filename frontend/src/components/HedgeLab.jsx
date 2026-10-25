@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react'
+import { RefreshCw, Play, BrainCircuit } from 'lucide-react'
 import _Plot from 'react-plotly.js'
 const Plot = _Plot?.default ?? _Plot
 import { usePortfolioStore, PAIR_META, isCrypto } from '../store/portfolio'
 import { simulateHedge, fetchVolForecast } from '../api/client'
+import KpiStrip from './KpiStrip'
 
 const LAYOUT = {
-  paper_bgcolor:'transparent', plot_bgcolor:'#080d18',
-  font:{ color:'#94a3b8', size:11 },
+  paper_bgcolor:'transparent', plot_bgcolor:'#0a1511',
+  font:{ family:"'Geist Variable', sans-serif", color:'#9eab9f', size:11 },
   margin:{ l:56, r:16, t:12, b:44 },
-  legend:{ bgcolor:'transparent', font:{ size:9 }, orientation:'h', x:0, y:-0.22 },
-  hoverlabel:{ bgcolor:'#0f172a', font:{ color:'#e2e8f0' }, bordercolor:'rgba(0,212,255,0.15)' },
+  legend:{ bgcolor:'transparent', font:{ size:10.5 }, orientation:'h', x:0, y:-0.22 },
+  hoverlabel:{ bgcolor:'#0f1d18', font:{ color:'#ebe5d3' }, bordercolor:'rgba(169,154,255,0.15)' },
 }
-const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1e293b', color:'#475569', zeroline:false, ...extra })
+const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1c2e26', color:'#7e8f84', zeroline:false, ...extra })
 const FREQS = [[1, 'Daily'], [2, '2× / day'], [4, '4× / day'], [8, '8× / day'], [24, 'Hourly']]
 const MODELS = [['gbm', 'Lognormal (GBM)'], ['jump', 'Jump-diffusion (Merton)'], ['bootstrap', 'Historical bootstrap']]
 
@@ -81,8 +83,8 @@ export default function HedgeLab() {
   return (
     <div style={{ padding:16 }}>
       <div style={{ marginBottom:10 }}>
-        <div className="section-title">Hedge Lab — delta-hedged P&amp;L of your portfolio ({pair})</div>
-        <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:2 }}>
+        <div className="section-title" style={{ color:'var(--text-muted)', letterSpacing:'0.08em' }}>{pair}</div>
+        <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:2 }}>
           Options traded &amp; hedged at implied σ = {(sigma * 100).toFixed(2)}% · {legs.length} leg(s), longest {maxT}y ·
           Monte Carlo with discrete hedging, {crypto ? 'jumps' : 'weekend gaps, jumps'}, transaction costs and carry
         </div>
@@ -93,7 +95,7 @@ export default function HedgeLab() {
 
       {response.error && response.key === submitted && (
         <div style={{ padding:8, borderRadius:6, margin:'8px 0', fontSize:11,
-          background:'rgba(255,61,90,0.1)', border:'1px solid #ff3d5a', color:'#ff3d5a' }}>{response.error}</div>
+          background:'rgba(238,107,91,0.1)', border:'1px solid #ee6b5b', color:'#ee6b5b' }}>{response.error}</div>
       )}
       {!d && !loading && !response.error && (
         <div style={{ padding:24, textAlign:'center', color:'var(--text-muted)', fontSize:12 }}>
@@ -104,7 +106,7 @@ export default function HedgeLab() {
 
       {d && (
         <div style={{ opacity: loading ? 0.6 : 1, marginTop:10 }}>
-          {stale && <div style={{ fontSize:10, color:'var(--amber)', marginBottom:6 }}>Inputs changed — re-run to update.</div>}
+          {stale && <div style={{ fontSize:11, color:'var(--amber)', marginBottom:6 }}>Inputs changed — re-run to update.</div>}
           <Kpis d={d} />
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(380px, 1fr))', gap:12, marginBottom:12 }}>
             <Histogram d={d} />
@@ -114,7 +116,7 @@ export default function HedgeLab() {
             <Attribution d={d} />
             <Paths d={d} />
           </div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
             Delta-hedged P&amp;L ≈ ½ΓS²(σ²<sub>realised</sub> − σ²<sub>implied</sub>)dt, plus discrete-hedging noise
             (Derman &amp; Kamal 1999: sd ≈ √(π/4N)·vega·σ), jump/gap losses no hedge can follow, and costs
             (Leland 1985). Jump-diffusion keeps total variance equal to the realised vol (Merton 1976); the bootstrap
@@ -129,7 +131,7 @@ export default function HedgeLab() {
 
 function Field({ label, children, hint }) {
   return (
-    <label title={hint} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>
+    <label title={hint} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>
       {label}{children}
     </label>
   )
@@ -191,12 +193,12 @@ function Controls({ params, set, crypto, onRun, loading, onForecast, fcNote }) {
           </Field>
         )}
         <button className="btn-primary" onClick={onRun} disabled={loading} style={{ padding:'7px 10px', fontSize:11 }}>
-          {loading ? '⟳ Simulating…' : '▶ Run simulation'}
+          {loading ? <><RefreshCw size={13} aria-hidden="true" style={{ animation:'spin 0.9s linear infinite' }} />Simulating…</> : <><Play size={13} aria-hidden="true" />Run simulation</>}
         </button>
       </div>
       <div style={{ display:'flex', gap:8, alignItems:'center', marginTop:8 }}>
-        <button className="btn-ghost" onClick={onForecast} style={{ fontSize:10 }}>🤖 Use Vol Forecast for realised σ</button>
-        {fcNote && <span style={{ fontSize:10, color:'var(--text-muted)' }}>{fcNote}</span>}
+        <button className="btn-ghost" onClick={onForecast} style={{ fontSize:11 }}><BrainCircuit size={13} aria-hidden="true" />Use Vol Forecast for realised σ</button>
+        {fcNote && <span style={{ fontSize:11, color:'var(--text-muted)' }}>{fcNote}</span>}
       </div>
     </div>
   )
@@ -218,22 +220,14 @@ function Kpis({ d }) {
     { label:'Trades / path', value: d.trades_per_path.toFixed(0), sub:`${d.inputs.n_steps} steps${d.inputs.weekend_gaps ? ` · ${d.inputs.weekend_gaps} weekend gaps` : ''}` },
   ]
   return (
-    <div style={{ display:'flex', gap:8, marginBottom:12, flexWrap:'wrap' }}>
-      {items.map(k => (
-        <div key={k.label} className="glass" style={{ padding:'6px 12px', borderRadius:6, fontSize:11 }}>
-          <div style={{ color:'var(--text-muted)', fontSize:9, letterSpacing:'0.05em' }}>{k.label}</div>
-          <div className="font-mono" style={{ color: k.color ?? 'var(--cyan)', fontWeight:700, fontSize:14 }}>{k.value}</div>
-          {k.sub && <div className="font-mono" style={{ fontSize:9, color:'var(--text-muted)' }}>{k.sub}</div>}
-        </div>
-      ))}
-    </div>
+    <KpiStrip items={items} />
   )
 }
 
 function Card({ title, children }) {
   return (
     <div className="glass" style={{ borderRadius:8, padding:8 }}>
-      <div className="section-title" style={{ fontSize:10, margin:'2px 0 4px 6px' }}>{title}</div>
+      <div className="section-title" style={{ fontSize:11, margin:'2px 0 4px 6px' }}>{title}</div>
       {children}
     </div>
   )
@@ -245,12 +239,12 @@ function Histogram({ d }) {
   return (
     <Card title={`P&L distribution · ${d.inputs.n_paths} paths`}>
       <Plot data={[{ x:h.centers, y:h.counts, type:'bar', name:'Paths',
-          marker:{ color:h.centers.map(c => c >= 0 ? 'rgba(0,255,136,0.55)' : 'rgba(255,61,90,0.55)') } }]}
+          marker:{ color:h.centers.map(c => c >= 0 ? 'rgba(79,198,144,0.55)' : 'rgba(238,107,91,0.55)') } }]}
         layout={{ ...LAYOUT, showlegend:false, bargap:0.05, xaxis:axis('P&L at expiry'), yaxis:axis('Paths'),
-          shapes:[vline(0, 'rgba(255,255,255,0.35)', 'dot'), vline(d.pnl.mean, '#00d4ff', 'solid'),
-            vline(d.benchmarks.theoretical_edge, '#ffd700', 'dash')],
-          annotations:[{ x:d.pnl.mean, yref:'paper', y:1, text:'mean', showarrow:false, font:{ color:'#00d4ff', size:9 } },
-            { x:d.benchmarks.theoretical_edge, yref:'paper', y:0.92, text:'edge', showarrow:false, font:{ color:'#ffd700', size:9 } }] }}
+          shapes:[vline(0, 'rgba(255,255,255,0.35)', 'dot'), vline(d.pnl.mean, '#86abea', 'solid'),
+            vline(d.benchmarks.theoretical_edge, '#e4dcc3', 'dash')],
+          annotations:[{ x:d.pnl.mean, yref:'paper', y:1, text:'mean', showarrow:false, font:{ color:'#86abea', size:10.5 } },
+            { x:d.benchmarks.theoretical_edge, yref:'paper', y:0.92, text:'edge', showarrow:false, font:{ color:'#e4dcc3', size:10.5 } }] }}
         config={{ responsive:true, displayModeBar:false }} style={{ width:'100%', height:280 }} />
     </Card>
   )
@@ -263,10 +257,10 @@ function Sweep({ d }) {
   return (
     <Card title="Hedge frequency: risk vs cost (time-based rule)">
       <Plot data={[
-          { x, y:s.map(r => r.std), type:'scatter', mode:'lines+markers', name:'P&L st. dev.', line:{ color:'#00d4ff', width:2 } },
-          { x, y:s.map(r => r.derman_kamal_sd), type:'scatter', mode:'lines', name:'Derman-Kamal (GBM)', line:{ color:'#00d4ff', dash:'dot', width:1 } },
-          { x, y:s.map(r => r.cost), type:'scatter', mode:'lines+markers', name:'Mean hedge cost', yaxis:'y2', line:{ color:'#ff3d5a', width:2 } },
-          { x, y:s.map(r => -r.es05), type:'scatter', mode:'lines', name:'−5% ES', line:{ color:'#ffd700', width:1.2 } },
+          { x, y:s.map(r => r.std), type:'scatter', mode:'lines+markers', name:'P&L st. dev.', line:{ color:'#86abea', width:2 } },
+          { x, y:s.map(r => r.derman_kamal_sd), type:'scatter', mode:'lines', name:'Derman-Kamal (GBM)', line:{ color:'#86abea', dash:'dot', width:1 } },
+          { x, y:s.map(r => r.cost), type:'scatter', mode:'lines+markers', name:'Mean hedge cost', yaxis:'y2', line:{ color:'#ee6b5b', width:2 } },
+          { x, y:s.map(r => -r.es05), type:'scatter', mode:'lines', name:'−5% ES', line:{ color:'#e4dcc3', width:1.2 } },
         ]}
         layout={{ ...LAYOUT, xaxis:axis('Hedges per day', { type:'log', tickvals:x, ticktext:x.map(String) }),
           yaxis:axis('Risk'), yaxis2:{ ...axis('Cost'), overlaying:'y', side:'right', showgrid:false },
@@ -283,7 +277,7 @@ function Attribution({ d }) {
   return (
     <Card title="Mean P&L attribution">
       <Plot data={[{ type:'bar', orientation:'h', y:items.map(i => i[0]), x:items.map(i => i[1]),
-          marker:{ color:items.map(i => i[1] >= 0 ? 'rgba(0,255,136,0.6)' : 'rgba(255,61,90,0.6)') },
+          marker:{ color:items.map(i => i[1] >= 0 ? 'rgba(79,198,144,0.6)' : 'rgba(238,107,91,0.6)') },
           text:items.map(i => fmt(i[1])), textposition:'auto' }]}
         layout={{ ...LAYOUT, showlegend:false, margin:{ ...LAYOUT.margin, l:190 }, xaxis:axis(''), yaxis:axis('', { automargin:true }) }}
         config={{ responsive:true, displayModeBar:false }} style={{ width:'100%', height:240 }} />

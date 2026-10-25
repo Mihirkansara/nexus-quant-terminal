@@ -47,7 +47,7 @@ export default function VolSmile() {
     {
       type:'scatter', mode:'lines', name:'Vanna-Volga smile',
       x: result.strikes, y: result.vols.map(v => v * 100),
-      line:{ color:'#00d4ff', width:2.5 },
+      line:{ color:'#86abea', width:2.5 },
       hovertemplate:'K %{x:.5f}<br>σ %{y:.3f}%<extra></extra>',
     },
     {
@@ -59,14 +59,14 @@ export default function VolSmile() {
       type:'scatter', mode:'markers+text', name:'Market pillars',
       x: result.pillars.map(p => p.K), y: result.pillars.map(p => p.vol * 100),
       text: result.pillars.map(p => p.label), textposition:'top center',
-      textfont:{ color:'#ffd700', size:9 },
-      marker:{ color:'#ffd700', size:9, symbol:'diamond', line:{ color:'#0a0e1a', width:2 } },
+      textfont:{ color:'#e4dcc3', size:10.5 },
+      marker:{ color:'#e4dcc3', size:10.5, symbol:'diamond', line:{ color:'#09130f', width:2 } },
       hovertemplate:'%{text}<br>K %{x:.5f}<br>σ %{y:.3f}%<extra></extra>',
     },
     ...(result.legs.length ? [{
       type:'scatter', mode:'markers', name:'Portfolio strikes',
       x: result.legs.map(l => l.K), y: result.legs.map(l => l.smile_vol * 100),
-      marker:{ color:'#00ff88', size:8, symbol:'circle', line:{ color:'#0a0e1a', width:2 } },
+      marker:{ color:'#4fc690', size:8, symbol:'circle', line:{ color:'#09130f', width:2 } },
       text: result.legs.map(l => l.label),
       hovertemplate:'%{text}<br>σ %{y:.3f}%<extra></extra>',
     }] : []),
@@ -76,8 +76,8 @@ export default function VolSmile() {
     <div style={{ padding:16 }}>
       <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:12, gap:12, flexWrap:'wrap' }}>
         <div>
-          <div className="section-title">FX Volatility Smile — Vanna-Volga ({pair})</div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:2 }}>
+          <div className="section-title" style={{ color:'var(--text-muted)', letterSpacing:'0.08em' }}>{pair}</div>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:2 }}>
             Built from ATM / 25Δ RR / 25Δ BF quotes · spot delta, DNS ATM · T={T}y
             {result && <> · Fwd {result.forward}</>}
           </div>
@@ -85,7 +85,7 @@ export default function VolSmile() {
         <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
           {QUOTE_FIELDS.map(({ key, label, hint }) => (
             <label key={key} title={hint} className="glass"
-              style={{ display:'flex', alignItems:'center', gap:6, padding:'4px 10px', borderRadius:6, fontSize:10 }}>
+              style={{ display:'flex', alignItems:'center', gap:6, padding:'4px 10px', borderRadius:6, fontSize:11 }}>
               <span style={{ color:'var(--text-muted)' }}>{label}</span>
               <input type="number" step="0.05" value={Number.isFinite(quotes[key]) ? quotes[key] : ''}
                 onChange={e => setQuote(key, e.target.value)}
@@ -99,8 +99,8 @@ export default function VolSmile() {
       </div>
 
       {error && (
-        <div style={{ padding:10, borderRadius:6, marginBottom:10, background:'rgba(255,61,90,0.1)',
-          border:'1px solid #ff3d5a', color:'#ff3d5a', fontSize:11 }}>{error}</div>
+        <div style={{ padding:10, borderRadius:6, marginBottom:10, background:'rgba(238,107,91,0.1)',
+          border:'1px solid #ee6b5b', color:'#ee6b5b', fontSize:11 }}>{error}</div>
       )}
 
       {!result && loading && <div className="skeleton" style={{ height:320, borderRadius:8 }}/>}
@@ -110,15 +110,15 @@ export default function VolSmile() {
           <div className="glass" style={{ borderRadius:8, padding:8, marginBottom:12, opacity: loading ? 0.6 : 1 }}>
             <Plot data={traces}
               layout={{
-                paper_bgcolor:'transparent', plot_bgcolor:'#080d18',
-                font:{ color:'#94a3b8', size:11 },
+                paper_bgcolor:'transparent', plot_bgcolor:'#0a1511',
+                font:{ family:"'Geist Variable', sans-serif", color:'#9eab9f', size:11 },
                 margin:{ l:52, r:16, t:16, b:50 },
-                xaxis:{ title:`Strike (${pair})`, gridcolor:'#1e293b', color:'#475569', zeroline:false },
-                yaxis:{ title:'Implied vol (%)', gridcolor:'#1e293b', color:'#475569', zeroline:false },
-                legend:{ bgcolor:'transparent', font:{ size:9 }, orientation:'h', x:0, y:-0.18 },
+                xaxis:{ title:`Strike (${pair})`, gridcolor:'#1c2e26', color:'#7e8f84', zeroline:false },
+                yaxis:{ title:'Implied vol (%)', gridcolor:'#1c2e26', color:'#7e8f84', zeroline:false },
+                legend:{ bgcolor:'transparent', font:{ size:10.5 }, orientation:'h', x:0, y:-0.18 },
                 shapes:[{ type:'line', x0:S, x1:S, yref:'paper', y0:0, y1:1,
-                  line:{ color:'rgba(255,215,0,0.35)', width:1, dash:'dot' } }],
-                hoverlabel:{ bgcolor:'#0f172a', font:{ color:'#e2e8f0' }, bordercolor:'rgba(0,212,255,0.15)' },
+                  line:{ color:'rgba(228,220,195,0.35)', width:1, dash:'dot' } }],
+                hoverlabel:{ bgcolor:'#0f1d18', font:{ color:'#ebe5d3' }, bordercolor:'rgba(169,154,255,0.15)' },
               }}
               config={{ responsive:true, displayModeBar:false }}
               style={{ width:'100%', height:320 }} />
@@ -139,7 +139,7 @@ export default function VolSmile() {
                 ]} />
             )}
           </div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:10 }}>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:10 }}>
             Castagna &amp; Mercurio (2007) second-order approximation. Pillar vols use σ25 = ATM + BF ± RR/2
             (smile-strangle convention). All legs are priced off the smile for tenor T.
           </div>
@@ -156,13 +156,13 @@ const signed = v => (
 function SmileTable({ title, headers, rows }) {
   return (
     <div>
-      <div className="section-title" style={{ fontSize:10, marginBottom:6 }}>{title}</div>
+      <div className="section-title" style={{ fontSize:11, marginBottom:6 }}>{title}</div>
       <div style={{ overflowX:'auto', borderRadius:8, border:'1px solid var(--border)' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
+        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
           <thead>
             <tr style={{ background:'var(--bg3)' }}>
               {headers.map((h, i) => (
-                <th key={h} style={{ padding:'7px 10px', fontWeight:600, fontSize:9, color:'var(--text-muted)',
+                <th key={h} style={{ padding:'7px 10px', fontWeight:600, fontSize:10.5, color:'var(--text-muted)',
                   letterSpacing:'0.05em', textAlign: i === 0 ? 'left' : 'right', whiteSpace:'nowrap' }}>{h}</th>
               ))}
             </tr>

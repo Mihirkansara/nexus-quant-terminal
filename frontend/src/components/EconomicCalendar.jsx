@@ -1,13 +1,9 @@
 import { useState, useEffect, useCallback, Fragment, useMemo } from 'react'
+import { RefreshCw, X, CalendarX2 } from 'lucide-react'
 import { fetchCalendar } from '../api/client'
 
 /* ─── constants ────────────────────────────────────────── */
 
-const FLAGS = {
-  USD:'🇺🇸', EUR:'🇪🇺', GBP:'🇬🇧', JPY:'🇯🇵',
-  AUD:'🇦🇺', CAD:'🇨🇦', CHF:'🇨🇭', NZD:'🇳🇿',
-  CNY:'🇨🇳', CNH:'🇨🇳',
-}
 
 const IMP = {
   High:   { color:'var(--red)',   bar:'var(--red)',   label:'HIGH', badge:'tbadge-high'   },
@@ -77,10 +73,10 @@ function ImpactDots({ counts }) {
   return (
     <div style={{ display:'flex', gap:2, marginTop:3, justifyContent:'center' }}>
       {counts.high   > 0 && [...Array(Math.min(counts.high,  3))].map((_,i) =>
-        <span key={'h'+i} style={{ width:4, height:4, borderRadius:'50%', background:'#ff3d5a', opacity:0.9 }}/>
+        <span key={'h'+i} style={{ width:4, height:4, borderRadius:'50%', background:'#ee6b5b', opacity:0.9 }}/>
       )}
       {counts.medium > 0 && [...Array(Math.min(counts.medium,3))].map((_,i) =>
-        <span key={'m'+i} style={{ width:4, height:4, borderRadius:'50%', background:'#f59e0b', opacity:0.7 }}/>
+        <span key={'m'+i} style={{ width:4, height:4, borderRadius:'50%', background:'#f0914a', opacity:0.7 }}/>
       )}
     </div>
   )
@@ -88,7 +84,6 @@ function ImpactDots({ counts }) {
 
 function EventRow({ ev }) {
   const imp    = IMP[ev.impact] || IMP.Low
-  const flag   = FLAGS[ev.country] || '🏳️'
   const past   = isPast(ev.datetime_utc)
   const cd     = countdown(ev.datetime_utc)
   const actual = ev.actual?.trim()
@@ -122,8 +117,8 @@ function EventRow({ ev }) {
           {fmtUtcTime(ev.datetime_utc)}
         </div>
         {cd && (
-          <div className="font-mono live-dot-blink" style={{ fontSize:8, color:'var(--cyan)', marginTop:2 }}>
-            in {cd}
+          <div className="font-mono" style={{ fontSize:10.5, color:'var(--uv)', marginTop:3, display:'flex', alignItems:'center', gap:5, whiteSpace:'nowrap' }}>
+            <span className="live-dot-blink" aria-hidden="true" />in {cd}
           </div>
         )}
       </td>
@@ -131,8 +126,8 @@ function EventRow({ ev }) {
       {/* Currency */}
       <td style={{ padding:'7px 8px', width:72, whiteSpace:'nowrap' }}>
         <div style={{ display:'flex', alignItems:'center', gap:5 }}>
-          <span style={{ fontSize:14 }}>{flag}</span>
-          <span style={{ fontFamily:'var(--font-mono)', fontSize:9, fontWeight:800, color:imp.color, letterSpacing:'0.06em' }}>
+          
+          <span style={{ fontFamily:'var(--font-ui)', fontSize:10.5, fontWeight:600, color:imp.color, letterSpacing:'0.06em' }}>
             {ev.country}
           </span>
         </div>
@@ -142,13 +137,13 @@ function EventRow({ ev }) {
       <td style={{ padding:'7px 6px', width:44 }}>
         {imp.badge
           ? <span className={`tbadge ${imp.badge}`}>{imp.label}</span>
-          : <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-faint)', letterSpacing:'0.06em' }}>{imp.label}</span>
+          : <span style={{ fontFamily:'var(--font-ui)', fontSize:10, color:'var(--text-faint)', letterSpacing:'0.06em' }}>{imp.label}</span>
         }
       </td>
 
       {/* Event name */}
       <td style={{ padding:'7px 10px' }}>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:11, color: cd ? 'var(--text)' : past ? 'var(--text-muted)' : 'var(--text-secondary)',
+        <span style={{ fontFamily:'var(--font-ui)', fontSize:12.5, color: cd ? 'var(--text)' : past ? 'var(--text-muted)' : 'var(--text-secondary)',
           fontWeight: cd ? 600 : 400 }}>
           {ev.title}
         </span>
@@ -158,23 +153,23 @@ function EventRow({ ev }) {
       <td style={{ padding:'7px 12px', textAlign:'right', width:80 }}>
         {actual ? (
           <span className="font-mono" style={{ fontSize:11, fontWeight:700, color:actualColor, fontVariantNumeric:'tabular-nums' }}>
-            {bm === 'beat' ? '▲ ' : bm === 'miss' ? '▼ ' : ''}{actual}
+            {actual}{bm === 'beat' ? <span style={{ fontFamily:'var(--font-ui)', fontSize:10, fontWeight:500, marginLeft:5 }}>beat</span> : bm === 'miss' ? <span style={{ fontFamily:'var(--font-ui)', fontSize:10, fontWeight:500, marginLeft:5 }}>miss</span> : null}
           </span>
         ) : (
-          <span style={{ fontSize:10, color:'var(--text-ghost)' }}>—</span>
+          <span style={{ fontSize:11, color:'var(--text-faint)' }}>—</span>
         )}
       </td>
 
       {/* Forecast */}
       <td style={{ padding:'7px 12px', textAlign:'right', width:80 }}>
-        <span className="font-mono" style={{ fontSize:11, color: ev.forecast?.trim() ? 'var(--text-dim)' : 'var(--text-ghost)', fontVariantNumeric:'tabular-nums' }}>
+        <span className="font-mono" style={{ fontSize:11, color: ev.forecast?.trim() ? 'var(--text-dim)' : 'var(--text-faint)', fontVariantNumeric:'tabular-nums' }}>
           {ev.forecast?.trim() || '—'}
         </span>
       </td>
 
       {/* Previous */}
       <td style={{ padding:'7px 12px', textAlign:'right', width:80 }}>
-        <span className="font-mono" style={{ fontSize:11, color: ev.previous?.trim() ? 'var(--text-muted)' : 'var(--text-ghost)', fontVariantNumeric:'tabular-nums' }}>
+        <span className="font-mono" style={{ fontSize:11, color: ev.previous?.trim() ? 'var(--text-muted)' : 'var(--text-faint)', fontVariantNumeric:'tabular-nums' }}>
           {ev.previous?.trim() || '—'}
         </span>
       </td>
@@ -283,8 +278,8 @@ export default function EconomicCalendar() {
         <span style={{ opacity:0.4 }}>·</span>
         <span className="term-header-title">Forex Factory · UTC</span>
         <div style={{ flex:1 }}/>
-        <button className="btn-ghost" onClick={load} style={{ fontSize:10, padding:'3px 9px' }}>
-          {loading ? '⟳' : '↻'}
+        <button className="btn-ghost" onClick={load} style={{ fontSize:11, padding:'3px 9px' }}>
+          <RefreshCw size={13} aria-hidden="true" style={loading ? { animation:'spin 0.9s linear infinite' } : undefined} />Refresh
         </button>
       </div>
 
@@ -320,7 +315,7 @@ export default function EconomicCalendar() {
                   opacity: hasData ? 1 : 0.2,
                   transition:'var(--t-fast)', textAlign:'center', outline:'none',
                 }}>
-                <div style={{ fontFamily:'var(--font-mono)', fontSize:7.5, fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase',
+                <div style={{ fontFamily:'var(--font-ui)', fontSize:10, fontWeight:600, letterSpacing:'0.1em', textTransform:'uppercase',
                   color: isSel ? 'var(--cyan)' : isToday ? 'color-mix(in srgb, var(--cyan) 70%, transparent)' : 'var(--text-muted)' }}>
                   {DAY_ABBR[d.getDay()]}
                 </div>
@@ -346,7 +341,7 @@ export default function EconomicCalendar() {
         flexShrink:0, gap:8,
       }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-          <span style={{ fontFamily:'var(--font-mono)', fontSize:11, fontWeight:700, color:'var(--text)' }}>
+          <span style={{ fontFamily:'var(--font-ui)', fontSize:11, fontWeight:700, color:'var(--text)' }}>
             {fmtFullDay(selDate)}
           </span>
           <div style={{ display:'flex', gap:4, alignItems:'center' }}>
@@ -357,7 +352,7 @@ export default function EconomicCalendar() {
               <span className="tbadge tbadge-medium">{selImpCounts.medium} Med</span>
             )}
             {selImpCounts.low > 0 && (
-              <span className="tbadge" style={{ fontFamily:'var(--font-mono)', fontSize:8,
+              <span className="tbadge" style={{ fontFamily:'var(--font-ui)', fontSize:10,
                 background:'var(--bg3)', color:'var(--text-muted)', borderRadius:3, padding:'1px 5px' }}>
                 {selImpCounts.low} Low
               </span>
@@ -372,7 +367,7 @@ export default function EconomicCalendar() {
             const accentVar = v === 'High' ? 'var(--red)' : v === 'Medium' ? 'var(--amber)' : 'var(--text-muted)'
             return (
               <button key={v} onClick={() => setImpFilter(v)} style={{
-                padding:'2px 8px', borderRadius:'var(--r-sm)', fontFamily:'var(--font-mono)', fontSize:8.5, fontWeight:700,
+                padding:'2px 8px', borderRadius:'var(--r-sm)', fontFamily:'var(--font-ui)', fontSize:10, fontWeight:700,
                 border: active ? `1px solid color-mix(in srgb, ${v==='All'?'var(--cyan)':accentVar} 40%, transparent)` : '1px solid var(--border-sub)',
                 background: active ? `color-mix(in srgb, ${v==='All'?'var(--cyan)':accentVar} 10%, transparent)` : 'transparent',
                 color: active ? (v==='All'?'var(--cyan)':accentVar) : 'var(--text-muted)',
@@ -387,19 +382,19 @@ export default function EconomicCalendar() {
               <button key={ccy} onClick={() =>
                 setCcyFilter(p => p.includes(ccy) ? p.filter(c=>c!==ccy) : [...p, ccy])
               } style={{
-                padding:'2px 6px', borderRadius:'var(--r-sm)', fontFamily:'var(--font-mono)', fontSize:8, fontWeight:700,
+                padding:'2px 6px', borderRadius:'var(--r-sm)', fontFamily:'var(--font-ui)', fontSize:10, fontWeight:700,
                 border: active ? '1px solid color-mix(in srgb, var(--cyan) 35%, transparent)' : '1px solid var(--border-sub)',
                 background: active ? 'var(--cyan-bg)' : 'transparent',
                 color: active ? 'var(--cyan)' : 'var(--text-muted)',
                 cursor:'pointer', transition:'var(--t-fast)', outline:'none',
-              }}>{FLAGS[ccy]||''} {ccy}</button>
+              }}>{ccy}</button>
             )
           })}
           {ccyFilter.length > 0 && (
             <button onClick={() => setCcyFilter([])} style={{
-              padding:'2px 5px', borderRadius:3, fontSize:9, border:'none',
+              padding:'2px 5px', borderRadius:3, fontSize:10.5, border:'none',
               background:'transparent', color:'var(--text-muted)', cursor:'pointer',
-            }}>✕</button>
+            }} aria-label="Clear currency filter"><X size={12} aria-hidden="true" /></button>
           )}
         </div>
       </div>
@@ -414,24 +409,24 @@ export default function EconomicCalendar() {
           </div>
         ) : error ? (
           <div style={{ padding:16 }}>
-            <div style={{ padding:12, borderRadius:6, background:'rgba(255,61,90,0.08)',
-              border:'1px solid #ff3d5a', color:'#ff3d5a', fontSize:12 }}>{error}</div>
+            <div style={{ padding:12, borderRadius:6, background:'rgba(238,107,91,0.08)',
+              border:'1px solid #ee6b5b', color:'#ee6b5b', fontSize:12 }}>{error}</div>
             <button className="btn-primary" onClick={load} style={{ marginTop:8 }}>Retry</button>
           </div>
         ) : !availDates.has(selDate) ? (
           <div style={{ padding:40, textAlign:'center' }}>
-            <div style={{ fontSize:28, marginBottom:10 }}>📭</div>
-            <div style={{ fontSize:13, color:'#475569', fontWeight:600 }}>No data for {fmtFullDay(selDate)}</div>
-            <div style={{ fontSize:11, color:'#334155', marginTop:6 }}>
+            <CalendarX2 size={28} strokeWidth={1.4} color="var(--text-faint)" style={{ marginBottom:10 }} aria-hidden="true" />
+            <div style={{ fontSize:13, color:'#7e8f84', fontWeight:600 }}>No data for {fmtFullDay(selDate)}</div>
+            <div style={{ fontSize:11, color:'var(--text-faint)', marginTop:6 }}>
               Forex Factory publishes the current week's calendar each Sunday.
               <br/>Navigate to a date within the available range.
             </div>
             <div style={{ marginTop:10, display:'flex', gap:6, justifyContent:'center', flexWrap:'wrap' }}>
               {[...availDates].sort().map(d => (
                 <button key={d} onClick={() => setSelDate(d)} style={{
-                  padding:'4px 10px', borderRadius:5, fontSize:10, cursor:'pointer',
-                  background:'rgba(0,212,255,0.07)', border:'1px solid rgba(0,212,255,0.2)',
-                  color:'#00d4ff',
+                  padding:'4px 10px', borderRadius:5, fontSize:11, cursor:'pointer',
+                  background:'rgba(169,154,255,0.07)', border:'1px solid rgba(169,154,255,0.2)',
+                  color:'#86abea',
                 }}>
                   {new Date(d+'T12:00:00Z').toLocaleDateString('en-US',
                     { weekday:'short', month:'short', day:'numeric', timeZone:'UTC' })}
@@ -440,7 +435,7 @@ export default function EconomicCalendar() {
             </div>
           </div>
         ) : dayEvents.length === 0 ? (
-          <div style={{ padding:30, textAlign:'center', color:'#334155', fontSize:12 }}>
+          <div style={{ padding:30, textAlign:'center', color:'var(--text-faint)', fontSize:12 }}>
             No events match the current filters.
           </div>
         ) : (
@@ -461,7 +456,7 @@ export default function EconomicCalendar() {
                 <th style={{ padding:0 }}/>
                 {['Time (UTC)','Currency','Imp.','Event','Actual','Forecast','Previous'].map((h,i) => (
                   <th key={h} style={{ padding:'5px '+(i===0||i===1?'12px':'8px'),
-                    fontFamily:'var(--font-mono)', fontSize:8, fontWeight:700, letterSpacing:'0.1em',
+                    fontFamily:'var(--font-ui)', fontSize:10, fontWeight:600, letterSpacing:'0.1em',
                     textTransform:'uppercase', color:'var(--text-muted)',
                     textAlign: i >= 4 ? 'right' : 'left' }}>{h}</th>
                 ))}
@@ -481,10 +476,10 @@ export default function EconomicCalendar() {
         background:'var(--bg2)',
         display:'flex', alignItems:'center', gap:12,
       }}>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-ghost)' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-faint)' }}>
           Forex Factory · nfs.faireconomy.media · published weekly · all times UTC
         </span>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-ghost)', marginLeft:'auto' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-faint)', marginLeft:'auto' }}>
           {data?.count || 0} events
         </span>
       </div>

@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react'
+import { Check, Scale, RefreshCw } from 'lucide-react'
 import _Plot from 'react-plotly.js'
 const Plot = _Plot?.default ?? _Plot
 import { usePortfolioStore, isCrypto, PAIR_META } from '../store/portfolio'
 import { calibrateJumps, priceMerton } from '../api/client'
+import KpiStrip from './KpiStrip'
 
 const LAYOUT = {
-  paper_bgcolor:'transparent', plot_bgcolor:'#080d18',
-  font:{ color:'#94a3b8', size:11 },
+  paper_bgcolor:'transparent', plot_bgcolor:'#0a1511',
+  font:{ family:"'Geist Variable', sans-serif", color:'#9eab9f', size:11 },
   margin:{ l:52, r:16, t:12, b:42 },
-  legend:{ bgcolor:'transparent', font:{ size:9 }, orientation:'h', x:0, y:-0.22 },
-  hoverlabel:{ bgcolor:'#0f172a', font:{ color:'#e2e8f0' }, bordercolor:'rgba(0,212,255,0.15)' },
+  legend:{ bgcolor:'transparent', font:{ size:10.5 }, orientation:'h', x:0, y:-0.22 },
+  hoverlabel:{ bgcolor:'#0f1d18', font:{ color:'#ebe5d3' }, bordercolor:'rgba(169,154,255,0.15)' },
 }
-const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1e293b', color:'#475569', zeroline:false, ...extra })
+const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1c2e26', color:'#7e8f84', zeroline:false, ...extra })
 const pct = (v, d = 1) => (v == null ? '—' : (v * 100).toFixed(d) + '%')
 const fmt = (v, d = 3) => (v == null ? '—' : Number(v).toFixed(d))
 
@@ -30,8 +32,8 @@ export default function JumpLab() {
     <div style={{ padding:16 }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:12, marginBottom:12, flexWrap:'wrap' }}>
         <div>
-          <div className="section-title">Jump Lab — Merton &amp; Bates jump-diffusion ({pair})</div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:2 }}>
+          <div className="section-title" style={{ color:'var(--text-muted)', letterSpacing:'0.08em' }}>{pair}</div>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:2 }}>
             How much of the smile is jump risk vs stochastic vol · risk-neutral crash odds · feeds Hedge Lab
           </div>
         </div>
@@ -41,7 +43,7 @@ export default function JumpLab() {
         </div>
       </div>
       {live === 'live' && isCrypto(pair) ? <Calibrated pair={pair} /> : <Manual key={pair} pair={pair} />}
-      <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
+      <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
         Merton (1976) lognormal jumps priced by the Poisson-weighted Black series on the forward. Bates (1996) = Heston
         stochastic variance + Merton jumps, priced with the COS method (Fang &amp; Oosterlee 2008) on the &quot;little Heston
         trap&quot; characteristic function (Albrecher et al. 2007). Calibration: bounded least squares on vega-weighted OTM
@@ -52,8 +54,8 @@ export default function JumpLab() {
 }
 
 const Chip = ({ active, onClick, children }) => (
-  <button onClick={onClick} className="font-mono" style={{ padding:'3px 9px', borderRadius:4, fontSize:9, cursor:'pointer',
-    border:'1px solid ' + (active ? 'var(--cyan)' : 'var(--border)'), background: active ? 'rgba(0,212,255,0.1)' : 'transparent',
+  <button onClick={onClick} className="font-mono" style={{ padding:'3px 9px', borderRadius:4, fontSize:10.5, cursor:'pointer',
+    border:'1px solid ' + (active ? 'var(--cyan)' : 'var(--border)'), background: active ? 'rgba(169,154,255,0.1)' : 'transparent',
     color: active ? 'var(--cyan)' : 'var(--text-muted)' }}>{children}</button>
 )
 
@@ -61,7 +63,7 @@ function Card({ title, right, children }) {
   return (
     <div className="glass" style={{ borderRadius:8, padding:8 }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', margin:'2px 6px 4px', gap:8, flexWrap:'wrap' }}>
-        <span className="section-title" style={{ fontSize:10 }}>{title}</span>{right}
+        <span className="section-title" style={{ fontSize:11 }}>{title}</span>{right}
       </div>
       {children}
     </div>
@@ -70,15 +72,7 @@ function Card({ title, right, children }) {
 
 function Kpis({ items }) {
   return (
-    <div style={{ display:'flex', gap:8, marginBottom:12, flexWrap:'wrap' }}>
-      {items.map(k => (
-        <div key={k.label} className="glass" title={k.hint} style={{ padding:'6px 12px', borderRadius:6, fontSize:11 }}>
-          <div style={{ color:'var(--text-muted)', fontSize:9, letterSpacing:'0.05em' }}>{k.label}</div>
-          <div className="font-mono" style={{ color: k.color ?? 'var(--cyan)', fontWeight:700, fontSize:14 }}>{k.value}</div>
-          {k.sub && <div className="font-mono" style={{ fontSize:9, color:'var(--text-muted)' }}>{k.sub}</div>}
-        </div>
-      ))}
-    </div>
+    <KpiStrip items={items} />
   )
 }
 
@@ -86,10 +80,10 @@ function SendToHedge({ jump }) {
   const setHedgeJump = usePortfolioStore(s => s.setHedgeJump)
   const [done, setDone] = useState(false)
   return (
-    <button className="btn-ghost" style={{ fontSize:10 }} onClick={() => {
+    <button className="btn-ghost" style={{ fontSize:11 }} onClick={() => {
       setHedgeJump({ intensity:+jump.lambda.toFixed(2), mean:+(jump.mu_j * 100).toFixed(2), sd:+(jump.delta * 100).toFixed(2) })
       setDone(true)
-    }}>{done ? '✓ Sent — open Hedge Lab' : '⚖ Use these jumps in Hedge Lab'}</button>
+    }}>{done ? <><Check size={13} aria-hidden="true" />Sent. Open Hedge Lab</> : <><Scale size={13} aria-hidden="true" />Use these jumps in Hedge Lab</>}</button>
   )
 }
 
@@ -98,12 +92,12 @@ function DensityChart({ d, title }) {
     <Card title={title}>
       <Plot data={[
           { x:d.spot, y:d.density, type:'scatter', mode:'lines', name:'Model (risk-neutral)', fill:'tozeroy',
-            line:{ color:'#00d4ff', width:2 }, fillcolor:'rgba(0,212,255,0.08)' },
-          { x:d.spot, y:d.lognormal, type:'scatter', mode:'lines', name:'Lognormal, same variance', line:{ color:'#ffd700', width:1.2, dash:'dash' } },
+            line:{ color:'#86abea', width:2 }, fillcolor:'rgba(169,154,255,0.08)' },
+          { x:d.spot, y:d.lognormal, type:'scatter', mode:'lines', name:'Lognormal, same variance', line:{ color:'#e4dcc3', width:1.2, dash:'dash' } },
         ]}
         layout={{ ...LAYOUT, hovermode:'x unified', xaxis:axis('Price at horizon'), yaxis:axis('Density', { showticklabels:false }) }}
         config={{ responsive:true, displayModeBar:false }} style={{ width:'100%', height:280 }} />
-      <div className="font-mono" style={{ fontSize:10, color:'var(--text-muted)', padding:'0 8px 4px' }}>
+      <div className="font-mono" style={{ fontSize:11, color:'var(--text-muted)', padding:'0 8px 4px' }}>
         P(−20%): <span style={{ color:'var(--red)' }}>{pct(d.p_down_20)}</span> vs {pct(d.p_down_20_lognormal)} lognormal ·
         P(+20%): <span style={{ color:'var(--green)' }}>{pct(d.p_up_20)}</span> vs {pct(d.p_up_20_lognormal)} lognormal
       </div>
@@ -155,19 +149,19 @@ function Calibrated({ pair }) {
             <Chip key={s.label} active={s === sel} onClick={() => setIdx(i)}>{s.label}</Chip>)}</div>}>
           <Plot data={[
               { x:sel.market.strikes, y:sel.market.iv.map(v => v * 100), type:'scatter', mode:'markers', name:'Deribit mark IV',
-                marker:{ color:'#ffd700', size:6, line:{ color:'#0a0e1a', width:1 } } },
-              { x:sel.grid, y:sel.bates.map(v => v == null ? null : v * 100), type:'scatter', mode:'lines', name:`Bates (${(sel.rmse_bates * 100).toFixed(2)})`, line:{ color:'#00d4ff', width:2.5 } },
-              { x:sel.grid, y:sel.merton.map(v => v == null ? null : v * 100), type:'scatter', mode:'lines', name:`Merton (${(sel.rmse_merton * 100).toFixed(2)})`, line:{ color:'#c084fc', width:1.5, dash:'dash' } },
+                marker:{ color:'#e4dcc3', size:6, line:{ color:'#09130f', width:1 } } },
+              { x:sel.grid, y:sel.bates.map(v => v == null ? null : v * 100), type:'scatter', mode:'lines', name:`Bates (${(sel.rmse_bates * 100).toFixed(2)})`, line:{ color:'#86abea', width:2.5 } },
+              { x:sel.grid, y:sel.merton.map(v => v == null ? null : v * 100), type:'scatter', mode:'lines', name:`Merton (${(sel.rmse_merton * 100).toFixed(2)})`, line:{ color:'#d58fc0', width:1.5, dash:'dash' } },
             ]}
             layout={{ ...LAYOUT, xaxis:axis('Strike'), yaxis:axis('Implied vol (%)'),
-              shapes:[{ type:'line', x0:sel.forward, x1:sel.forward, yref:'paper', y0:0, y1:1, line:{ color:'rgba(255,215,0,0.35)', dash:'dot', width:1 } }] }}
+              shapes:[{ type:'line', x0:sel.forward, x1:sel.forward, yref:'paper', y0:0, y1:1, line:{ color:'rgba(228,220,195,0.35)', dash:'dot', width:1 } }] }}
             config={{ responsive:true, displayModeBar:false }} style={{ width:'100%', height:300 }} />
         </Card>
         <DensityChart d={d.density_30d} title="30-day risk-neutral density (Bates) vs lognormal" />
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(420px, 1fr))', gap:12 }}>
         <ParamTable b={b} m={m} smiles={smiles} />
-        <Card title="Hand off" right={<button className="btn-ghost" style={{ fontSize:10 }} onClick={() => setNonce(n => n + 1)}>↻ Recalibrate</button>}>
+        <Card title="Hand off" right={<button className="btn-ghost" style={{ fontSize:11 }} onClick={() => setNonce(n => n + 1)}><RefreshCw size={13} aria-hidden="true" />Recalibrate</button>}>
           <div style={{ padding:'4px 8px', fontSize:11, color:'var(--text-muted)', lineHeight:1.6 }}>
             Send the calibrated Bates jump component (λ = {fmt(b.params.lambda, 2)}/yr, μ = {(b.params.mu_j * 100).toFixed(1)}%,
             δ = {(b.params.delta * 100).toFixed(1)}%) to Hedge Lab to stress your delta hedge with the jumps the options market is pricing.
@@ -193,19 +187,19 @@ function ParamTable({ b, m, smiles }) {
   ]
   return (
     <Card title="Calibrated parameters">
-      <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
+      <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
         <thead><tr style={{ background:'var(--bg3)' }}>
-          {['Parameter', 'Merton', 'Bates'].map((h, i) => <th key={h} style={{ padding:'6px 8px', fontSize:9, color:'var(--text-muted)', textAlign: i ? 'right' : 'left' }}>{h}</th>)}
+          {['Parameter', 'Merton', 'Bates'].map((h, i) => <th key={h} style={{ padding:'6px 8px', fontSize:10.5, color:'var(--text-muted)', textAlign: i ? 'right' : 'left' }}>{h}</th>)}
         </tr></thead>
         <tbody>{rows.map(r => (
           <tr key={r[0]} style={{ borderTop:'1px solid var(--border)' }}>
             <td style={{ padding:'5px 8px' }}>{r[0]}</td>
-            <td className="font-mono" style={{ padding:'5px 8px', textAlign:'right', color:'#c084fc' }}>{r[1]}</td>
+            <td className="font-mono" style={{ padding:'5px 8px', textAlign:'right', color:'#d58fc0' }}>{r[1]}</td>
             <td className="font-mono" style={{ padding:'5px 8px', textAlign:'right', color:'var(--cyan)' }}>{r[2]}</td>
           </tr>
         ))}</tbody>
       </table>
-      <div style={{ fontSize:9, color:'var(--text-muted)', padding:'6px 8px' }}>
+      <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'6px 8px' }}>
         Per-expiry RMSE (Merton → Bates): {smiles.map(s => `${s.label} ${(s.rmse_merton * 100).toFixed(1)}→${(s.rmse_bates * 100).toFixed(1)}`).join(' · ')}
       </div>
     </Card>
@@ -213,7 +207,7 @@ function ParamTable({ b, m, smiles }) {
 }
 
 function ErrorBox({ msg }) {
-  return <div style={{ padding:8, borderRadius:6, fontSize:11, background:'rgba(255,61,90,0.1)', border:'1px solid #ff3d5a', color:'#ff3d5a' }}>{msg}</div>
+  return <div style={{ padding:8, borderRadius:6, fontSize:11, background:'rgba(238,107,91,0.1)', border:'1px solid #ee6b5b', color:'#ee6b5b' }}>{msg}</div>
 }
 
 function Manual({ pair }) {
@@ -233,7 +227,7 @@ function Manual({ pair }) {
   }, [key])
   const d = res.data
   const field = (label, k, step) => (
-    <label key={k} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>{label}
+    <label key={k} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>{label}
       <input type="number" value={p[k]} step={step} onChange={e => setP(q => ({ ...q, [k]: +e.target.value }))}
         style={{ background:'var(--bg3)', border:'1px solid var(--border)', borderRadius:4, color:'var(--cyan)', fontSize:11,
           padding:'4px 6px', fontFamily:'var(--font-mono)', width:'100%' }} />
@@ -250,7 +244,7 @@ function Manual({ pair }) {
           {field('Jump sd (%)', 'jump_sd', 0.5)}
           {d && <SendToHedge jump={{ lambda:p.jump_intensity, mu_j:p.jump_mean / 100, delta:p.jump_sd / 100 }} />}
         </div>
-        <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:6 }}>
+        <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:6 }}>
           Model event and gap risk (CPI/FOMC days, weekend gaps, squeezes) that no listed-option feed is available for —
           e.g. silver&apos;s 2026 −25% day. Spot, rates and tenor come from the portfolio.
         </div>
@@ -268,11 +262,11 @@ function Manual({ pair }) {
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(420px, 1fr))', gap:12 }}>
             <Card title={`Merton smile · ${pair} · T = ${p.T}y`}>
               <Plot data={[{ x:d.strikes, y:d.iv.map(v => v == null ? null : v * 100), type:'scatter', mode:'lines',
-                  line:{ color:'#00d4ff', width:2.5 }, name:'Merton' },
+                  line:{ color:'#86abea', width:2.5 }, name:'Merton' },
                 { x:[d.strikes[0], d.strikes.at(-1)], y:[p.sigma, p.sigma], type:'scatter', mode:'lines',
                   line:{ color:'rgba(255,255,255,0.25)', dash:'dash', width:1 }, name:'Diffusion σ' }]}
                 layout={{ ...LAYOUT, xaxis:axis('Strike'), yaxis:axis('Implied vol (%)'),
-                  shapes:[{ type:'line', x0:d.forward, x1:d.forward, yref:'paper', y0:0, y1:1, line:{ color:'rgba(255,215,0,0.35)', dash:'dot', width:1 } }] }}
+                  shapes:[{ type:'line', x0:d.forward, x1:d.forward, yref:'paper', y0:0, y1:1, line:{ color:'rgba(228,220,195,0.35)', dash:'dot', width:1 } }] }}
                 config={{ responsive:true, displayModeBar:false }} style={{ width:'100%', height:280 }} />
             </Card>
             <DensityChart d={d.density} title={`Risk-neutral density at T = ${p.T}y vs lognormal`} />

@@ -3,18 +3,19 @@ import _Plot from 'react-plotly.js'
 const Plot = _Plot?.default ?? _Plot
 import { usePortfolioStore, isCrypto, PAIR_META } from '../store/portfolio'
 import { priceBarriers, priceDci, priceAccumulator } from '../api/client'
+import KpiStrip from './KpiStrip'
+import { num } from '../lib/format'
 
 const LAYOUT = {
-  paper_bgcolor:'transparent', plot_bgcolor:'#080d18',
-  font:{ color:'#94a3b8', size:11 },
+  paper_bgcolor:'transparent', plot_bgcolor:'#0a1511',
+  font:{ family:"'Geist Variable', sans-serif", color:'#9eab9f', size:11 },
   margin:{ l:56, r:16, t:12, b:42 },
-  legend:{ bgcolor:'transparent', font:{ size:9 }, orientation:'h', x:0, y:-0.22 },
-  hoverlabel:{ bgcolor:'#0f172a', font:{ color:'#e2e8f0' }, bordercolor:'rgba(0,212,255,0.15)' },
+  legend:{ bgcolor:'transparent', font:{ size:10.5 }, orientation:'h', x:0, y:-0.22 },
+  hoverlabel:{ bgcolor:'#0f1d18', font:{ color:'#ebe5d3' }, bordercolor:'rgba(169,154,255,0.15)' },
 }
 const CFG = { responsive:true, displayModeBar:false }
-const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1e293b', color:'#475569', zeroline:false, ...extra })
+const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1c2e26', color:'#7e8f84', zeroline:false, ...extra })
 const pct = (v, d = 1) => (v == null ? '—' : (v * 100).toFixed(d) + '%')
-const num = (v, d = 2) => (v == null ? '—' : Number(v).toLocaleString(undefined, { minimumFractionDigits:d, maximumFractionDigits:d }))
 const dpOf = (pair) => PAIR_META[pair]?.dp ?? (PAIR_META[pair]?.pip === 0.01 ? 3 : 5)
 const roundTo = (x, dp) => +Number(x).toFixed(dp)
 
@@ -42,8 +43,8 @@ export default function ExoticsDesk() {
     <div style={{ padding:16 }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', gap:12, marginBottom:12, flexWrap:'wrap' }}>
         <div>
-          <div className="section-title">Exotics Desk — barriers, touches, Dual Investment &amp; accumulators ({pair})</div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:2 }}>
+          <div className="section-title" style={{ color:'var(--text-muted)', letterSpacing:'0.08em' }}>{pair}</div>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:2 }}>
             Price what clients are actually sold: KO/KI and touch structures, crypto/gold DCI yields, KO accumulators
           </div>
         </div>
@@ -61,8 +62,8 @@ export default function ExoticsDesk() {
 }
 
 const Chip = ({ active, onClick, children }) => (
-  <button onClick={onClick} className="font-mono" style={{ padding:'3px 9px', borderRadius:4, fontSize:9, cursor:'pointer',
-    border:'1px solid ' + (active ? 'var(--cyan)' : 'var(--border)'), background: active ? 'rgba(0,212,255,0.1)' : 'transparent',
+  <button onClick={onClick} className="font-mono" style={{ padding:'3px 9px', borderRadius:4, fontSize:10.5, cursor:'pointer',
+    border:'1px solid ' + (active ? 'var(--cyan)' : 'var(--border)'), background: active ? 'rgba(169,154,255,0.1)' : 'transparent',
     color: active ? 'var(--cyan)' : 'var(--text-muted)' }}>{children}</button>
 )
 
@@ -70,7 +71,7 @@ function Card({ title, right, children }) {
   return (
     <div className="glass" style={{ borderRadius:8, padding:8 }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', margin:'2px 6px 4px', gap:8, flexWrap:'wrap' }}>
-        <span className="section-title" style={{ fontSize:10 }}>{title}</span>{right}
+        <span className="section-title" style={{ fontSize:11 }}>{title}</span>{right}
       </div>
       {children}
     </div>
@@ -79,20 +80,12 @@ function Card({ title, right, children }) {
 
 function Kpis({ items }) {
   return (
-    <div style={{ display:'flex', gap:8, marginBottom:12, flexWrap:'wrap' }}>
-      {items.map(k => (
-        <div key={k.label} className="glass" title={k.hint} style={{ padding:'6px 12px', borderRadius:6, fontSize:11 }}>
-          <div style={{ color:'var(--text-muted)', fontSize:9, letterSpacing:'0.05em' }}>{k.label}</div>
-          <div className="font-mono" style={{ color: k.color ?? 'var(--cyan)', fontWeight:700, fontSize:14 }}>{k.value}</div>
-          {k.sub && <div className="font-mono" style={{ fontSize:9, color:'var(--text-muted)' }}>{k.sub}</div>}
-        </div>
-      ))}
-    </div>
+    <KpiStrip items={items} />
   )
 }
 
 function ErrorBox({ msg }) {
-  return <div style={{ padding:8, borderRadius:6, fontSize:11, marginBottom:10, background:'rgba(255,61,90,0.1)', border:'1px solid #ff3d5a', color:'#ff3d5a' }}>{msg}</div>
+  return <div style={{ padding:8, borderRadius:6, fontSize:11, marginBottom:10, background:'rgba(238,107,91,0.1)', border:'1px solid #ee6b5b', color:'#ee6b5b' }}>{msg}</div>
 }
 
 const inputStyle = { background:'var(--bg3)', border:'1px solid var(--border)', borderRadius:4, color:'var(--cyan)', fontSize:11,
@@ -100,7 +93,7 @@ const inputStyle = { background:'var(--bg3)', border:'1px solid var(--border)', 
 
 function Field({ label, value, onChange, step, hint }) {
   return (
-    <label title={hint} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>{label}
+    <label title={hint} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>{label}
       <input type="number" value={value} step={step} onChange={e => onChange(+e.target.value)} style={inputStyle} />
     </label>
   )
@@ -108,7 +101,7 @@ function Field({ label, value, onChange, step, hint }) {
 
 function Select({ label, value, onChange, options }) {
   return (
-    <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>{label}
+    <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>{label}
       <select value={value} onChange={e => onChange(e.target.value)} style={inputStyle}>
         {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
       </select>
@@ -119,7 +112,7 @@ function Select({ label, value, onChange, options }) {
 const Panel = ({ children, note }) => (
   <div className="glass" style={{ borderRadius:8, padding:10, marginBottom:12 }}>
     <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(120px, 1fr))', gap:10, alignItems:'end' }}>{children}</div>
-    {note && <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:6, lineHeight:1.5 }}>{note}</div>}
+    {note && <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:6, lineHeight:1.5 }}>{note}</div>}
   </div>
 )
 
@@ -187,29 +180,29 @@ function Barriers({ pair }) {
             <Card title={`${knock === 'out' ? 'Knock-out' : 'Knock-in'} ${cp} vs vanilla across spot`}>
               <Plot data={[
                   { x:d.selected.spots, y:d.selected.vanilla, type:'scatter', mode:'lines', name:'Vanilla', line:{ color:'rgba(255,255,255,0.35)', dash:'dash', width:1.2 } },
-                  { x:d.selected.spots, y:d.selected.price, type:'scatter', mode:'lines', name:'Barrier', line:{ color:'#00d4ff', width:2.5 } },
-                  { x:d.selected.spots, y:d.selected.delta, type:'scatter', mode:'lines', name:'Barrier Δ (rhs)', yaxis:'y2', line:{ color:'#c084fc', width:1.3 } },
+                  { x:d.selected.spots, y:d.selected.price, type:'scatter', mode:'lines', name:'Barrier', line:{ color:'#86abea', width:2.5 } },
+                  { x:d.selected.spots, y:d.selected.delta, type:'scatter', mode:'lines', name:'Barrier Δ (rhs)', yaxis:'y2', line:{ color:'#d58fc0', width:1.3 } },
                 ]}
                 layout={{ ...LAYOUT, hovermode:'x unified', xaxis:axis('Spot'), yaxis:axis('Price'),
-                  yaxis2:{ overlaying:'y', side:'right', color:'#c084fc', showgrid:false, zeroline:false, title:{ text:'Δ' } },
+                  yaxis2:{ overlaying:'y', side:'right', color:'#d58fc0', showgrid:false, zeroline:false, title:{ text:'Δ' } },
                   shapes:[
-                    { type:'line', x0:d.selected.barrier, x1:d.selected.barrier, yref:'paper', y0:0, y1:1, line:{ color:'#ff3d5a', dash:'dot', width:1.5 } },
-                    { type:'line', x0:S, x1:S, yref:'paper', y0:0, y1:1, line:{ color:'rgba(255,215,0,0.5)', dash:'dot', width:1 } }] }}
+                    { type:'line', x0:d.selected.barrier, x1:d.selected.barrier, yref:'paper', y0:0, y1:1, line:{ color:'#ee6b5b', dash:'dot', width:1.5 } },
+                    { type:'line', x0:S, x1:S, yref:'paper', y0:0, y1:1, line:{ color:'rgba(228,220,195,0.5)', dash:'dot', width:1 } }] }}
                 config={CFG} style={{ width:'100%', height:300 }} />
-              <div style={{ fontSize:9, color:'var(--text-muted)', padding:'0 8px 4px' }}>
+              <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'0 8px 4px' }}>
                 Red = barrier, gold = spot. Watch Δ near the barrier: a reverse KO (barrier in the money) has a delta gap — the pin risk dealers hedge with barrier shifts.
               </div>
             </Card>
             <Card title="Touch ladder — hit probability by barrier (daily fixings)">
               <Plot data={[
                   { x:d.touch_ladder.map(r => r.barrier), y:d.touch_ladder.map(r => r.prob_touch * 100), type:'bar', name:'P(touch)',
-                    marker:{ color:d.touch_ladder.map(r => r.barrier > S ? 'rgba(0,255,136,0.55)' : 'rgba(255,61,90,0.55)') },
+                    marker:{ color:d.touch_ladder.map(r => r.barrier > S ? 'rgba(79,198,144,0.55)' : 'rgba(238,107,91,0.55)') },
                     customdata:d.touch_ladder.map(r => r.sd.toFixed(2)), hovertemplate:'H %{x}<br>%{customdata} sd<br>P(touch) %{y:.1f}%<extra></extra>' },
                 ]}
                 layout={{ ...LAYOUT, showlegend:false, xaxis:axis('Barrier'), yaxis:axis('P(touch before expiry) %', { range:[0, 100] }),
-                  shapes:[{ type:'line', x0:S, x1:S, yref:'paper', y0:0, y1:1, line:{ color:'rgba(255,215,0,0.5)', dash:'dot', width:1 } }] }}
+                  shapes:[{ type:'line', x0:S, x1:S, yref:'paper', y0:0, y1:1, line:{ color:'rgba(228,220,195,0.5)', dash:'dot', width:1 } }] }}
                 config={CFG} style={{ width:'100%', height:300 }} />
-              <div style={{ fontSize:9, color:'var(--text-muted)', padding:'0 8px 4px' }}>
+              <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'0 8px 4px' }}>
                 Risk-neutral odds of a level trading before expiry — compare with prediction-market &quot;will gold hit X&quot; contracts.
               </div>
             </Card>
@@ -227,12 +220,12 @@ function BarrierTable({ rows, dp, sel }) {
     <Card title="All eight single barriers (same K, lower/upper barrier)">
       <div style={{ overflowX:'auto' }}>
         <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
-          <thead><tr style={{ color:'var(--text-muted)', fontSize:9, textAlign:'right' }}>
+          <thead><tr style={{ color:'var(--text-muted)', fontSize:10.5, textAlign:'right' }}>
             <th style={{ textAlign:'left', padding:'4px 8px' }}>Structure</th><th style={{ padding:'4px 8px' }}>Barrier</th>
             <th style={{ padding:'4px 8px' }}>Continuous</th><th style={{ padding:'4px 8px' }}>Discrete (BGK)</th>
             <th style={{ padding:'4px 8px' }}>Vanilla</th><th style={{ padding:'4px 8px' }}>% vanilla</th></tr></thead>
           <tbody>{rows.map(r => (
-            <tr key={name(r)} style={{ borderTop:'1px solid var(--border)', background: r === sel ? 'rgba(0,212,255,0.06)' : 'transparent' }}>
+            <tr key={name(r)} style={{ borderTop:'1px solid var(--border)', background: r === sel ? 'rgba(169,154,255,0.06)' : 'transparent' }}>
               <td style={{ padding:'5px 8px' }}>{name(r)}</td>
               {[r.barrier, r.continuous, r.discrete, r.vanilla].map((v, i) => (
                 <td key={i} className="font-mono" style={{ padding:'5px 8px', textAlign:'right', color: i === 2 ? 'var(--cyan)' : undefined }}>{num(v, dp)}</td>))}
@@ -281,27 +274,27 @@ function Dci({ pair }) {
             { label:'Platform margin', value:`${(a.margin_apr * 100).toFixed(1)}% APR`, color: a.margin_apr > 0 ? 'var(--red)' : 'var(--green)',
               hint:'Fair − offered: the yield the platform keeps' },
             { label:'Vol you are paid', value:pct(a.implied_vol_paid, 1), sub: a.vol_haircut != null ? `${(a.vol_haircut * 100).toFixed(1)} vol below σ` : null,
-              color:'var(--gold, #ffd700)', hint:'Implied vol at which the offered APR is fair' },
+              color:'var(--gold, #e4dcc3)', hint:'Implied vol at which the offered APR is fair' },
             { label:'P(conversion)', value:pct(a.prob_conversion, 1), color:'var(--red)' },
             { label:'Breakeven', value:num(a.breakeven, dp) },
           ]} />}
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(420px, 1fr))', gap:12 }}>
             <Card title={`Fair APR vs conversion odds · ${p.days}d ${p.side === 'sell_high' ? 'sell-high' : 'buy-low'}`}>
               <Plot data={[
-                  { x:d.ladder.map(r => r.strike), y:d.ladder.map(r => r.fair_apr * 100), type:'bar', name:'Fair APR %', marker:{ color:'rgba(0,212,255,0.55)' } },
+                  { x:d.ladder.map(r => r.strike), y:d.ladder.map(r => r.fair_apr * 100), type:'bar', name:'Fair APR %', marker:{ color:'rgba(169,154,255,0.55)' } },
                   { x:d.ladder.map(r => r.strike), y:d.ladder.map(r => r.prob_conversion * 100), type:'scatter', mode:'lines+markers', name:'P(conversion) %',
-                    yaxis:'y2', line:{ color:'#ff3d5a', width:2 } },
+                    yaxis:'y2', line:{ color:'#ee6b5b', width:2 } },
                   ...(a ? [{ x:[S * a.strike_pct / 100], y:[a.offered_apr * 100], type:'scatter', mode:'markers', name:'Offered',
-                    marker:{ color:'#ffd700', size:12, symbol:'diamond' } }] : []),
+                    marker:{ color:'#e4dcc3', size:12, symbol:'diamond' } }] : []),
                 ]}
                 layout={{ ...LAYOUT, hovermode:'x unified', xaxis:axis('Target price (strike)'), yaxis:axis('APR %'),
-                  yaxis2:{ overlaying:'y', side:'right', color:'#ff3d5a', showgrid:false, zeroline:false, title:{ text:'P(conv) %' } } }}
+                  yaxis2:{ overlaying:'y', side:'right', color:'#ee6b5b', showgrid:false, zeroline:false, title:{ text:'P(conv) %' } } }}
                 config={CFG} style={{ width:'100%', height:300 }} />
             </Card>
             <Card title="Strike ladder">
               <div style={{ overflowX:'auto' }}>
                 <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
-                  <thead><tr style={{ color:'var(--text-muted)', fontSize:9, textAlign:'right' }}>
+                  <thead><tr style={{ color:'var(--text-muted)', fontSize:10.5, textAlign:'right' }}>
                     <th style={{ padding:'4px 8px' }}>Strike</th><th style={{ padding:'4px 8px' }}>% spot</th><th style={{ padding:'4px 8px' }}>Premium</th>
                     <th style={{ padding:'4px 8px' }}>Fair APR</th><th style={{ padding:'4px 8px' }}>P(conv)</th><th style={{ padding:'4px 8px' }}>Breakeven</th></tr></thead>
                   <tbody>{d.ladder.map(r => (
@@ -314,7 +307,7 @@ function Dci({ pair }) {
                     </tr>))}</tbody>
                 </table>
               </div>
-              <div style={{ fontSize:9, color:'var(--text-muted)', padding:'6px 8px' }}>
+              <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'6px 8px' }}>
                 Breakeven: the spot at which converting at K leaves you level with simply holding, after the premium.
               </div>
             </Card>
@@ -377,11 +370,11 @@ function Accumulator({ pair }) {
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(420px, 1fr))', gap:12 }}>
             <Card title="Client P&L distribution at the end of the contract">
               <Plot data={[{ x:d.histogram.centers, y:d.histogram.counts, type:'bar', name:'Paths',
-                  marker:{ color:d.histogram.centers.map(c => c < 0 ? 'rgba(255,61,90,0.6)' : 'rgba(0,255,136,0.55)') } }]}
+                  marker:{ color:d.histogram.centers.map(c => c < 0 ? 'rgba(238,107,91,0.6)' : 'rgba(79,198,144,0.55)') } }]}
                 layout={{ ...LAYOUT, showlegend:false, bargap:0.05, xaxis:axis(`P&L (${pair.slice(3)})`), yaxis:axis('Paths'),
-                  shapes:[{ type:'line', x0:d.pnl.p01, x1:d.pnl.p01, yref:'paper', y0:0, y1:1, line:{ color:'#ff3d5a', dash:'dot', width:1.5 } }] }}
+                  shapes:[{ type:'line', x0:d.pnl.p01, x1:d.pnl.p01, yref:'paper', y0:0, y1:1, line:{ color:'#ee6b5b', dash:'dot', width:1.5 } }] }}
                 config={CFG} style={{ width:'100%', height:300 }} />
-              <div style={{ fontSize:9, color:'var(--text-muted)', padding:'0 8px 4px' }}>
+              <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'0 8px 4px' }}>
                 Capped upside (knocked out early), uncapped geared downside — the asymmetry behind the 2008 and 2022 accumulator blow-ups.
               </div>
             </Card>
@@ -389,10 +382,10 @@ function Accumulator({ pair }) {
               <Plot data={d.sample_paths.map((y, i) => ({ y, type:'scatter', mode:'lines', name:`path ${i + 1}`, line:{ width:1.2 } }))}
                 layout={{ ...LAYOUT, showlegend:false, xaxis:axis('Fixing (sampled)'), yaxis:axis('Spot'),
                   shapes:[
-                    { type:'line', xref:'paper', x0:0, x1:1, y0:d.ko_level, y1:d.ko_level, line:{ color:'#00ff88', dash:'dash', width:1.5 } },
-                    { type:'line', xref:'paper', x0:0, x1:1, y0:d.strike, y1:d.strike, line:{ color:'#ff3d5a', dash:'dash', width:1.5 } }] }}
+                    { type:'line', xref:'paper', x0:0, x1:1, y0:d.ko_level, y1:d.ko_level, line:{ color:'#4fc690', dash:'dash', width:1.5 } },
+                    { type:'line', xref:'paper', x0:0, x1:1, y0:d.strike, y1:d.strike, line:{ color:'#ee6b5b', dash:'dash', width:1.5 } }] }}
                 config={CFG} style={{ width:'100%', height:300 }} />
-              <div style={{ fontSize:9, color:'var(--text-muted)', padding:'0 8px 4px' }}>Green = KO level, red = strike (below it the client buys {p.gearing}×).</div>
+              <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'0 8px 4px' }}>Green = KO level, red = strike (below it the client buys {p.gearing}×).</div>
             </Card>
           </div>
         </div>

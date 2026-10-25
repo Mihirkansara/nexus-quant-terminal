@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { ChartCandlestick } from 'lucide-react'
 import _Plot from 'react-plotly.js'
 const Plot = _Plot?.default ?? _Plot
 import { usePortfolioStore } from '../store/portfolio'
@@ -107,9 +108,8 @@ export default function PriceChart() {
   const change     = (last && first) ? ((last - first) / first * 100) : null
   const isUp       = change !== null ? change >= 0 : true
 
-  const lineColor  = isUp ? '#00ff88' : '#ff3d5a'
-  const fillColor  = isUp ? 'rgba(0,255,136,0.18)' : 'rgba(255,61,90,0.18)'
-  const glowColor  = isUp ? 'rgba(0,255,136,0.10)' : 'rgba(255,61,90,0.10)'
+  const lineColor  = isUp ? '#4fc690' : '#ee6b5b'
+  const fillColor  = isUp ? 'rgba(79,198,144,0.18)' : 'rgba(238,107,91,0.18)'
   const ema20      = closes.length >= 20 ? ema(closes, 20) : []
   const ema9       = closes.length >= 9  ? ema(closes, 9)  : []
 
@@ -146,13 +146,6 @@ export default function PriceChart() {
       fillcolor: fillColor,
       hovertemplate: '<b>%{x|%H:%M %b %d}</b><br>%{y:.5f}<extra></extra>',
     },
-    // Glow layer
-    {
-      type: 'scatter', mode: 'lines',
-      x: data.dates, y: closes,
-      line: { color: glowColor, width: 18, shape: 'spline', smoothing: 0.5 },
-      showlegend: false, hoverinfo: 'skip',
-    },
     ...(ema20.length ? [{
       type: 'scatter', mode: 'lines',
       x: data.dates, y: ema20,
@@ -164,45 +157,45 @@ export default function PriceChart() {
       type: 'scatter', mode: 'lines',
       x: data.dates, y: ema9,
       name: 'EMA 9',
-      line: { color: 'rgba(255,215,0,0.7)', width: 1.2, shape: 'spline', smoothing: 0.5 },
+      line: { color: 'rgba(228,220,195,0.7)', width: 1.2, shape: 'spline', smoothing: 0.5 },
       hovertemplate: 'EMA9: %{y:.5f}<extra></extra>',
     }] : []),
   ] : []
 
   const layout = {
     paper_bgcolor: 'transparent',
-    plot_bgcolor:  'rgba(4,10,28,0.8)',
-    font: { color: '#475569', family: 'JetBrains Mono, monospace', size: 10 },
+    plot_bgcolor:  'rgba(10,21,17,0.8)',
+    font: { color: '#7e8f84', family: "'Geist Mono Variable', monospace", size: 11 },
     margin: { l: 12, r: 68, t: 12, b: 44 },
     xaxis: {
       type: 'date',
-      gridcolor: 'rgba(0,212,255,0.05)',
-      linecolor: 'rgba(0,212,255,0.1)',
-      color: '#475569',
+      gridcolor: 'rgba(169,154,255,0.05)',
+      linecolor: 'rgba(169,154,255,0.1)',
+      color: '#7e8f84',
       rangeslider: { visible: false },
-      showspikes: true, spikecolor: 'rgba(0,212,255,0.35)', spikethickness: 1,
-      tickfont: { size: 9 }, zeroline: false,
+      showspikes: true, spikecolor: 'rgba(169,154,255,0.35)', spikethickness: 1,
+      tickfont: { size: 10.5 }, zeroline: false,
     },
     yaxis: {
-      gridcolor: 'rgba(0,212,255,0.05)',
-      linecolor: 'rgba(0,212,255,0.1)',
-      color: '#475569',
+      gridcolor: 'rgba(169,154,255,0.05)',
+      linecolor: 'rgba(169,154,255,0.1)',
+      color: '#7e8f84',
       side: 'right', tickformat: '.5f',
-      showspikes: true, spikecolor: 'rgba(0,212,255,0.35)', spikethickness: 1,
-      tickfont: { size: 9 }, zeroline: false,
+      showspikes: true, spikecolor: 'rgba(169,154,255,0.35)', spikethickness: 1,
+      tickfont: { size: 10.5 }, zeroline: false,
     },
     legend: {
-      bgcolor: 'rgba(4,10,28,0.85)',
-      bordercolor: 'rgba(0,212,255,0.12)', borderwidth: 1,
-      font: { color: '#64748b', size: 9 },
+      bgcolor: 'rgba(10,21,17,0.85)',
+      bordercolor: 'rgba(169,154,255,0.12)', borderwidth: 1,
+      font: { color: '#7a8a80', size: 10.5 },
       orientation: 'h', x: 0.01, y: 0.99, xanchor: 'left', yanchor: 'top',
     },
     dragmode: 'pan',
     hovermode: 'x unified',
     hoverlabel: {
-      bgcolor: 'rgba(4,10,28,0.95)',
-      bordercolor: isUp ? 'rgba(0,255,136,0.4)' : 'rgba(255,61,90,0.4)',
-      font: { color: '#e0f2fe', family: 'JetBrains Mono, monospace', size: 11 },
+      bgcolor: 'rgba(10,21,17,0.95)',
+      bordercolor: isUp ? 'rgba(79,198,144,0.4)' : 'rgba(238,107,91,0.4)',
+      font: { color: '#f3eedf', family: "'Geist Mono Variable', monospace", size: 11 },
     },
   }
 
@@ -218,14 +211,14 @@ export default function PriceChart() {
           </div>
           {data && (
             <div style={{ display:'flex', alignItems:'baseline', gap:10, marginTop:3 }}>
-              <span className="font-mono" style={{ fontSize:26, fontWeight:800,
+              <span className="font-mono" style={{ fontSize:26, fontWeight:600,
                 color:'var(--text)', letterSpacing:'-0.5px' }}>
                 {last?.toFixed(5)}
               </span>
               {change !== null && (
                 <span className="font-mono" style={{ fontSize:13, fontWeight:700,
-                  color: lineColor, textShadow:`0 0 14px ${lineColor}88` }}>
-                  {isUp ? '▲' : '▼'} {Math.abs(change).toFixed(3)}%
+                  color: lineColor }}>
+                  {isUp ? '+' : '−'}{Math.abs(change).toFixed(3)}%
                 </span>
               )}
             </div>
@@ -235,31 +228,31 @@ export default function PriceChart() {
         {data && (
           <div style={{ display:'flex', gap:6, marginTop:4 }}>
             {[
-              { label:'H', value: periodHigh?.toFixed(5), c:'#00ff88' },
-              { label:'L', value: periodLow?.toFixed(5),  c:'#ff3d5a' },
+              { label:'H', value: periodHigh?.toFixed(5), c:'#4fc690' },
+              { label:'L', value: periodLow?.toFixed(5),  c:'#ee6b5b' },
               { label:'N', value: closes.length + ' bars', c:'var(--text-muted)' },
             ].map(({ label, value, c }) => (
               <div key={label} className="glass" style={{ padding:'4px 10px', borderRadius:6 }}>
-                <span style={{ fontSize:9, color:'var(--text-muted)' }}>{label} </span>
-                <span className="font-mono" style={{ fontSize:10, color:c, fontWeight:600 }}>{value}</span>
+                <span style={{ fontSize:10.5, color:'var(--text-muted)' }}>{label} </span>
+                <span className="font-mono" style={{ fontSize:11, color:c, fontWeight:600 }}>{value}</span>
               </div>
             ))}
           </div>
         )}
 
         <div style={{ display:'flex', gap:3, background:'rgba(0,0,0,0.25)',
-          borderRadius:8, padding:3, border:'1px solid rgba(0,212,255,0.08)' }}>
+          borderRadius:8, padding:3, border:'1px solid rgba(169,154,255,0.08)' }}>
           {INTERVALS.map(iv => {
             const active = interval === iv.val
             return (
               <button key={iv.val}
                 onClick={() => { setInterval(iv.val); load(iv.val) }}
                 style={{
-                  padding:'5px 13px', fontSize:10, cursor:'pointer',
+                  padding:'5px 13px', fontSize:11, cursor:'pointer',
                   borderRadius:6, border:'none',
-                  fontFamily:'JetBrains Mono, monospace', fontWeight: active ? 700 : 400,
-                  background: active ? (isUp ? 'rgba(0,255,136,0.14)' : 'rgba(255,61,90,0.14)') : 'transparent',
-                  color: active ? lineColor : '#475569',
+                  fontFamily:'var(--font-mono)', fontWeight: active ? 700 : 400,
+                  background: active ? (isUp ? 'rgba(79,198,144,0.14)' : 'rgba(238,107,91,0.14)') : 'transparent',
+                  color: active ? lineColor : '#7e8f84',
                   boxShadow: active ? `0 0 10px ${lineColor}44` : 'none',
                   transition: 'all 0.22s ease',
                 }}>
@@ -272,7 +265,7 @@ export default function PriceChart() {
 
       {error && (
         <div style={{ padding:10, borderRadius:6, marginBottom:10, fontSize:11,
-          background:'rgba(255,61,90,0.08)', border:'1px solid rgba(255,61,90,0.3)', color:'#ff3d5a' }}>
+          background:'rgba(238,107,91,0.08)', border:'1px solid rgba(238,107,91,0.3)', color:'#ee6b5b' }}>
           {error}
         </div>
       )}
@@ -280,11 +273,11 @@ export default function PriceChart() {
       {/* Chart container with fade+slide animation */}
       <div ref={containerRef} style={{
         borderRadius:10, overflow:'hidden',
-        border:`1px solid ${isUp ? 'rgba(0,255,136,0.12)' : 'rgba(255,61,90,0.12)'}`,
+        border:`1px solid ${isUp ? 'rgba(79,198,144,0.12)' : 'rgba(238,107,91,0.12)'}`,
         boxShadow: isUp
-          ? '0 0 40px rgba(0,255,136,0.05), inset 0 1px 0 rgba(0,255,136,0.1)'
-          : '0 0 40px rgba(255,61,90,0.05), inset 0 1px 0 rgba(255,61,90,0.1)',
-        background: 'rgba(4,10,28,0.8)',
+          ? 'inset 0 1px 0 rgba(79,198,144,0.1)'
+          : 'inset 0 1px 0 rgba(238,107,91,0.1)',
+        background: 'rgba(10,21,17,0.8)',
         opacity:   fading ? 0 : 1,
         transform: fading ? 'translateY(8px) scale(0.995)' : 'translateY(0) scale(1)',
         transition: 'opacity 0.25s ease, transform 0.25s ease',
@@ -301,7 +294,7 @@ export default function PriceChart() {
                 }}/>
               ))}
             </div>
-            <span style={{ fontSize:11, color:'var(--text-muted)', fontFamily:'JetBrains Mono' }}>
+            <span style={{ fontSize:11, color:'var(--text-muted)', fontFamily:'var(--font-mono)' }}>
               Loading {pair} {interval}…
             </span>
           </div>
@@ -321,7 +314,7 @@ export default function PriceChart() {
         {!data && !loading && (
           <div style={{ height:460, display:'flex', flexDirection:'column',
             alignItems:'center', justifyContent:'center', gap:10 }}>
-            <span style={{ fontSize:34 }}>📈</span>
+            <ChartCandlestick size={30} strokeWidth={1.4} color="var(--text-faint)" aria-hidden="true" />
             <span style={{ color:'var(--text-muted)', fontSize:12 }}>Select a pair to load chart</span>
           </div>
         )}
@@ -333,18 +326,18 @@ export default function PriceChart() {
           {[
             { color: lineColor,               label:`${pair} Close`, dot:true  },
             { color: 'rgba(167,139,250,0.9)',  label:'EMA 20',       dot:false },
-            { color: 'rgba(255,215,0,0.8)',    label:'EMA 9',        dot:false },
+            { color: 'rgba(228,220,195,0.8)',    label:'EMA 9',        dot:false },
           ].map(({ color, label, dot }) => (
             <div key={label} style={{ display:'flex', alignItems:'center', gap:5 }}>
               {dot
                 ? <div style={{ width:7, height:7, borderRadius:'50%', background:color, boxShadow:`0 0 7px ${color}` }}/>
                 : <div style={{ width:18, height:1.5, background:color, borderRadius:1 }}/>
               }
-              <span style={{ fontSize:9, color:'var(--text-muted)', fontFamily:'JetBrains Mono' }}>{label}</span>
+              <span style={{ fontSize:10.5, color:'var(--text-muted)', fontFamily:'var(--font-mono)' }}>{label}</span>
             </div>
           ))}
           <div style={{ flex:1 }}/>
-          <span style={{ fontSize:9, color:'var(--text-muted)', fontStyle:'italic' }}>
+          <span style={{ fontSize:10.5, color:'var(--text-muted)', fontStyle:'italic' }}>
             {interval} · {data.dates?.at(-1)?.slice(0, 10)} · Garman-Kohlhagen
           </span>
         </div>

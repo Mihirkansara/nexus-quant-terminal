@@ -1,22 +1,24 @@
 import { useState } from 'react'
+import { RotateCcw, Play } from 'lucide-react'
 import _Plot from 'react-plotly.js'
 const Plot = _Plot?.default ?? _Plot
 import { usePortfolioStore, isCrypto, PAIR_META } from '../store/portfolio'
 import { trainDeepHedge } from '../api/client'
+import KpiStrip from './KpiStrip'
+import { num } from '../lib/format'
 
 const LAYOUT = {
-  paper_bgcolor:'transparent', plot_bgcolor:'#080d18',
-  font:{ color:'#94a3b8', size:11 },
+  paper_bgcolor:'transparent', plot_bgcolor:'#0a1511',
+  font:{ family:"'Geist Variable', sans-serif", color:'#9eab9f', size:11 },
   margin:{ l:56, r:16, t:12, b:42 },
-  legend:{ bgcolor:'transparent', font:{ size:9 }, orientation:'h', x:0, y:-0.22 },
-  hoverlabel:{ bgcolor:'#0f172a', font:{ color:'#e2e8f0' }, bordercolor:'rgba(0,212,255,0.15)' },
+  legend:{ bgcolor:'transparent', font:{ size:10.5 }, orientation:'h', x:0, y:-0.22 },
+  hoverlabel:{ bgcolor:'#0f1d18', font:{ color:'#ebe5d3' }, bordercolor:'rgba(169,154,255,0.15)' },
 }
 const CFG = { responsive:true, displayModeBar:false }
-const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1e293b', color:'#475569', zeroline:false, ...extra })
-const num = (v, d = 2) => (v == null ? '—' : Number(v).toLocaleString(undefined, { minimumFractionDigits:d, maximumFractionDigits:d }))
+const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1c2e26', color:'#7e8f84', zeroline:false, ...extra })
 // Exponential moving average for noisy minibatch losses.
 const ema = (xs, a = 0.1) => { let m = xs[0]; return xs.map(x => (m = a * x + (1 - a) * m)) }
-const COLOR = { 'No hedge':'#475569', 'BS delta':'#94a3b8', 'Whalley-Wilmott':'#ffd700', 'Deep NTB':'#00d4ff', 'Deep FF':'#c084fc' }
+const COLOR = { 'No hedge':'#7e8f84', 'BS delta':'#9eab9f', 'Whalley-Wilmott':'#e4dcc3', 'Deep NTB':'#86abea', 'Deep FF':'#d58fc0' }
 const NOTE = {
   'No hedge':'Naked short option',
   'BS delta':'Rebalance to Black-Scholes delta every step',
@@ -29,7 +31,7 @@ function Card({ title, right, children }) {
   return (
     <div className="glass" style={{ borderRadius:8, padding:8 }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', margin:'2px 6px 4px', gap:8, flexWrap:'wrap' }}>
-        <span className="section-title" style={{ fontSize:10 }}>{title}</span>{right}
+        <span className="section-title" style={{ fontSize:11 }}>{title}</span>{right}
       </div>
       {children}
     </div>
@@ -38,15 +40,7 @@ function Card({ title, right, children }) {
 
 function Kpis({ items }) {
   return (
-    <div style={{ display:'flex', gap:8, marginBottom:12, flexWrap:'wrap' }}>
-      {items.map(k => (
-        <div key={k.label} className="glass" title={k.hint} style={{ padding:'6px 12px', borderRadius:6, fontSize:11 }}>
-          <div style={{ color:'var(--text-muted)', fontSize:9, letterSpacing:'0.05em' }}>{k.label}</div>
-          <div className="font-mono" style={{ color: k.color ?? 'var(--cyan)', fontWeight:700, fontSize:14 }}>{k.value}</div>
-          {k.sub && <div className="font-mono" style={{ fontSize:9, color:'var(--text-muted)' }}>{k.sub}</div>}
-        </div>
-      ))}
-    </div>
+    <KpiStrip items={items} />
   )
 }
 
@@ -55,7 +49,7 @@ const inputStyle = { background:'var(--bg3)', border:'1px solid var(--border)', 
 
 function Field({ label, value, onChange, step, hint }) {
   return (
-    <label title={hint} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>{label}
+    <label title={hint} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>{label}
       <input type="number" value={value} step={step} onChange={e => onChange(+e.target.value)} style={inputStyle} />
     </label>
   )
@@ -98,8 +92,8 @@ function Hedger({ pair }) {
   return (
     <div style={{ padding:16 }}>
       <div style={{ marginBottom:12 }}>
-        <div className="section-title">AI Hedger — deep hedging under transaction costs &amp; jumps ({pair})</div>
-        <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:2 }}>
+        <div className="section-title" style={{ color:'var(--text-muted)', letterSpacing:'0.08em' }}>{pair}</div>
+        <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:2 }}>
           Trains a neural hedging policy on simulated paths (in-browser request, server-side numpy — no GPU, no API key) and benchmarks it
           against BS delta and the Whalley-Wilmott band on fresh paths
         </div>
@@ -113,7 +107,7 @@ function Hedger({ pair }) {
             hint="Proportional cost: spread + fees + slippage (Deribit perp taker ≈ 5 bp, OTC gold spot ≈ 2-10 bp)" />
           <Field label="Rebalances" value={p.n_steps} onChange={set('n_steps')} step={5} />
           <Field label="CVaR level (%)" value={p.alpha} onChange={set('alpha')} step={1} />
-          <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>Training market
+          <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>Training market
             <select value={p.jumps ? 'jump' : 'gbm'} onChange={e => set('jumps')(e.target.value === 'jump')} style={inputStyle}>
               <option value="gbm">GBM</option><option value="jump">Merton jumps</option>
             </select>
@@ -123,53 +117,53 @@ function Hedger({ pair }) {
             <Field label="Mean jump (%)" value={p.jump.mean} onChange={setJ('mean')} step={0.5} />
             <Field label="Jump sd (%)" value={p.jump.sd} onChange={setJ('sd')} step={0.5} />
           </>}
-          <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>Test market
+          <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>Test market
             <select value={p.test_regime} onChange={e => set('test_regime')(e.target.value)} style={inputStyle}>
               <option value="same">Same as training</option><option value="vol_up">Vol +50% (regime shift)</option>
               <option value="jumps">Crash jumps (12/yr, −5%)</option>
             </select>
           </label>
           <button className="btn-primary" disabled={res.busy} onClick={train} style={{ padding:'6px 10px', fontSize:11 }}>
-            {res.busy ? 'Training…' : d ? '↻ Retrain' : '▶ Train AI hedger'}
+            {res.busy ? 'Training…' : d ? <><RotateCcw size={13} aria-hidden="true" />Retrain</> : <><Play size={13} aria-hidden="true" />Train AI hedger</>}
           </button>
         </div>
-        <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:6, lineHeight:1.5 }}>
+        <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:6, lineHeight:1.5 }}>
           The desk is short 1 call (premium = BS price) and minimises CVaR {p.alpha}% of the hedged loss. ≈ 5–10 s: 10k training paths,
           250 Adam steps per network. {hedgeJump ? 'Jump parameters pre-filled from Jump Lab.' : ''}
         </div>
       </div>
-      {res.error && <div style={{ padding:8, borderRadius:6, fontSize:11, marginBottom:10, background:'rgba(255,61,90,0.1)', border:'1px solid #ff3d5a', color:'#ff3d5a' }}>{res.error}</div>}
+      {res.error && <div style={{ padding:8, borderRadius:6, fontSize:11, marginBottom:10, background:'rgba(238,107,91,0.1)', border:'1px solid #ee6b5b', color:'#ee6b5b' }}>{res.error}</div>}
       {!d && !res.busy && !res.error && <div style={{ fontSize:11, color:'var(--text-muted)', padding:12 }}>Set the trade and costs, then train.</div>}
       {d && (
         <div style={{ opacity: res.busy ? 0.5 : 1, transition:'opacity .2s' }}>
           <Kpis items={[
             { label:'Premium (BS)', value:num(d.premium, dp), sub:`K ${num(d.strike, dp)} · ${d.days}d` },
-            { label:`CVaR ${Math.round(d.alpha * 100)}% · BS delta`, value:num(s['BS delta'].cvar, dp), color:'#94a3b8' },
+            { label:`CVaR ${Math.round(d.alpha * 100)}% · BS delta`, value:num(s['BS delta'].cvar, dp), color:'#9eab9f' },
             { label:`CVaR ${Math.round(d.alpha * 100)}% · Deep NTB`, value:num(s['Deep NTB'].cvar, dp),
               color: gain > 0 ? 'var(--green)' : 'var(--red)', sub:`${gain >= 0 ? '−' : '+'}${Math.abs(gain * 100).toFixed(1)}% tail risk vs delta` },
-            { label:'Turnover vs delta', value:`${turn >= 0 ? '−' : '+'}${Math.abs(turn * 100).toFixed(0)}%`, color:'#ffd700',
+            { label:'Turnover vs delta', value:`${turn >= 0 ? '−' : '+'}${Math.abs(turn * 100).toFixed(0)}%`, color:'#e4dcc3',
               sub:`${s['Deep NTB'].turnover.toFixed(2)} vs ${s['BS delta'].turnover.toFixed(2)} units` },
             { label:'Risk-adjusted price (NTB)', value:num(s['Deep NTB'].risk_price, dp),
               sub:`delta hedge needs ${num(s['BS delta'].risk_price, dp)}`, hint:'Premium at which the hedged CVaR is zero — what you must charge' },
-            { label:'Test market', value:d.test_regime_label, color: d.test_regime_label.startsWith('Same') ? 'var(--cyan)' : '#fb923c' },
+            { label:'Test market', value:d.test_regime_label, color: d.test_regime_label.startsWith('Same') ? 'var(--cyan)' : '#f0914a' },
           ]} />
           <StrategyTable s={s} dp={dp} alpha={d.alpha} />
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(420px, 1fr))', gap:12, marginTop:12 }}>
             <Card title="Learned no-trade band vs Whalley-Wilmott"
-              right={<select value={bandIdx} onChange={e => setBandIdx(+e.target.value)} style={{ ...inputStyle, width:'auto', fontSize:9 }}>
+              right={<select value={bandIdx} onChange={e => setBandIdx(+e.target.value)} style={{ ...inputStyle, width:'auto', fontSize:10.5 }}>
                 {d.bands.map((b, i) => <option key={i} value={i}>{Math.round(b.tau_frac * d.days)}d to expiry</option>)}</select>}>
               <Plot data={[
-                  { x:band.spot, y:band.ntb_hi, type:'scatter', mode:'lines', line:{ color:'#00d4ff', width:0 }, showlegend:false, hoverinfo:'skip' },
+                  { x:band.spot, y:band.ntb_hi, type:'scatter', mode:'lines', line:{ color:'#86abea', width:0 }, showlegend:false, hoverinfo:'skip' },
                   { x:band.spot, y:band.ntb_lo, type:'scatter', mode:'lines', name:'Deep NTB band', fill:'tonexty',
-                    fillcolor:'rgba(0,212,255,0.18)', line:{ color:'#00d4ff', width:1 } },
-                  { x:band.spot, y:band.ww_hi, type:'scatter', mode:'lines', name:'Whalley-Wilmott band', line:{ color:'#ffd700', dash:'dash', width:1.2 } },
-                  { x:band.spot, y:band.ww_lo, type:'scatter', mode:'lines', showlegend:false, line:{ color:'#ffd700', dash:'dash', width:1.2 } },
-                  { x:band.spot, y:band.delta, type:'scatter', mode:'lines', name:'BS delta', line:{ color:'#e2e8f0', width:1.5 } },
+                    fillcolor:'rgba(169,154,255,0.18)', line:{ color:'#86abea', width:1 } },
+                  { x:band.spot, y:band.ww_hi, type:'scatter', mode:'lines', name:'Whalley-Wilmott band', line:{ color:'#e4dcc3', dash:'dash', width:1.2 } },
+                  { x:band.spot, y:band.ww_lo, type:'scatter', mode:'lines', showlegend:false, line:{ color:'#e4dcc3', dash:'dash', width:1.2 } },
+                  { x:band.spot, y:band.delta, type:'scatter', mode:'lines', name:'BS delta', line:{ color:'#ebe5d3', width:1.5 } },
                 ]}
                 layout={{ ...LAYOUT, hovermode:'x unified', xaxis:axis('Spot'), yaxis:axis('Hedge (units of underlying)', { range:[-0.05, 1.05] }),
-                  shapes:[{ type:'line', x0:d.strike, x1:d.strike, yref:'paper', y0:0, y1:1, line:{ color:'rgba(255,61,90,0.5)', dash:'dot' } }] }}
+                  shapes:[{ type:'line', x0:d.strike, x1:d.strike, yref:'paper', y0:0, y1:1, line:{ color:'rgba(238,107,91,0.5)', dash:'dot' } }] }}
                 config={CFG} style={{ width:'100%', height:300 }} />
-              <div style={{ fontSize:9, color:'var(--text-muted)', padding:'0 8px 4px' }}>
+              <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'0 8px 4px' }}>
                 Inside the band the AI holds its position; it only trades to the nearest edge. Widest where gamma is high and costs bite — what a desk does by feel.
               </div>
             </Card>
@@ -186,23 +180,23 @@ function Hedger({ pair }) {
                   { x:d.sample.t, y:d.sample.spot, type:'scatter', mode:'lines', name:'Spot (rhs)', yaxis:'y2', line:{ color:'rgba(255,255,255,0.25)', width:1 } },
                 ]}
                 layout={{ ...LAYOUT, hovermode:'x unified', xaxis:axis('Day'), yaxis:axis('Units'),
-                  yaxis2:{ overlaying:'y', side:'right', showgrid:false, zeroline:false, color:'#475569' } }}
+                  yaxis2:{ overlaying:'y', side:'right', showgrid:false, zeroline:false, color:'#7e8f84' } }}
                 config={CFG} style={{ width:'100%', height:300 }} />
             </Card>
             <Card title={`Training curve · CVaR ${Math.round(d.alpha * 100)}% per minibatch`}>
               <Plot data={[
-                  { y:d.training.ntb, type:'scatter', mode:'lines', showlegend:false, hoverinfo:'skip', line:{ color:'rgba(0,212,255,0.15)', width:1 } },
+                  { y:d.training.ntb, type:'scatter', mode:'lines', showlegend:false, hoverinfo:'skip', line:{ color:'rgba(169,154,255,0.15)', width:1 } },
                   { y:d.training.ff, type:'scatter', mode:'lines', showlegend:false, hoverinfo:'skip', line:{ color:'rgba(192,132,252,0.15)', width:1 } },
-                  { y:ema(d.training.ntb), type:'scatter', mode:'lines', name:'Deep NTB (EMA)', line:{ color:'#00d4ff', width:2 } },
-                  { y:ema(d.training.ff), type:'scatter', mode:'lines', name:'Deep FF (EMA)', line:{ color:'#c084fc', width:2 } },
+                  { y:ema(d.training.ntb), type:'scatter', mode:'lines', name:'Deep NTB (EMA)', line:{ color:'#86abea', width:2 } },
+                  { y:ema(d.training.ff), type:'scatter', mode:'lines', name:'Deep FF (EMA)', line:{ color:'#d58fc0', width:2 } },
                   { x:[0, d.training.ntb.length - 1], y:[s['BS delta'].cvar, s['BS delta'].cvar], type:'scatter', mode:'lines',
-                    name:'BS delta (test)', line:{ color:'#94a3b8', dash:'dash' } },
+                    name:'BS delta (test)', line:{ color:'#9eab9f', dash:'dash' } },
                 ]}
                 layout={{ ...LAYOUT, xaxis:axis('Adam step'), yaxis:axis('CVaR') }}
                 config={CFG} style={{ width:'100%', height:300 }} />
             </Card>
           </div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
             Buehler, Gonon, Teichmann &amp; Wood (2019) &quot;Deep hedging&quot;; Imaki et al. (2021) &quot;No-transaction band network&quot;;
             Whalley &amp; Wilmott (1997). CVaR minimised by its tail-average gradient (Rockafellar-Uryasev); NTB trained by back-propagation through time
             (gradient-checked against finite differences). Zero rates; costs on every trade incl. the initial hedge; no unwind at expiry (physical settlement).
@@ -221,14 +215,14 @@ function StrategyTable({ s, dp, alpha }) {
     <Card title="Out-of-sample comparison (fresh paths)">
       <div style={{ overflowX:'auto' }}>
         <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
-          <thead><tr style={{ color:'var(--text-muted)', fontSize:9, textAlign:'right' }}>
+          <thead><tr style={{ color:'var(--text-muted)', fontSize:10.5, textAlign:'right' }}>
             <th style={{ textAlign:'left', padding:'4px 8px' }}>Strategy</th>
             {cols.map(([, l]) => <th key={l} style={{ padding:'4px 8px' }}>{l}</th>)}</tr></thead>
           <tbody>{Object.entries(s).map(([n, v]) => (
             <tr key={n} title={NOTE[n]} style={{ borderTop:'1px solid var(--border)', textAlign:'right',
-              background: v.cvar === best ? 'rgba(0,255,136,0.06)' : 'transparent' }}>
+              background: v.cvar === best ? 'rgba(79,198,144,0.06)' : 'transparent' }}>
               <td style={{ textAlign:'left', padding:'5px 8px', color:COLOR[n] }}>{n}
-                <div style={{ fontSize:8, color:'var(--text-muted)' }}>{NOTE[n]}</div></td>
+                <div style={{ fontSize:10, color:'var(--text-muted)' }}>{NOTE[n]}</div></td>
               {cols.map(([k]) => <td key={k} className="font-mono" style={{ padding:'5px 8px',
                 color: k === 'cvar' ? (v.cvar === best ? 'var(--green)' : 'var(--red)') : undefined }}>
                 {k === 'turnover' ? v[k].toFixed(2) : num(v[k], dp)}</td>)}

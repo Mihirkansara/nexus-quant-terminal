@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { RefreshCw } from 'lucide-react'
 
 const CITIES = [
   { name:'New York',   sub:'NYSE · Wall St',         lat:40.71, lon:-74.00 },
@@ -21,7 +22,7 @@ function CryptoCard({ coin }) {
   return (
     <div style={{
       background:'var(--surface)', border:'1px solid var(--border)',
-      borderLeft:`3px solid ${color}`,
+      borderLeft:`1px solid ${color}`,
       borderRadius:'var(--r-md)', padding:'10px 14px',
       display:'flex', flexDirection:'column', gap:6,
       transition:'var(--t-fast)',
@@ -34,23 +35,23 @@ function CryptoCard({ coin }) {
         <div style={{ display:'flex', alignItems:'center', gap:7 }}>
           <img src={coin.image} alt={coin.symbol} width={20} height={20} style={{ borderRadius:'50%' }}/>
           <div>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, fontWeight:700, color:'var(--text)', textTransform:'uppercase' }}>
+            <div style={{ fontFamily:'var(--font-ui)', fontSize:11, fontWeight:600, color:'var(--text)', textTransform:'uppercase' }}>
               {coin.symbol}
             </div>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-muted)' }}>{coin.name}</div>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-muted)' }}>{coin.name}</div>
           </div>
         </div>
         <span style={{
-          fontFamily:'var(--font-mono)', fontSize:8, fontWeight:700, padding:'1px 6px',
+          fontFamily:'var(--font-mono)', fontSize:10, fontWeight:700, padding:'1px 6px',
           borderRadius:3, color, background:`color-mix(in srgb, ${color} 12%, transparent)`,
         }}>
-          {up ? '▲' : '▼'} {Math.abs(coin.price_change_percentage_24h).toFixed(2)}%
+          {up ? '+' : '−'}{Math.abs(coin.price_change_percentage_24h).toFixed(2)}%
         </span>
       </div>
-      <div style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:800, color:'var(--text)', fontVariantNumeric:'tabular-nums' }}>
+      <div style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:600, color:'var(--text)', fontVariantNumeric:'tabular-nums' }}>
         ${fmt(coin.current_price)}
       </div>
-      <div style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-muted)', display:'flex', gap:10 }}>
+      <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-muted)', display:'flex', gap:10 }}>
         <span>MCap ${coin.market_cap > 1e9 ? (coin.market_cap/1e9).toFixed(1)+'B' : (coin.market_cap/1e6).toFixed(0)+'M'}</span>
         <span>Vol ${coin.total_volume > 1e9 ? (coin.total_volume/1e9).toFixed(1)+'B' : (coin.total_volume/1e6).toFixed(0)+'M'}</span>
       </div>
@@ -94,14 +95,14 @@ export default function LiveFeeds() {
         <span className="live-dot-blink"/>
         <span className="term-header-cyan">CRYPTO MARKETS</span>
         <span style={{ opacity:0.4 }}>·</span>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--text-muted)' }}>CoinGecko · top 12 by market cap</span>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--text-muted)' }}>CoinGecko · top 12 by market cap</span>
         {lastCrypto && <>
           <span style={{ opacity:0.4 }}>·</span>
-          <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--text-muted)' }}>{lastCrypto}</span>
+          <span style={{ fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--text-muted)' }}>{lastCrypto}</span>
         </>}
         <div style={{ flex:1 }}/>
-        {loadCrypto && <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--cyan)' }}>⟳ loading…</span>}
-        <button className="btn-ghost" onClick={fetchCrypto} style={{ fontSize:10, padding:'3px 9px' }}>↻</button>
+        {loadCrypto && <span style={{ fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--cyan)' }}>Loading…</span>}
+        <button className="btn-ghost" onClick={fetchCrypto} style={{ fontSize:11, padding:'3px 9px' }} aria-label="Refresh"><RefreshCw size={13} aria-hidden="true" /></button>
       </div>
 
       <div style={{ padding:'10px 14px', background:'var(--bg)', borderBottom:'1px solid var(--border)' }}>
@@ -109,11 +110,11 @@ export default function LiveFeeds() {
           <div style={{
             padding:'10px 14px', borderRadius:'var(--r-md)',
             background:'var(--amber-bg)', border:'1px solid var(--amber)',
-            fontFamily:'var(--font-mono)', fontSize:10, color:'var(--amber)',
+            fontFamily:'var(--font-mono)', fontSize:11, color:'var(--amber)',
             display:'flex', alignItems:'center', justifyContent:'space-between',
           }}>
             {cryptoErr}
-            <button className="btn-ghost" onClick={fetchCrypto} style={{ fontSize:9 }}>Retry</button>
+            <button className="btn-ghost" onClick={fetchCrypto} style={{ fontSize:10.5 }}>Retry</button>
           </div>
         ) : crypto.length === 0 ? (
           <div style={{ display:'grid', gridTemplateColumns:'repeat(6,1fr)', gap:8 }}>
@@ -133,7 +134,7 @@ export default function LiveFeeds() {
         <span className="live-dot-blink"/>
         <span className="term-header-cyan">LIVE GLOBAL CAMERAS</span>
         <span style={{ opacity:0.4 }}>·</span>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--text-muted)' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--text-muted)' }}>
           Windy.com · click camera pins on map for live feeds
         </span>
         <div style={{ flex:1 }}/>
@@ -149,7 +150,7 @@ export default function LiveFeeds() {
           const active = activeCity === i
           return (
             <button key={i} onClick={() => setActiveCity(i)} style={{
-              fontFamily:'var(--font-mono)', fontSize:9, fontWeight:700, letterSpacing:'0.06em',
+              fontFamily:'var(--font-mono)', fontSize:10.5, fontWeight:700, letterSpacing:'0.06em',
               padding:'4px 12px', borderRadius:'var(--r-sm)', cursor:'pointer', outline:'none',
               whiteSpace:'nowrap',
               border: active ? '1px solid color-mix(in srgb, var(--cyan) 30%, transparent)' : '1px solid var(--border-sub)',
@@ -173,15 +174,15 @@ export default function LiveFeeds() {
           <span style={{ fontFamily:'var(--font-mono)', fontSize:11, fontWeight:700, color:'var(--text)' }}>
             {CITIES[activeCity].name}
           </span>
-          <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--text-muted)', marginLeft:8 }}>
+          <span style={{ fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--text-muted)', marginLeft:8 }}>
             {CITIES[activeCity].sub}
           </span>
         </div>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-faint)' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-faint)' }}>
           {CITIES[activeCity].lat.toFixed(2)}°N, {CITIES[activeCity].lon.toFixed(2)}°E
         </span>
         <div style={{ flex:1 }}/>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-muted)' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-muted)' }}>
           Click camera pins on the map to open live feeds
         </span>
       </div>
@@ -216,10 +217,10 @@ export default function LiveFeeds() {
               onMouseEnter={e => !active && (e.currentTarget.style.background='var(--bg3)')}
               onMouseLeave={e => !active && (e.currentTarget.style.background='var(--bg2)')}
             >
-              <div style={{ fontFamily:'var(--font-mono)', fontSize:9, fontWeight:700, color: active ? 'var(--cyan)' : 'var(--text-secondary)' }}>
+              <div style={{ fontFamily:'var(--font-mono)', fontSize:10.5, fontWeight:700, color: active ? 'var(--cyan)' : 'var(--text-secondary)' }}>
                 {c.name}
               </div>
-              <div style={{ fontFamily:'var(--font-mono)', fontSize:7.5, color:'var(--text-muted)', marginTop:2 }}>
+              <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-muted)', marginTop:2 }}>
                 {c.sub.split(' · ')[0]}
               </div>
             </button>
@@ -232,10 +233,10 @@ export default function LiveFeeds() {
         padding:'4px 14px', borderTop:'1px solid var(--border)',
         background:'var(--bg2)', display:'flex', gap:12, flexShrink:0,
       }}>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-ghost)' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-faint)' }}>
           Crypto: CoinGecko free API · 60s refresh · no API key required
         </span>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-ghost)' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-faint)' }}>
           Webcams: Windy.com · click camera pins for live streams
         </span>
       </div>

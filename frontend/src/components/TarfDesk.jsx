@@ -3,20 +3,21 @@ import _Plot from 'react-plotly.js'
 const Plot = _Plot?.default ?? _Plot
 import { usePortfolioStore, isCrypto, PAIR_META } from '../store/portfolio'
 import { priceTarf } from '../api/client'
+import KpiStrip from './KpiStrip'
+import { num } from '../lib/format'
 
 const LAYOUT = {
-  paper_bgcolor:'transparent', plot_bgcolor:'#080d18',
-  font:{ color:'#94a3b8', size:11 },
+  paper_bgcolor:'transparent', plot_bgcolor:'#0a1511',
+  font:{ family:"'Geist Variable', sans-serif", color:'#9eab9f', size:11 },
   margin:{ l:56, r:16, t:12, b:42 },
-  legend:{ bgcolor:'transparent', font:{ size:9 }, orientation:'h', x:0, y:-0.22 },
-  hoverlabel:{ bgcolor:'#0f172a', font:{ color:'#e2e8f0' }, bordercolor:'rgba(0,212,255,0.15)' },
+  legend:{ bgcolor:'transparent', font:{ size:10.5 }, orientation:'h', x:0, y:-0.22 },
+  hoverlabel:{ bgcolor:'#0f1d18', font:{ color:'#ebe5d3' }, bordercolor:'rgba(169,154,255,0.15)' },
 }
 const CFG = { responsive:true, displayModeBar:false }
-const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1e293b', color:'#475569', zeroline:false, ...extra })
+const axis = (title, extra = {}) => ({ title:{ text:title }, gridcolor:'#1c2e26', color:'#7e8f84', zeroline:false, ...extra })
 const pct = (v, d = 1) => (v == null ? '—' : (v * 100).toFixed(d) + '%')
-const num = (v, d = 2) => (v == null ? '—' : Number(v).toLocaleString(undefined, { minimumFractionDigits:d, maximumFractionDigits:d }))
 const MODEL_NAME = { bs:'Flat vol (Black)', lv:'Local vol (SSVI-Dupire)', jump:'Merton jumps' }
-const MODEL_COLOR = { bs:'#94a3b8', lv:'#00d4ff', jump:'#c084fc' }
+const MODEL_COLOR = { bs:'#9eab9f', lv:'#86abea', jump:'#d58fc0' }
 const FREQ = [['12', 'Monthly'], ['52', 'Weekly'], ['26', 'Bi-weekly']]
 
 function useLoad(fn, key, enabled = true) {
@@ -38,7 +39,7 @@ function Card({ title, right, children }) {
   return (
     <div className="glass" style={{ borderRadius:8, padding:8 }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', margin:'2px 6px 4px', gap:8, flexWrap:'wrap' }}>
-        <span className="section-title" style={{ fontSize:10 }}>{title}</span>{right}
+        <span className="section-title" style={{ fontSize:11 }}>{title}</span>{right}
       </div>
       {children}
     </div>
@@ -47,15 +48,7 @@ function Card({ title, right, children }) {
 
 function Kpis({ items }) {
   return (
-    <div style={{ display:'flex', gap:8, marginBottom:12, flexWrap:'wrap' }}>
-      {items.map(k => (
-        <div key={k.label} className="glass" title={k.hint} style={{ padding:'6px 12px', borderRadius:6, fontSize:11 }}>
-          <div style={{ color:'var(--text-muted)', fontSize:9, letterSpacing:'0.05em' }}>{k.label}</div>
-          <div className="font-mono" style={{ color: k.color ?? 'var(--cyan)', fontWeight:700, fontSize:14 }}>{k.value}</div>
-          {k.sub && <div className="font-mono" style={{ fontSize:9, color:'var(--text-muted)' }}>{k.sub}</div>}
-        </div>
-      ))}
-    </div>
+    <KpiStrip items={items} />
   )
 }
 
@@ -64,7 +57,7 @@ const inputStyle = { background:'var(--bg3)', border:'1px solid var(--border)', 
 
 function Field({ label, value, onChange, step, hint, placeholder }) {
   return (
-    <label title={hint} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>{label}
+    <label title={hint} style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>{label}
       <input type="number" value={value} step={step} placeholder={placeholder}
         onChange={e => onChange(e.target.value === '' ? '' : +e.target.value)} style={inputStyle} />
     </label>
@@ -73,7 +66,7 @@ function Field({ label, value, onChange, step, hint, placeholder }) {
 
 function Select({ label, value, onChange, options }) {
   return (
-    <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:9, color:'var(--text-muted)' }}>{label}
+    <label style={{ display:'flex', flexDirection:'column', gap:3, fontSize:10.5, color:'var(--text-muted)' }}>{label}
       <select value={value} onChange={e => onChange(e.target.value)} style={inputStyle}>
         {options.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
       </select>
@@ -109,8 +102,8 @@ function Desk({ pair }) {
   return (
     <div style={{ padding:16 }}>
       <div style={{ marginBottom:12 }}>
-        <div className="section-title">TARF Desk — target redemption forwards under three smile models ({pair})</div>
-        <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:2 }}>
+        <div className="section-title" style={{ color:'var(--text-muted)', letterSpacing:'0.08em' }}>{pair}</div>
+        <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:2 }}>
           Zero-cost strike · knock-out timing · capped gain vs geared loss · model risk between flat vol, local vol and jumps
         </div>
       </div>
@@ -131,13 +124,13 @@ function Desk({ pair }) {
           <Field label="Jumps / year" value={p.jump_intensity} onChange={set('jump_intensity')} step={1} />
           <Field label="Jump sd (%)" value={p.jump_sd} onChange={set('jump_sd')} step={0.5} />
         </div>
-        <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:6, lineHeight:1.5 }}>
+        <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:6, lineHeight:1.5 }}>
           Each fixing the client {sideWord} 1 unit at K when it pays, and {p.leverage}× units when it costs; the trade dies once the accrued gain reaches
           the target. RR/BF {smileQuotes ? 'pre-filled from Vol Smile / Vol Lab' : 'blank → typical values for the asset class'}; jumps
           {hedgeJump ? ' from Jump Lab' : ' default to moves against the client'}.
         </div>
       </div>
-      {error && <div style={{ padding:8, borderRadius:6, fontSize:11, marginBottom:10, background:'rgba(255,61,90,0.1)', border:'1px solid #ff3d5a', color:'#ff3d5a' }}>{error}</div>}
+      {error && <div style={{ padding:8, borderRadius:6, fontSize:11, marginBottom:10, background:'rgba(238,107,91,0.1)', border:'1px solid #ee6b5b', color:'#ee6b5b' }}>{error}</div>}
       {!d && !error && <div style={{ fontSize:11, color:'var(--text-muted)', padding:12 }}>Simulating 3 models × 15,000 paths…</div>}
       {d && ref && (
         <div style={{ opacity: loading ? 0.6 : 1, transition:'opacity .2s' }}>
@@ -160,26 +153,26 @@ function Desk({ pair }) {
             <Card title="When does it knock out? (reference model)">
               <Plot data={[
                   { x:d.detail.ko_by_fixing.map((_, i) => i + 1), y:d.detail.ko_by_fixing.map(v => v * 100), type:'bar', name:'P(KO at fixing) %',
-                    marker:{ color:'rgba(0,212,255,0.55)' } },
+                    marker:{ color:'rgba(169,154,255,0.55)' } },
                   { x:d.detail.survival.map((_, i) => i + 1), y:d.detail.survival.map(v => v * 100), type:'scatter', mode:'lines+markers',
-                    name:'Still alive after fixing %', line:{ color:'#ffd700', width:2 } },
+                    name:'Still alive after fixing %', line:{ color:'#e4dcc3', width:2 } },
                   { x:d.detail.prob_favourable.map((_, i) => i + 1), y:d.detail.prob_favourable.map(v => v * 100), type:'scatter', mode:'lines',
-                    name:'P(fixing favourable) %', line:{ color:'#00ff88', width:1.2, dash:'dot' } },
+                    name:'P(fixing favourable) %', line:{ color:'#4fc690', width:1.2, dash:'dot' } },
                 ]}
                 layout={{ ...LAYOUT, hovermode:'x unified', xaxis:axis('Fixing', { dtick:1 }), yaxis:axis('%', { range:[0, 100] }) }}
                 config={CFG} style={{ width:'100%', height:290 }} />
-              <div style={{ fontSize:9, color:'var(--text-muted)', padding:'0 8px 4px' }}>
+              <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'0 8px 4px' }}>
                 Good outcomes end the hedge early; bad ones keep it alive at {p.leverage}× — the client is left hedged only when they did not need it.
               </div>
             </Card>
             <Card title="Client P&L over the life of the trade">
               <Plot data={[{ x:d.detail.pnl_hist.centers, y:d.detail.pnl_hist.counts, type:'bar',
-                  marker:{ color:d.detail.pnl_hist.centers.map(c => c < 0 ? 'rgba(255,61,90,0.6)' : 'rgba(0,255,136,0.55)') } }]}
+                  marker:{ color:d.detail.pnl_hist.centers.map(c => c < 0 ? 'rgba(238,107,91,0.6)' : 'rgba(79,198,144,0.55)') } }]}
                 layout={{ ...LAYOUT, showlegend:false, bargap:0.04, xaxis:axis(`P&L (${pair.slice(3)}, per unit notional)`), yaxis:axis('Paths'),
-                  shapes:[{ type:'line', x0:d.max_gain, x1:d.max_gain, yref:'paper', y0:0, y1:1, line:{ color:'#00ff88', dash:'dot', width:1.5 } }],
-                  annotations:[{ x:d.max_gain, y:1, yref:'paper', text:'target cap', showarrow:false, font:{ size:9, color:'#00ff88' }, yanchor:'bottom' }] }}
+                  shapes:[{ type:'line', x0:d.max_gain, x1:d.max_gain, yref:'paper', y0:0, y1:1, line:{ color:'#4fc690', dash:'dot', width:1.5 } }],
+                  annotations:[{ x:d.max_gain, y:1, yref:'paper', text:'target cap', showarrow:false, font:{ size:10.5, color:'#4fc690' }, yanchor:'bottom' }] }}
                 config={CFG} style={{ width:'100%', height:290 }} />
-              <div className="font-mono" style={{ fontSize:10, color:'var(--text-muted)', padding:'0 8px 4px' }}>
+              <div className="font-mono" style={{ fontSize:11, color:'var(--text-muted)', padding:'0 8px 4px' }}>
                 1%: <span style={{ color:'var(--red)' }}>{num(d.detail.pnl_quantiles['0.01'], dp)}</span> · 5%: {num(d.detail.pnl_quantiles['0.05'], dp)} ·
                 median: {num(d.detail.pnl_quantiles['0.5'], dp)} · 95%: <span style={{ color:'var(--green)' }}>{num(d.detail.pnl_quantiles['0.95'], dp)}</span>
               </div>
@@ -188,23 +181,23 @@ function Desk({ pair }) {
               <Plot data={[
                   ...d.detail.sample_paths.map((y, i) => ({ x:y.map((_, j) => j + 1), y, type:'scatter', mode:'lines+markers', name:`path ${i + 1}`,
                     line:{ width:1 }, marker:{ size:3 }, showlegend:false })),
-                  { x:d.forwards.map((_, j) => j + 1), y:d.forwards, type:'scatter', mode:'lines', name:'Forward', line:{ color:'#ffd700', dash:'dash' } },
+                  { x:d.forwards.map((_, j) => j + 1), y:d.forwards, type:'scatter', mode:'lines', name:'Forward', line:{ color:'#e4dcc3', dash:'dash' } },
                 ]}
                 layout={{ ...LAYOUT, xaxis:axis('Fixing', { dtick:1 }), yaxis:axis('Spot'),
-                  shapes:[{ type:'line', xref:'paper', x0:0, x1:1, y0:d.strike, y1:d.strike, line:{ color:'#ff3d5a', width:1.5, dash:'dot' } }] }}
+                  shapes:[{ type:'line', xref:'paper', x0:0, x1:1, y0:d.strike, y1:d.strike, line:{ color:'#ee6b5b', width:1.5, dash:'dot' } }] }}
                 config={CFG} style={{ width:'100%', height:290 }} />
             </Card>
             <Card title="Expected cash flow per fixing (client)">
               <Plot data={[{ x:d.detail.expected_cf.map((_, i) => i + 1), y:d.detail.expected_cf, type:'bar',
-                  marker:{ color:d.detail.expected_cf.map(v => v < 0 ? 'rgba(255,61,90,0.6)' : 'rgba(0,255,136,0.55)') } }]}
+                  marker:{ color:d.detail.expected_cf.map(v => v < 0 ? 'rgba(238,107,91,0.6)' : 'rgba(79,198,144,0.55)') } }]}
                 layout={{ ...LAYOUT, showlegend:false, xaxis:axis('Fixing', { dtick:1 }), yaxis:axis('E[cash flow]') }}
                 config={CFG} style={{ width:'100%', height:290 }} />
-              <div style={{ fontSize:9, color:'var(--text-muted)', padding:'0 8px 4px' }}>
+              <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'0 8px 4px' }}>
                 Early fixings carry the gains, late fixings the geared losses — the zero-cost strike balances them in present value.
               </div>
             </Card>
           </div>
-          <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
+          <div style={{ fontSize:10.5, color:'var(--text-muted)', marginTop:10, lineHeight:1.5 }}>
             Models are simulated on the forward (vanilla forwards matched exactly). Local vol: Dupire from an SSVI surface (Gatheral &amp; Jacquier 2014)
             calibrated to ATM/RR/BF with a flat ATM term structure; Merton jumps keep the ATM total variance. Greeks by common-random-number bumps.
             Reference: Wystup (2017) §2.7; Clarus FT and ION on TARFs under local vol.
@@ -220,19 +213,19 @@ function ModelTable({ d, dp }) {
   const spread = ks.length > 1 ? Math.max(...ks) - Math.min(...ks) : null
   return (
     <Card title={`Model risk at strike ${num(d.strike, dp)}`}
-      right={spread != null && <span className="font-mono" style={{ fontSize:10, color:'#ffd700' }}>
+      right={spread != null && <span className="font-mono" style={{ fontSize:11, color:'#e4dcc3' }}>
         zero-cost strike spread {num(spread, dp)} ({(spread / d.forwards[0] * 1e4).toFixed(0)} bp)</span>}>
       <div style={{ overflowX:'auto' }}>
         <table style={{ width:'100%', borderCollapse:'collapse', fontSize:11 }}>
-          <thead><tr style={{ color:'var(--text-muted)', fontSize:9, textAlign:'right' }}>
+          <thead><tr style={{ color:'var(--text-muted)', fontSize:10.5, textAlign:'right' }}>
             <th style={{ textAlign:'left', padding:'4px 8px' }}>Model</th><th style={{ padding:'4px 8px' }}>Client PV</th>
             <th style={{ padding:'4px 8px' }}>Zero-cost K</th><th style={{ padding:'4px 8px' }}>P(KO)</th>
             <th style={{ padding:'4px 8px' }}>E[fixings]</th><th style={{ padding:'4px 8px' }}>P(loss)</th><th style={{ padding:'4px 8px' }}>Client ES 5%</th></tr></thead>
           <tbody>{Object.entries(d.models).map(([m, v]) => (
             <tr key={m} className="font-mono" style={{ borderTop:'1px solid var(--border)', textAlign:'right',
-              background: m === d.reference_model ? 'rgba(0,212,255,0.06)' : 'transparent' }}>
+              background: m === d.reference_model ? 'rgba(169,154,255,0.06)' : 'transparent' }}>
               <td style={{ textAlign:'left', padding:'5px 8px', color:MODEL_COLOR[m] }}>{MODEL_NAME[m]}{m === d.reference_model ? ' · ref' : ''}</td>
-              <td style={{ padding:'5px 8px', color: v.pv < 0 ? 'var(--red)' : 'var(--green)' }}>{num(v.pv, dp)} <span style={{ color:'var(--text-muted)', fontSize:9 }}>±{num(v.pv_se, dp)}</span></td>
+              <td style={{ padding:'5px 8px', color: v.pv < 0 ? 'var(--red)' : 'var(--green)' }}>{num(v.pv, dp)} <span style={{ color:'var(--text-muted)', fontSize:10.5 }}>±{num(v.pv_se, dp)}</span></td>
               <td style={{ padding:'5px 8px', color:'var(--cyan)' }}>{num(v.zero_cost_strike, dp)}</td>
               <td style={{ padding:'5px 8px' }}>{pct(v.prob_ko)}</td>
               <td style={{ padding:'5px 8px' }}>{v.expected_fixings.toFixed(2)}</td>
@@ -241,7 +234,7 @@ function ModelTable({ d, dp }) {
             </tr>))}</tbody>
         </table>
       </div>
-      <div style={{ fontSize:9, color:'var(--text-muted)', padding:'6px 8px' }}>
+      <div style={{ fontSize:10.5, color:'var(--text-muted)', padding:'6px 8px' }}>
         All three match the same vanilla forwards; differences come from the path distribution (forward skew, jumps) that the knock-out and the geared leg are exposed to.
         A dealer quoting off flat vol mis-marks the trade by the PV gap.
       </div>

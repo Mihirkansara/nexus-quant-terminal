@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { RefreshCw, ArrowUpRight } from 'lucide-react'
 
 const API = import.meta.env.VITE_API_URL || ''
 import { MapContainer, TileLayer, Marker, Popup, CircleMarker, useMap } from 'react-leaflet'
@@ -24,14 +25,14 @@ function planeIcon(heading) {
   const deg = (heading || 0) - 45
   return L.divIcon({
     html: `<svg viewBox="0 0 20 20" width="13" height="13" style="transform:rotate(${deg}deg);overflow:visible;display:block">
-      <polygon points="10,0 13,8 20,10 13,12 10,20 7,12 0,10 7,8" fill="#00c8f0" opacity="0.85"/>
+      <polygon points="10,0 13,8 20,10 13,12 10,20 7,12 0,10 7,8" fill="#86abea" opacity="0.85"/>
     </svg>`,
     iconSize: [13,13], iconAnchor: [6,6], className:'',
   })
 }
 
 function eventIcon(impact) {
-  const c = impact === 'High' ? '#ff4c5e' : impact === 'Medium' ? '#f5a623' : '#3ddc84'
+  const c = impact === 'High' ? '#ee6b5b' : impact === 'Medium' ? '#f0914a' : '#4fc690'
   return L.divIcon({
     html: `<span style="display:block;width:8px;height:8px;border-radius:50%;background:${c};border:1.5px solid rgba(255,255,255,0.3);box-shadow:0 0 7px ${c}99"></span>`,
     iconSize: [8,8], iconAnchor: [4,4], className:'',
@@ -39,9 +40,9 @@ function eventIcon(impact) {
 }
 
 function quakeColor(m) {
-  if (m >= 7)   return '#ff0040'
-  if (m >= 6)   return '#ff4c5e'
-  if (m >= 5.5) return '#f5a623'
+  if (m >= 7)   return '#ee6b5b'
+  if (m >= 6)   return '#ee6b5b'
+  if (m >= 5.5) return '#f0914a'
   return '#f5a62355'
 }
 function quakeR(m) { return Math.max(5, (m - 4) * 7) }
@@ -154,18 +155,18 @@ export default function WorldMap() {
         <span className="live-dot-blink"/>
         <span className="term-header-cyan">LIVE WORLD MAP</span>
         <span style={{ opacity:0.4 }}>·</span>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--text-muted)' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--text-muted)' }}>
           OpenSky · USGS · RainViewer · Forex Factory
         </span>
         {updated && <>
           <span style={{ opacity:0.4 }}>·</span>
-          <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--text-muted)' }}>updated {updated}</span>
+          <span style={{ fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--text-muted)' }}>updated {updated}</span>
         </>}
         <div style={{ flex:1 }}/>
         {loadingAc && (
-          <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--cyan)' }}>⟳ aircraft…</span>
+          <span style={{ fontFamily:'var(--font-mono)', fontSize:10.5, color:'var(--cyan)' }}>Loading aircraft…</span>
         )}
-        <button className="btn-ghost" onClick={refresh} style={{ fontSize:10, padding:'3px 9px' }}>↻ Refresh</button>
+        <button className="btn-ghost" onClick={refresh} style={{ fontSize:11, padding:'3px 9px' }}><RefreshCw size={13} aria-hidden="true" />Refresh</button>
       </div>
 
       {/* Layer toggles */}
@@ -173,13 +174,13 @@ export default function WorldMap() {
         display:'flex', gap:4, padding:'5px 12px', alignItems:'center',
         background:'var(--bg2)', borderBottom:'1px solid var(--border)', flexShrink:0, flexWrap:'wrap',
       }}>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-muted)', letterSpacing:'0.1em', marginRight:4 }}>LAYERS</span>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-muted)', letterSpacing:'0.1em', marginRight:4 }}>LAYERS</span>
         {LAYER_CFG.map(({ key, label, color }) => {
           const on = layers[key]
           const count = key === 'aircraft' ? stats.planes : key === 'quakes' ? stats.quakes : key === 'events' ? stats.events : null
           return (
             <button key={key} onClick={() => toggle(key)} style={{
-              fontFamily:'var(--font-mono)', fontSize:8.5, fontWeight:700, letterSpacing:'0.06em',
+              fontFamily:'var(--font-mono)', fontSize:10, fontWeight:700, letterSpacing:'0.06em',
               padding:'3px 10px', borderRadius:'var(--r-sm)', cursor:'pointer', outline:'none',
               border:`1px solid ${on ? color : 'var(--border-sub)'}`,
               background: on ? `color-mix(in srgb, ${color} 12%, transparent)` : 'transparent',
@@ -189,13 +190,13 @@ export default function WorldMap() {
               <span style={{ width:6, height:6, borderRadius:'50%', background: on ? color : 'var(--text-faint)', display:'inline-block', transition:'var(--t-fast)' }}/>
               {label}
               {count != null && on && (
-                <span style={{ opacity:0.65, fontSize:8 }}>({count})</span>
+                <span style={{ opacity:0.65, fontSize:10 }}>({count})</span>
               )}
             </button>
           )
         })}
         <div style={{ flex:1 }}/>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--text-faint)' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--text-faint)' }}>
           aircraft refresh 30s · data: anonymous free APIs
         </span>
       </div>
@@ -203,7 +204,7 @@ export default function WorldMap() {
       {/* Map container */}
       <div style={{ flex:1, position:'relative', minHeight:'400px' }}>
         <style>{`
-          .leaflet-container { background:#080e1a !important; font-family:var(--font-mono) !important; }
+          .leaflet-container { background:#09130f !important; font-family:var(--font-mono) !important; }
           .leaflet-popup-content-wrapper { background:var(--bg3) !important; border:1px solid var(--border-md) !important; color:var(--text) !important; border-radius:var(--r-md) !important; box-shadow:0 8px 32px rgba(0,0,0,0.5) !important; }
           .leaflet-popup-tip { background:var(--bg3) !important; }
           .leaflet-popup-content { margin:10px 14px !important; }
@@ -215,12 +216,13 @@ export default function WorldMap() {
 
         <MapContainer
           center={[25, 10]} zoom={2} minZoom={2} maxZoom={14}
-          style={{ width:'100%', height:'calc(100vh - 155px)', minHeight:'400px', background:'#080e1a' }}
+          style={{ width:'100%', height:'calc(100vh - 155px)', minHeight:'400px', background:'#09130f' }}
           worldCopyJump
         >
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+            maxNativeZoom={16}
+            attribution="Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap contributors"
             subdomains="abcd" maxZoom={19}
           />
 
@@ -240,13 +242,13 @@ export default function WorldMap() {
                   <div>
                     <div style={{ color:quakeColor(mag), fontWeight:700, fontSize:13, marginBottom:4 }}>M {mag?.toFixed(1)}</div>
                     <div style={{ fontSize:11 }}>{q.properties.place}</div>
-                    <div style={{ color:'var(--text-muted)', fontSize:9, marginTop:4 }}>
+                    <div style={{ color:'var(--text-muted)', fontSize:10.5, marginTop:4 }}>
                       {new Date(q.properties.time).toUTCString()}
                     </div>
-                    <div style={{ color:'var(--text-muted)', fontSize:9 }}>Depth: {q.geometry.coordinates[2]?.toFixed(1)} km</div>
+                    <div style={{ color:'var(--text-muted)', fontSize:10.5 }}>Depth: {q.geometry.coordinates[2]?.toFixed(1)} km</div>
                     <a href={q.properties.url} target="_blank" rel="noreferrer"
-                      style={{ color:'var(--cyan)', fontSize:9, marginTop:5, display:'block' }}>
-                      USGS details →
+                      style={{ color:'var(--cyan)', fontSize:10.5, marginTop:5, display:'block' }}>
+                      USGS details<ArrowUpRight size={11} aria-hidden="true" style={{ verticalAlign:'-1px', marginLeft:3 }} />
                     </a>
                   </div>
                 </Popup>
@@ -263,20 +265,20 @@ export default function WorldMap() {
                 <Popup>
                   <div>
                     <div style={{ fontWeight:700, fontSize:12, marginBottom:4 }}>{ev.title}</div>
-                    <div style={{ fontSize:10 }}>
+                    <div style={{ fontSize:11 }}>
                       <span style={{ color: ev.impact === 'High' ? 'var(--red)' : ev.impact === 'Medium' ? 'var(--amber)' : 'var(--green)' }}>
                         {ev.impact} impact
                       </span>
                       {' · '}{ev.country}
                     </div>
                     {ev.actual?.trim() && (
-                      <div style={{ color:'var(--green)', fontSize:10, marginTop:4 }}>Actual: {ev.actual}</div>
+                      <div style={{ color:'var(--green)', fontSize:11, marginTop:4 }}>Actual: {ev.actual}</div>
                     )}
                     {ev.forecast?.trim() && (
-                      <div style={{ color:'var(--text-muted)', fontSize:10 }}>Forecast: {ev.forecast}</div>
+                      <div style={{ color:'var(--text-muted)', fontSize:11 }}>Forecast: {ev.forecast}</div>
                     )}
                     {ev.previous?.trim() && (
-                      <div style={{ color:'var(--text-muted)', fontSize:10 }}>Previous: {ev.previous}</div>
+                      <div style={{ color:'var(--text-muted)', fontSize:11 }}>Previous: {ev.previous}</div>
                     )}
                   </div>
                 </Popup>
@@ -292,15 +294,15 @@ export default function WorldMap() {
                   <div style={{ color:'var(--cyan)', fontWeight:700, fontSize:13, marginBottom:4 }}>
                     {ac.call}
                   </div>
-                  <div style={{ fontSize:10, color:'var(--text-secondary)' }}>{ac.country}</div>
-                  <div style={{ fontSize:10, color:'var(--text-muted)', marginTop:4 }}>
+                  <div style={{ fontSize:11, color:'var(--text-secondary)' }}>{ac.country}</div>
+                  <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:4 }}>
                     Alt: {ac.alt} ft
                   </div>
-                  <div style={{ fontSize:10, color:'var(--text-muted)' }}>
+                  <div style={{ fontSize:11, color:'var(--text-muted)' }}>
                     Speed: {ac.spd} kts
                   </div>
                   {ac.hdg != null && (
-                    <div style={{ fontSize:10, color:'var(--text-muted)' }}>
+                    <div style={{ fontSize:11, color:'var(--text-muted)' }}>
                       Heading: {Math.round(ac.hdg)}°
                     </div>
                   )}
@@ -315,17 +317,17 @@ export default function WorldMap() {
           position:'absolute', bottom:24, right:12, zIndex:1000,
           background:'rgba(8,14,26,0.9)', border:'1px solid var(--border)',
           borderRadius:'var(--r-md)', padding:'8px 12px',
-          fontFamily:'var(--font-mono)', fontSize:8.5,
+          fontFamily:'var(--font-mono)', fontSize:10,
         }}>
           {layers.aircraft && (
             <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
-              <span style={{ color:'#00c8f0' }}>◆</span>
+              <span style={{ color:'#86abea' }}>◆</span>
               <span style={{ color:'var(--text-muted)' }}>{stats.planes} aircraft · OpenSky</span>
             </div>
           )}
           {layers.quakes && (
             <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:4 }}>
-              <span style={{ color:'var(--red)' }}>●</span>
+              <span aria-hidden="true" style={{ display:'inline-block', width:7, height:7, borderRadius:'50%', background:'var(--red)' }} />
               <span style={{ color:'var(--text-muted)' }}>{stats.quakes} quakes M4.5+ · USGS 7d</span>
             </div>
           )}
@@ -337,7 +339,7 @@ export default function WorldMap() {
           )}
           {layers.events && (
             <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-              <span style={{ color:'var(--amber)' }}>●</span>
+              <span aria-hidden="true" style={{ display:'inline-block', width:7, height:7, borderRadius:'50%', background:'var(--amber)' }} />
               <span style={{ color:'var(--text-muted)' }}>{stats.events} forex events · Forex Factory</span>
             </div>
           )}

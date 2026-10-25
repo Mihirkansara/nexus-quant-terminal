@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { TriangleAlert } from 'lucide-react'
 import { usePortfolioStore } from '../store/portfolio'
 import { fetchVolumeProfile, fetchVolumePairs } from '../api/client'
 
@@ -17,9 +18,9 @@ const Metric = ({ label, value, color }) => (
   <div style={{
     background: 'var(--bg2)', borderRadius: 'var(--r-sm)',
     border: '1px solid var(--border)', padding: '8px 12px',
-    borderLeft: `3px solid ${color || 'var(--cyan)'}`, minWidth: 96,
+    borderLeft:`1px solid ${color || 'var(--cyan)'}`, minWidth: 96,
   }}>
-    <div style={{ fontSize: 8.5, color: 'var(--text-muted)', letterSpacing: '0.12em',
+    <div style={{ fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.12em',
       fontFamily: 'var(--font-mono)', marginBottom: 3 }}>{label}</div>
     <div style={{ fontSize: 14, fontWeight: 700, color: color || 'var(--text)',
       fontFamily: 'var(--font-mono)', fontVariantNumeric: 'tabular-nums' }}>{value}</div>
@@ -86,7 +87,7 @@ export default function VolumeProfileView() {
             {PROFILE_TYPES.map(pt => (
               <button key={pt.id} className="btn-ghost" onClick={() => setProfileType(pt.id)}
                 style={{
-                  fontSize: 9, padding: '4px 10px', letterSpacing: '0.08em',
+                  fontSize: 10.5, padding: '4px 10px', letterSpacing: '0.08em',
                   background: profileType === pt.id
                     ? 'color-mix(in srgb, var(--cyan) 12%, transparent)' : 'transparent',
                   color: profileType === pt.id ? 'var(--cyan)' : 'var(--text-muted)',
@@ -104,7 +105,7 @@ export default function VolumeProfileView() {
           background: 'color-mix(in srgb, var(--red) 8%, transparent)',
           border: '1px solid color-mix(in srgb, var(--red) 25%, transparent)',
           color: 'var(--red)', fontFamily: 'var(--font-mono)' }}>
-          ⚠ {err}
+          <TriangleAlert size={14} aria-hidden="true" style={{ verticalAlign:'-2px', marginRight:6 }} />{err}
         </div>
       )}
 
@@ -134,7 +135,7 @@ export default function VolumeProfileView() {
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)',
             borderRadius: 'var(--r-sm)', padding: '10px 14px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between',
-              fontFamily: 'var(--font-mono)', fontSize: 9.5, marginBottom: 6 }}>
+              fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 6 }}>
               <span style={{ color: 'var(--green)' }}>AGGRESSIVE BUYERS {data.aggressive_buy_pct}%</span>
               <span style={{ color: 'var(--red)' }}>{(100 - data.aggressive_buy_pct).toFixed(1)}% AGGRESSIVE SELLERS</span>
             </div>
@@ -149,7 +150,7 @@ export default function VolumeProfileView() {
           </div>
 
           {/* Profile bars */}
-          <div className="signal-panel" style={{ borderLeft: '3px solid var(--cyan)',
+          <div className="signal-panel" style={{ borderLeft:'1px solid var(--cyan)',
             padding: '14px 16px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {buckets.map((b) => {
@@ -162,7 +163,7 @@ export default function VolumeProfileView() {
                     height: 11, fontFamily: 'var(--font-mono)' }}>
                     {/* Price label */}
                     <div style={{
-                      width: 74, textAlign: 'right', fontSize: 8.5,
+                      width: 74, textAlign: 'right', fontSize: 10,
                       fontVariantNumeric: 'tabular-nums',
                       color: b.is_poc ? 'var(--amber)' : isLast ? 'var(--text)' : 'var(--text-muted)',
                       fontWeight: b.is_poc || isLast ? 700 : 400,
@@ -188,7 +189,7 @@ export default function VolumeProfileView() {
                           opacity: 0.7 }} />
                       </div>
                       {(isHVN || isLVN) && (
-                        <span style={{ fontSize: 7.5, marginLeft: 6, letterSpacing: '0.08em',
+                        <span style={{ fontSize: 10, marginLeft: 6, letterSpacing: '0.08em',
                           color: isHVN ? 'var(--purple)' : 'var(--text-faint)' }}>
                           {isHVN ? 'HVN' : 'LVN'}
                         </span>
@@ -206,7 +207,7 @@ export default function VolumeProfileView() {
             {/* Legend */}
             <div style={{ display: 'flex', gap: 16, marginTop: 12, paddingTop: 10,
               borderTop: '1px solid var(--border)', fontFamily: 'var(--font-mono)',
-              fontSize: 8.5, color: 'var(--text-muted)', flexWrap: 'wrap' }}>
+              fontSize: 10, color: 'var(--text-muted)', flexWrap: 'wrap' }}>
               <span><span style={{ color: 'var(--green)' }}>■</span> Buy</span>
               <span><span style={{ color: 'var(--red)' }}>■</span> Sell</span>
               <span><span style={{ color: 'var(--amber)' }}>■</span> POC</span>

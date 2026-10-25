@@ -46,7 +46,7 @@ export default function SurfacePlot() {
 
   if (!data) return (
     <div style={{ padding: 20, height: 460, display: 'flex', alignItems: 'center',
-      justifyContent: 'center', color: '#475569', fontSize: 13 }}>
+      justifyContent: 'center', color: '#7e8f84', fontSize: 13 }}>
       Add option legs to compute surfaces
     </div>
   )
@@ -65,18 +65,18 @@ export default function SurfacePlot() {
   }]
 
   const layout = {
-    title: { text: cfg.title, font: { color: '#00d4ff', size: 13 } },
+    title: { text: cfg.title, font: { color: '#86abea', size: 13 } },
     paper_bgcolor: 'transparent',
     plot_bgcolor:  'transparent',
     scene: {
-      xaxis: { title: 'Implied Vol', color: '#64748b', gridcolor: '#1e293b' },
-      yaxis: { title: 'Spot Rate',   color: '#64748b', gridcolor: '#1e293b' },
-      zaxis: { title: active,        color: '#64748b', gridcolor: '#1e293b' },
-      bgcolor: '#0a0e1a',
+      xaxis: { title: 'Implied Vol', color: '#7a8a80', gridcolor: '#1c2e26' },
+      yaxis: { title: 'Spot Rate',   color: '#7a8a80', gridcolor: '#1c2e26' },
+      zaxis: { title: active,        color: '#7a8a80', gridcolor: '#1c2e26' },
+      bgcolor: '#09130f',
       camera: { eye: { x: 1.5, y: 1.5, z: 0.9 } },
     },
     margin: { l: 0, r: 0, t: 40, b: 0 },
-    font: { color: '#e2e8f0', size: 11 },
+    font: { color: '#ebe5d3', size: 11 },
   }
 
   return (
@@ -87,8 +87,8 @@ export default function SurfacePlot() {
             style={{
               padding: '4px 12px', borderRadius: 6, border: 'none',
               fontSize: 11, fontWeight: 600, cursor: 'pointer',
-              background: active === key ? '#00d4ff' : 'rgba(255,255,255,0.05)',
-              color: active === key ? '#020817' : '#64748b',
+              background: active === key ? '#86abea' : 'rgba(255,255,255,0.05)',
+              color: active === key ? '#07100c' : '#7a8a80',
               transition: 'all 0.15s',
             }}>
             {title.split(' ')[0]}
@@ -97,7 +97,7 @@ export default function SurfacePlot() {
       </div>
 
       <div style={{ borderRadius: 8, overflow: 'hidden', background: 'rgba(10,14,26,0.6)',
-        border: '1px solid rgba(0,212,255,0.08)' }}>
+        border: '1px solid rgba(169,154,255,0.08)' }}>
         <Plot
           data={plotData}
           layout={layout}

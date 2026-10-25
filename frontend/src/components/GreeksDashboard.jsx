@@ -1,35 +1,61 @@
 import { useState, useEffect } from 'react'
+import { Download, Layers } from 'lucide-react'
 import { usePortfolioStore } from '../store/portfolio'
 import { computeGreeks, exportCSV } from '../api/client'
 
-const GREEK_INFO = {
-  delta: { label:'Δ DELTA',  sym:'Δ', color:'var(--cyan)',   desc:'Spot price sensitivity',    tip:'Change in option value per unit change in spot. Delta 0.8 = option moves 80¢ per $1 of spot.', cls:'cyan'   },
-  gamma: { label:'Γ GAMMA',  sym:'Γ', color:'var(--purple)', desc:'Delta convexity',            tip:'Rate of change of Delta w.r.t. spot. High Gamma = Delta shifts rapidly near the strike price.', cls:'purple' },
-  vega:  { label:'ν VEGA',   sym:'ν', color:'var(--green)',  desc:'Volatility sensitivity /1%', tip:'P&L impact per 1% move in implied vol. Long options = positive Vega (vol rising helps you).',   cls:'green'  },
-  theta: { label:'Θ THETA',  sym:'Θ', color:'var(--red)',    desc:'Time decay per year',        tip:'Daily P&L erosion due to time passing. Long options pay theta — short options earn it.',        cls:'red'    },
-  rho_d: { label:'ρ RHO_D',  sym:'ρ', color:'var(--amber)',  desc:'Domestic rate sensitivity',  tip:'Sensitivity to the domestic (quote currency) interest rate. Usually small on short expirations.', cls:'gold'  },
-  phi:   { label:'φ PHI',    sym:'φ', color:'#fb923c',       desc:'Foreign rate sensitivity',   tip:'Sensitivity to the foreign (base currency) rate. This greek is unique to FX options.',           cls:'orange' },
+const GREEKS = [
+  { key: 'delta', sym: 'Δ', name: 'Delta', unit: 'per unit of spot', tip: 'Change in book value per 1.00 move in spot. 0.80 means the book gains 0.80 for each unit spot rises.' },
+  { key: 'gamma', sym: 'Γ', name: 'Gamma', unit: 'Δ change per unit spot', tip: 'How fast delta changes as spot moves. Large gamma means the hedge drifts quickly near the strikes.' },
+  { key: 'vega',  sym: 'ν', name: 'Vega',  unit: 'per 1.00 of vol', tip: 'Value change per 1.00 (100 vol points) in implied vol; divide by 100 for per-point. Long options are long vega.' },
+  { key: 'theta', sym: 'Θ', name: 'Theta', unit: 'per year', tip: 'Value lost or earned as time passes, annualised. Long options pay theta; short options collect it.' },
+  { key: 'rho_d', sym: 'ρ', name: 'Rho',   unit: 'domestic rate', tip: 'Sensitivity to the domestic (quote currency) interest rate.' },
+  { key: 'phi',   sym: 'φ', name: 'Phi',   unit: 'foreign rate', tip: 'Sensitivity to the foreign (base currency) rate. Specific to FX options.' },
+]
+
+const signed = (v, dp = 4) => (v == null || !Number.isFinite(v) ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v).toFixed(dp))
+
+function Contribution({ legs, field, sym }) {
+  const max = Math.max(1e-12, ...legs.map(l => Math.abs(l[field] ?? 0)))
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '24px 1fr', gap: 10, alignItems: 'start' }}>
+      <span className="greek" style={{ fontSize: 18, color: 'var(--text-muted)', lineHeight: 1.1 }}>{sym}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {legs.map((l, i) => {
+          const v = l[field] ?? 0
+          const w = (Math.abs(v) / max) * 50
+          return (
+            <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 86px', gap: 10, alignItems: 'center' }}>
+              <div style={{ position: 'relative', height: 8, background: 'var(--well)', borderRadius: 2 }}>
+                <div style={{ position: 'absolute', left: '50%', top: -3, bottom: -3, width: 1, background: 'var(--border-md)' }} />
+                <div style={{ position: 'absolute', top: 0, bottom: 0, borderRadius: 2,
+                  left: v >= 0 ? '50%' : `${50 - w}%`, width: `${w}%`,
+                  background: 'repeating-linear-gradient(135deg, var(--foil) 0 2px, color-mix(in srgb, var(--foil) 55%, transparent) 2px 4px)' }} />
+              </div>
+              <span className="mono" style={{ fontSize: 11.5, textAlign: 'right', color: 'var(--text-secondary)' }}>{signed(v, field === 'gamma' ? 3 : 4)}</span>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
 export default function GreeksDashboard() {
   const { legs, S, sigma, T, r_d, r_f, pair } = usePortfolioStore()
-  const [data, setData]       = useState(null)
+  const [data, setData] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [error, setError]     = useState(null)
+  const [error, setError] = useState(null)
 
-  const payload = {
-    options: legs.map(({ type, K, T, qty }) => ({ type, K, T, qty })),
-    S, sigma, T, r_d, r_f,
-  }
+  const payload = { options: legs.map(({ type, K, T, qty }) => ({ type, K, T, qty })), S, sigma, T, r_d, r_f }
 
   useEffect(() => {
     if (!legs.length) return
-    setLoading(true); setError(null)
+    setLoading(true); setError(null) // eslint-disable-line react-hooks/set-state-in-effect -- refetch when the book changes
     computeGreeks(payload)
       .then(setData)
-      .catch(e => setError(e?.response?.data?.detail || 'Greeks computation failed'))
+      .catch(e => setError(e?.response?.data?.detail || 'The Greeks service did not respond. Check the API connection and try again.'))
       .finally(() => setLoading(false))
-  }, [S, sigma, T, r_d, r_f, JSON.stringify(legs)])
+  }, [S, sigma, T, r_d, r_f, JSON.stringify(legs)]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleExport = async () => {
     const blob = await exportCSV(payload)
@@ -39,126 +65,115 @@ export default function GreeksDashboard() {
     URL.revokeObjectURL(url)
   }
 
-  if (loading) return (
-    <div style={{ padding:20 }}>
-      <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:16 }}>
-        <div className="live-dot"/>
-        <span style={{ color:'var(--text-muted)', fontSize:12 }}>Computing Garman-Kohlhagen Greeks…</span>
+  if (!legs.length) return (
+    <div style={{ padding: 24 }}>
+      <div className="glass" style={{ padding: '36px 28px', maxWidth: 560, display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+        <Layers size={26} strokeWidth={1.4} color="var(--foil)" aria-hidden="true" />
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>The book is empty</div>
+          <div style={{ color: 'var(--text-dim)', lineHeight: 1.55 }}>
+            Add a leg in the book panel, or open the strategy library there and load a straddle, risk reversal or condor.
+            Greeks for every leg and for the whole book appear here as soon as it has a position.
+          </div>
+        </div>
       </div>
-      {[...Array(3)].map((_,i) => (
-        <div key={i} className="skeleton" style={{ height:60, marginBottom:8, borderRadius:8 }}/>
-      ))}
     </div>
   )
-
-  if (error) return (
-    <div style={{ padding:20 }}>
-      <div style={{ padding:12, borderRadius:6, background:'rgba(255,61,90,0.1)',
-        border:'1px solid var(--red)', color:'var(--red)', fontSize:12 }}>{error}</div>
-    </div>
-  )
-
-  if (!data) return null
 
   return (
-    <div style={{ padding:16 }}>
-      {/* Terminal header */}
-      <div className="term-header" style={{ margin:'-16px -16px 14px', padding:'8px 16px' }}>
-        <span className="term-header-cyan">PORTFOLIO GREEKS</span>
-        <span style={{ marginLeft:4, opacity:0.5 }}>·</span>
-        <span className="term-header-title">{pair}</span>
-        <span style={{ marginLeft:4, opacity:0.5 }}>·</span>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:9.5, color:'var(--text-muted)', letterSpacing:'0.04em' }}>
-          S={S} · σ={sigma} · r_d={r_d} · r_f={r_f}
+    <div style={{ padding: '18px 24px 28px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 14, flexWrap: 'wrap' }}>
+        <span className="section-title" style={{ color: 'var(--text-muted)', letterSpacing: '0.08em' }}>{pair} · {legs.length} legs</span>
+        <span className="mono" style={{ fontSize: 11.5, color: 'var(--text-muted)' }}>
+          S {S} · σ {(sigma * 100).toFixed(2)}% · r<sub>d</sub> {(r_d * 100).toFixed(2)}% · r<sub>f</sub> {(r_f * 100).toFixed(2)}%
         </span>
-        <div style={{ flex:1 }}/>
-        <button className="btn-ghost" onClick={handleExport} style={{ fontSize:10, padding:'3px 9px' }}>
-          ↓ CSV
-        </button>
+        <div style={{ flex: 1 }} />
+        <button className="btn-ghost" onClick={handleExport} disabled={!data}><Download size={13} aria-hidden="true" />Export CSV</button>
       </div>
 
-      {/* Greek cards — left-border Bloomberg style, 3+3 grid */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:6, marginBottom:14 }}>
-        {Object.entries(GREEK_INFO).map(([key, info]) => {
-          const val = data.total[key]
-          const formatted = val !== undefined ? (val >= 0 ? '+' : '') + val.toFixed(4) : '—'
+      {error && (
+        <div role="alert" style={{ padding: 12, borderRadius: 'var(--r-md)', background: 'var(--red-bg)', border: '1px solid color-mix(in srgb, var(--neg) 35%, transparent)', color: 'var(--neg)', fontSize: 12, marginBottom: 14 }}>{error}</div>
+      )}
+
+      {/* Book Greeks: one engraved strip, figures in foil (they are the book's own) */}
+      <section aria-label="Book Greeks" className="nx-greek-strip" style={{ display: 'grid', gap: 1,
+        background: 'var(--border)', border: '1px solid var(--border)', borderRadius: 'var(--r-lg)', overflow: 'hidden', marginBottom: 18 }}>
+        {GREEKS.map(g => {
+          const v = data?.total?.[g.key]
           return (
-            <div key={key} className={`greek-card ${info.cls}`} title={info.tip}>
-              <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:6 }}>
-                <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--text-muted)',
-                  textTransform:'uppercase', letterSpacing:'0.08em' }}>{info.desc}</span>
-                <span style={{ fontFamily:'var(--font-mono)', fontSize:17, fontWeight:800,
-                  color:info.color, lineHeight:1, fontVariantNumeric:'tabular-nums' }}>
-                  {info.sym}
-                </span>
+            <div key={g.key} title={g.tip} style={{ background: 'var(--panel)', padding: '14px 16px 12px', cursor: 'help', minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 550 }}>{g.name}</span>
+                <span className="greek" style={{ fontSize: 22, color: 'var(--text-muted)', lineHeight: 1 }}>{g.sym}</span>
               </div>
-              <div className="greek-value" style={{ color:info.color, marginBottom:4 }}>{formatted}</div>
-              <div style={{ fontFamily:'var(--font-mono)', fontSize:9.5, fontWeight:700,
-                color:info.color, opacity:0.7, letterSpacing:'0.1em' }}>{info.label}</div>
+              {loading && !data
+                ? <div className="skeleton" style={{ height: 24, marginTop: 10 }} />
+                : <div className="serial" style={{ fontSize: 22, color: 'var(--foil)', marginTop: 8, textAlign: 'right', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{signed(v)}</div>}
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'right', marginTop: 4 }}>{g.unit}</div>
             </div>
           )
         })}
-      </div>
+      </section>
 
-      {/* Quick stats */}
-      <div style={{ display:'flex', gap:12, marginBottom:14, flexWrap:'wrap' }}>
-        <div className="glass" style={{ padding:'8px 14px', borderRadius:6, fontSize:11 }}>
-          <span style={{ color:'var(--text-muted)' }}>Daily Theta: </span>
-          <span className="font-mono" style={{ color:'var(--red)' }}>
-            {data.total.theta !== undefined ? (data.total.theta / 365).toFixed(5) : '—'} /day
-          </span>
+      {data && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12, marginBottom: 22 }}>
+          {[
+            ['Theta per day', data.total.theta / 365, 'Time decay over one calendar day'],
+            ['Vega per vol point', data.total.vega / 100, 'Value change for a 1-point move in implied vol'],
+            ['Delta-equivalent notional', data.total.delta * S, 'Spot exposure in quote currency'],
+          ].map(([label, v, hint]) => (
+            <div key={label} className="glass" style={{ padding: '12px 16px', display: 'flex', alignItems: 'baseline', gap: 12 }} title={hint}>
+              <span style={{ color: 'var(--text-dim)', fontSize: 12, flex: 1 }}>{label}</span>
+              <span className="serial" style={{ fontSize: 16, color: 'var(--foil)' }}>{signed(v, Math.abs(v) >= 100 ? 2 : 5)}</span>
+            </div>
+          ))}
         </div>
-        <div className="glass" style={{ padding:'8px 14px', borderRadius:6, fontSize:11 }}>
-          <span style={{ color:'var(--text-muted)' }}>Vega per 1% vol: </span>
-          <span className="font-mono" style={{ color:'var(--green)' }}>
-            {data.total.vega !== undefined ? (data.total.vega / 100).toFixed(5) : '—'}
-          </span>
-        </div>
-        <div className="glass" style={{ padding:'8px 14px', borderRadius:6, fontSize:11 }}>
-          <span style={{ color:'var(--text-muted)' }}>Net Delta: </span>
-          <span className="font-mono" style={{ color: data.total.delta >= 0 ? 'var(--green)' : 'var(--red)' }}>
-            {data.total.delta !== undefined ? (data.total.delta >= 0 ? '+' : '') + data.total.delta.toFixed(4) : '—'}
-          </span>
-        </div>
-      </div>
+      )}
 
-      {/* Per-leg breakdown */}
-      <div className="section-header" style={{ marginBottom:6 }}>
-        <span className="section-title">Per-Leg Breakdown</span>
-      </div>
-      <div style={{ overflowX:'auto', borderRadius:8, border:'1px solid var(--border)' }}>
-        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:10 }}>
-          <thead>
-            <tr style={{ background:'var(--bg3)', color:'var(--text-muted)' }}>
-              {['Leg','Type','Strike','Delta','Gamma','Vega','Theta','Rho_d','Phi'].map(h => (
-                <th key={h} style={{ textAlign: h==='Leg'||h==='Type'?'left':'right',
-                  padding:'6px 10px', fontWeight:600, fontSize:9, letterSpacing:'0.05em' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.legs.map((leg, i) => (
-              <tr key={i} style={{ borderTop:'1px solid var(--border)',
-                background: i%2===0?'transparent':'rgba(0,212,255,0.015)' }}>
-                <td style={{ padding:'5px 10px', color:'var(--cyan)', fontSize:10 }}>{leg.label}</td>
-                <td style={{ padding:'5px 10px', color:'var(--text-dim)', fontSize:9 }}>{leg.type?.toUpperCase()}</td>
-                <td className="font-mono" style={{ padding:'5px 10px', textAlign:'right', color:'var(--text-dim)' }}>
-                  {leg.K?.toFixed(5)}
-                </td>
-                <td className="font-mono" style={{ padding:'5px 10px', textAlign:'right',
-                  color: leg.delta >= 0 ? 'var(--green)' : 'var(--red)' }}>
-                  {leg.delta !== undefined ? (leg.delta >= 0 ? '+' : '') + leg.delta : '—'}
-                </td>
-                <td className="font-mono" style={{ padding:'5px 10px', textAlign:'right', color:'#a78bfa' }}>{leg.gamma}</td>
-                <td className="font-mono" style={{ padding:'5px 10px', textAlign:'right', color:'var(--green)' }}>{leg.vega}</td>
-                <td className="font-mono" style={{ padding:'5px 10px', textAlign:'right', color:'var(--red)' }}>{leg.theta}</td>
-                <td className="font-mono" style={{ padding:'5px 10px', textAlign:'right', color:'var(--gold)' }}>{leg.rho_d ?? '—'}</td>
-                <td className="font-mono" style={{ padding:'5px 10px', textAlign:'right', color:'#fb923c' }}>{leg.phi ?? '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {data && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: 16 }}>
+          <section className="glass" style={{ overflow: 'hidden' }} aria-label="Greeks by leg">
+            <div className="term-header"><span className="term-header-title">Greeks by leg</span></div>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="data-table">
+                <thead>
+                  <tr>{['Leg', 'Delta', 'Gamma', 'Vega', 'Theta'].map((h, i) => <th key={h} style={{ textAlign: i ? 'right' : 'left' }}>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {data.legs.map((leg, i) => (
+                    <tr key={i}>
+                      <td style={{ color: 'var(--foil)', fontFamily: 'var(--font-mono)' }}>{leg.label}</td>
+                      <td className="mono" style={{ textAlign: 'right' }}>{signed(leg.delta, 5)}</td>
+                      <td className="mono" style={{ textAlign: 'right' }}>{signed(leg.gamma, 4)}</td>
+                      <td className="mono" style={{ textAlign: 'right' }}>{signed(leg.vega, 4)}</td>
+                      <td className="mono" style={{ textAlign: 'right' }}>{signed(leg.theta, 4)}</td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td style={{ fontWeight: 600, color: 'var(--ink)' }}>Book</td>
+                    {['delta', 'gamma', 'vega', 'theta'].map(k => (
+                      <td key={k} className="mono" style={{ textAlign: 'right', color: 'var(--foil)', fontWeight: 500 }}>{signed(data.total[k], k === 'delta' ? 5 : 4)}</td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section className="glass" aria-label="Contribution by leg">
+            <div className="term-header"><span className="term-header-title">Contribution by leg</span></div>
+            <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <Contribution legs={data.legs} field="delta" sym="Δ" />
+              <Contribution legs={data.legs} field="gamma" sym="Γ" />
+              <Contribution legs={data.legs} field="vega" sym="ν" />
+              <Contribution legs={data.legs} field="theta" sym="Θ" />
+              <div style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                Bars share one scale per Greek; left of the rule is negative. Rows follow the leg order in the book.
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

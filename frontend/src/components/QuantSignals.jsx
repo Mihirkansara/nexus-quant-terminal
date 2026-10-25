@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { RefreshCw } from 'lucide-react'
 import { usePortfolioStore } from '../store/portfolio'
 import { fetchSignals } from '../api/client'
 
@@ -13,7 +14,7 @@ const color = (v) => SIGNAL_COLOR[v] || 'var(--text-secondary)'
 
 /* Terminal signal panel — worldmonitor style */
 const SPanel = ({ title, accentColor, lbClass, badge, badgeClass, children }) => (
-  <div className="signal-panel" style={{ borderLeft:`3px solid ${accentColor}` }}>
+  <div className="signal-panel" style={{ borderLeft:`1px solid ${accentColor}` }}>
     <div className="signal-panel-header">
       <span className="signal-panel-title" style={{ color: accentColor }}>{title}</span>
       {badge && (
@@ -32,7 +33,7 @@ const Row = ({ label, value, desc, method, bar, barColor, barMax = 100 }) => (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
       <div style={{ flex:1, minWidth:0 }}>
         <span style={{ fontSize:12, color:'var(--text-dim)', fontWeight:500 }}>{label}</span>
-        {desc && <div style={{ fontSize:10, color:'var(--text-muted)', marginTop:1 }}>{desc}</div>}
+        {desc && <div style={{ fontSize:11, color:'var(--text-muted)', marginTop:1 }}>{desc}</div>}
       </div>
       <span className="font-mono" style={{ fontSize:13, fontWeight:700, color: color(value), flexShrink:0 }}>
         {value}
@@ -44,13 +45,13 @@ const Row = ({ label, value, desc, method, bar, barColor, barMax = 100 }) => (
           <div className="conf-bar-fill" style={{ width:`${Math.min(100,(bar/barMax)*100)}%`,
             background: barColor || 'linear-gradient(90deg, var(--cyan), var(--purple))' }}/>
         </div>
-        <span className="font-mono" style={{ fontSize:10, color:'var(--text-muted)', minWidth:32 }}>
+        <span className="font-mono" style={{ fontSize:11, color:'var(--text-muted)', minWidth:32 }}>
           {typeof bar === 'number' ? bar.toFixed(2) : bar}
         </span>
       </div>
     )}
     {method && (
-      <span style={{ fontSize:10, color:'var(--text-muted)', fontStyle:'italic' }}>
+      <span style={{ fontSize:11, color:'var(--text-muted)', fontStyle:'italic' }}>
         {method}
       </span>
     )}
@@ -108,11 +109,11 @@ export default function QuantSignals() {
         <span style={{ opacity:0.4 }}>·</span>
         <span className="term-header-title">{pair}</span>
         <span style={{ opacity:0.4 }}>·</span>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:9.5, color:'var(--text-muted)' }}>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'var(--text-muted)' }}>
           {data.n_observations} obs · gs-quant · Garman-Kohlhagen
         </span>
         <div style={{ flex:1 }}/>
-        <button className="btn-ghost" onClick={load} style={{ fontSize:10, padding:'3px 9px' }}>↻ Refresh</button>
+        <button className="btn-ghost" onClick={load} style={{ fontSize:11, padding:'3px 9px' }}><RefreshCw size={13} aria-hidden="true" />Refresh</button>
       </div>
 
       {/* Composite signal — bloomberg bar style */}
@@ -120,21 +121,21 @@ export default function QuantSignals() {
         display:'flex', alignItems:'center', justifyContent:'space-between',
         padding:'12px 16px', marginBottom:12,
         background:'var(--surface)', border:'1px solid var(--border)',
-        borderLeft:`4px solid ${data.composite==='BULLISH'?'var(--green)':data.composite==='BEARISH'?'var(--red)':'var(--amber)'}`,
+        borderLeft:`1px solid ${data.composite==='BULLISH'?'var(--green)':data.composite==='BEARISH'?'var(--red)':'var(--amber)'}`,
         borderRadius:'var(--r-md)',
       }}>
         <div>
-          <div style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--text-muted)',
+          <div style={{ fontFamily:'var(--font-ui)', fontSize:10.5, color:'var(--text-muted)',
             textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:6 }}>Composite Signal</div>
           <div className={`signal-badge ${data.composite.toLowerCase()}`}>
-            {data.composite === 'BULLISH' ? '▲' : data.composite === 'BEARISH' ? '▼' : '◆'}{' '}
+            
             {data.composite}
           </div>
         </div>
         <div style={{ textAlign:'right' }}>
-          <div style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--text-muted)',
+          <div style={{ fontFamily:'var(--font-ui)', fontSize:10.5, color:'var(--text-muted)',
             textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:4 }}>Confidence</div>
-          <div style={{ fontFamily:'var(--font-mono)', fontSize:32, fontWeight:800,
+          <div style={{ fontFamily:'var(--font-mono)', fontSize:32, fontWeight:600,
             color:'var(--cyan)', lineHeight:1, fontVariantNumeric:'tabular-nums' }}>
             {data.confidence}%
           </div>
@@ -159,7 +160,7 @@ export default function QuantSignals() {
             barColor="linear-gradient(90deg,var(--purple),var(--cyan))" />
           <Row label="Max Drawdown"    value={`${vol.max_drawdown_pct}%`} method={vol.method}
             bar={Math.abs(vol.max_drawdown_pct)} barMax={5}
-            barColor="linear-gradient(90deg,var(--red),#c00)" />
+            barColor="linear-gradient(90deg,var(--red),#b8473b)" />
         </SPanel>
 
         <SPanel title="Risk — 1-Day VaR" accentColor="var(--red)">
@@ -168,17 +169,17 @@ export default function QuantSignals() {
             barColor="linear-gradient(90deg,var(--amber),var(--red))" />
           <Row label="VaR 99%" value={`${risk.var_99_pct}%`} desc="Max loss · 99% conf."
             bar={risk.var_99_pct} barMax={3}
-            barColor="linear-gradient(90deg,var(--red),#c00)" />
+            barColor="linear-gradient(90deg,var(--red),#b8473b)" />
           <Row label="CVaR 95%" value={`${risk.cvar_95_pct}%`} desc="Expected shortfall"
             method={risk.method}
             bar={risk.cvar_95_pct} barMax={3}
-            barColor="linear-gradient(90deg,#c00,var(--purple))" />
+            barColor="linear-gradient(90deg,#b8473b,var(--purple))" />
         </SPanel>
 
         <SPanel title="Hurst Exponent" accentColor="var(--purple)">
           <Row label="H value" value={hurst.exponent} desc="<0.45 = MR · >0.55 = trend"
             bar={hurst.exponent} barMax={1}
-            barColor={hurst.exponent < 0.45 ? 'linear-gradient(90deg,var(--purple),#a78bfa)' :
+            barColor={hurst.exponent < 0.45 ? 'linear-gradient(90deg,var(--purple),#d58fc0)' :
               hurst.exponent > 0.55 ? 'linear-gradient(90deg,var(--cyan),var(--green))' :
               'linear-gradient(90deg,var(--amber),var(--text-muted))'} />
           <Row label="Regime" value={hurst.regime} />
@@ -204,11 +205,11 @@ export default function QuantSignals() {
           <Row label="5d Return"  value={`${momentum.return_5d_pct>0?'+':''}${momentum.return_5d_pct}%`}
             bar={Math.abs(momentum.return_5d_pct)} barMax={3}
             barColor={momentum.return_5d_pct>=0?'linear-gradient(90deg,var(--green),var(--cyan))':
-              'linear-gradient(90deg,var(--red),#c00)'} />
+              'linear-gradient(90deg,var(--red),#b8473b)'} />
           <Row label="20d Return" value={`${momentum.return_20d_pct>0?'+':''}${momentum.return_20d_pct}%`}
             bar={Math.abs(momentum.return_20d_pct)} barMax={5}
             barColor={momentum.return_20d_pct>=0?'linear-gradient(90deg,var(--green),var(--cyan))':
-              'linear-gradient(90deg,var(--red),#c00)'}
+              'linear-gradient(90deg,var(--red),#b8473b)'}
             method={momentum.method} />
         </SPanel>
 
@@ -229,7 +230,7 @@ export default function QuantSignals() {
             badgeClass={rsi.bias==='BULLISH'?'tbadge-green':rsi.bias==='BEARISH'?'tbadge-high':'tbadge-medium'}>
             <Row label="RSI(14)" value={rsi.value}
               bar={rsi.value} barMax={100}
-              barColor={rsi.value>70?'linear-gradient(90deg,var(--red),#c00)':
+              barColor={rsi.value>70?'linear-gradient(90deg,var(--red),#b8473b)':
                 rsi.value<30?'linear-gradient(90deg,var(--green),var(--cyan))':
                 'linear-gradient(90deg,var(--cyan),var(--purple))'} />
             <Row label="Bias" value={rsi.bias} method={rsi.method} />
@@ -243,7 +244,7 @@ export default function QuantSignals() {
             <Row label="MACD" value={macd.value}
               bar={Math.min(Math.abs(macd.value)*10000,100)} barMax={100}
               barColor={macd.value>=0?'linear-gradient(90deg,var(--green),var(--cyan))':
-                'linear-gradient(90deg,var(--red),#c00)'} />
+                'linear-gradient(90deg,var(--red),#b8473b)'} />
             <Row label="Signal" value={macd.signal} method={macd.method} />
           </SPanel>
         )}
@@ -257,7 +258,7 @@ export default function QuantSignals() {
             <Row label="Lower Band"  value={bb.lower} />
             <Row label="%B Position" value={`${(bb.pct_b*100).toFixed(1)}%`}
               bar={bb.pct_b*100} barMax={100}
-              barColor={bb.pct_b>0.8?'linear-gradient(90deg,var(--red),#c00)':
+              barColor={bb.pct_b>0.8?'linear-gradient(90deg,var(--red),#b8473b)':
                 bb.pct_b<0.2?'linear-gradient(90deg,var(--green),var(--cyan))':
                 'linear-gradient(90deg,var(--cyan),var(--purple))'}
               method={bb.method} />
@@ -268,10 +269,10 @@ export default function QuantSignals() {
 
       {/* GS-Quant attribution */}
       <div style={{ marginTop:12, padding:'6px 10px', borderRadius:6,
-        background:'rgba(0,212,255,0.04)', border:'1px solid rgba(0,212,255,0.1)',
+        background:'rgba(169,154,255,0.04)', border:'1px solid rgba(169,154,255,0.1)',
         display:'flex', alignItems:'center', gap:8 }}>
-        <span style={{ fontSize:9, color:'var(--cyan)', fontWeight:600 }}>POWERED BY</span>
-        <span style={{ fontSize:9, color:'var(--text-muted)' }}>
+        <span style={{ fontSize:10.5, color:'var(--cyan)', fontWeight:600 }}>POWERED BY</span>
+        <span style={{ fontSize:10.5, color:'var(--text-muted)' }}>
           gs-quant v2.0.0 (Goldman Sachs) — RSI, MACD, Bollinger, volatility, z-scores, max drawdown
         </span>
       </div>
