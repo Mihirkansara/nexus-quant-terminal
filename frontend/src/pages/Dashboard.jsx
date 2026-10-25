@@ -22,6 +22,7 @@ import AiHedger from '../components/AiHedger'
 import Positioning from '../components/Positioning'
 import SmileDynamics from '../components/SmileDynamics'
 import MarginDesk from '../components/MarginDesk'
+import RvScanner from '../components/RvScanner'
 
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
@@ -56,6 +57,7 @@ const TABS = [
   { id:'volforecast', icon:'🤖', label:'Vol Forecast', component: VolForecast },
   { id:'eventvol',   icon:'📆', label:'Event Vol',    component: EventVol },
   { id:'positioning', icon:'🧲', label:'Positioning',  component: Positioning },
+  { id:'rvscan',     icon:'🔍', label:'RV Scanner',   component: RvScanner },
   { id:'hedgelab',   icon:'⚖', label:'Hedge Lab',    component: HedgeLab },
   { id:'risk',       icon:'🛡', label:'Risk Desk',    component: RiskDesk },
   { id:'margin',     icon:'🏦', label:'Margin Desk',  component: MarginDesk },
