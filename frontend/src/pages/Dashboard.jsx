@@ -27,6 +27,8 @@ import RvScanner from '../components/RvScanner'
 const IVSurface  = lazy(() => import('../components/IVSurface'))
 const WorldMap   = lazy(() => import('../components/WorldMap'))
 const LiveFeeds  = lazy(() => import('../components/LiveFeeds'))
+const VolumeProfileView = lazy(() => import('../components/VolumeProfileView'))
+const NewsCenter        = lazy(() => import('../components/NewsCenter'))
 
 class TabErrorBoundary extends Component {
   state = { error: null }
@@ -76,6 +78,8 @@ const TABS = [
   { id:'calendar',      icon:'📅', label:'Calendar',      component: EconomicCalendar },
   { id:'worldmap',      icon:'🌍', label:'Live Map',       component: WorldMap  },
   { id:'livefeeds',     icon:'📡', label:'Live Feeds',     component: LiveFeeds },
+  { id:'volume',        icon:'📊', label:'Volume Profile', component: VolumeProfileView },
+  { id:'newscenter',    icon:'📰', label:'News Center',    component: NewsCenter },
 ]
 
 const LoadingFallback = () => (

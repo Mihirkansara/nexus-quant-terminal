@@ -80,3 +80,15 @@ export const fetchMarginBook = (p) => api.post('/margin/book', p, { timeout: 600
 
 // Carry & RV Scanner
 export const fetchRvScan = (ccy) => api.get(`/rvscan/${ccy}`).then(r=>r.data)
+
+// Volume profile
+export const fetchVolumePairs   = ()              => api.get('/volume/pairs').then(r => r.data)
+export const fetchVolumeProfile = (pair, profile) =>
+  api.get(`/volume/profile/${pair}`, { params: { profile } }).then(r => r.data)
+
+// News center
+export const fetchNewsFeed     = (limit, offset) =>
+  api.get('/newscenter/feed', { params: { limit, offset } }).then(r => r.data)
+export const fetchHotStory     = () => api.get('/newscenter/hot').then(r => r.data)
+export const fetchNewsSignals  = () => api.get('/newscenter/signals').then(r => r.data)
+export const fetchBreakingNews = () => api.get('/newscenter/breaking').then(r => r.data)
