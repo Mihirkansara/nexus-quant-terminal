@@ -75,6 +75,10 @@ export const fetchPositioning = (ccy, convention = 'classic', maxDays = 120) =>
 export const fetchSmileDynCrypto = ({ ccy, beta }) => api.get(`/smiledyn/crypto/${ccy}`, { params: { beta } }).then(r=>r.data)
 export const fetchSmileDynQuotes = (p) => api.post('/smiledyn/quotes', p).then(r=>r.data)
 
+// Variance Desk (var / vol swaps, implied moments and density, VRP)
+export const fetchVarianceCrypto = ({ ccy }) => api.get(`/variance/crypto/${ccy}`, { timeout: 60000 }).then(r=>r.data)
+export const fetchVarianceSmile  = (p) => api.post('/variance/smile', p, { timeout: 60000 }).then(r=>r.data)
+
 // Margin Desk
 export const fetchMarginBook = (p) => api.post('/margin/book', p, { timeout: 60000 }).then(r=>r.data)
 

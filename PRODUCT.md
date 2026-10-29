@@ -28,7 +28,7 @@ Desk-grade models with their working shown: full-revaluation VaR/ES with backtes
 
 ## Capabilities and Constraints
 
-- 28 modules today: Greeks, Chart, AI Signals, Vol Lab, Vol Forecast, Event Vol, Positioning, RV Scanner, Hedge Lab, Risk Desk, Margin Desk, AI Hedger, Jump Lab, Exotics Desk, TARF Desk, Cross-Asset, Vol Smile, Smile Dynamics, 3D Surfaces, Breakeven, Scenarios, Monte Carlo, Institutional, Calendar, Live Map, Live Feeds, Volume Profile, News Center.
+- 29 modules today: Greeks, Chart, AI Signals, Vol Lab, Vol Forecast, Event Vol, Variance Desk, Positioning, RV Scanner, Hedge Lab, Risk Desk, Margin Desk, AI Hedger, Jump Lab, Exotics Desk, TARF Desk, Cross-Asset, Vol Smile, Smile Dynamics, 3D Surfaces, Breakeven, Scenarios, Monte Carlo, Institutional, Calendar, Live Map, Live Feeds, Volume Profile, News Center.
 - Stack: React 19 + Vite 8 frontend (Zustand store, Plotly charts, Leaflet map, Tailwind 4 available), FastAPI backend. Frontend deploys to Vercel; backend to a Procfile host.
 - Instruments: FX pairs, BTC/ETH, XAU/XAG; some modules are crypto-only (Deribit-backed).
 - Every feature, model and data path must survive any redesign.

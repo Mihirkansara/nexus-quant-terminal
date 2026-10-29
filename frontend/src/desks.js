@@ -1,7 +1,7 @@
 import {
   Sigma, ChartCandlestick, Zap, FlaskConical, BrainCircuit, CalendarClock, Magnet, ScanSearch,
   Scale, ShieldCheck, Landmark, Bot, Activity, Puzzle, Target, Link2, Spline, WavesHorizontal,
-  Mountain, Crosshair, TriangleAlert, Dices, Building, CalendarDays, Earth, Radio, ChartColumn, Newspaper,
+  Mountain, Crosshair, TriangleAlert, Dices, Building, CalendarDays, Earth, Radio, ChartColumn, Newspaper, SquareSigma,
 } from 'lucide-react'
 
 // Desk registry: one source for the rail, the desk index (Ctrl K), routing and desk headers.
@@ -27,6 +27,7 @@ export const DESKS = [
   { id: 'smile',       group: 'vol',        label: 'Vol Smile',      icon: Spline,           meta: 'Vanna-Volga smile from ATM / 25Δ RR / 25Δ BF · Castagna-Mercurio' },
   { id: 'smiledyn',    group: 'vol',        label: 'Smile Dynamics', icon: WavesHorizontal,  meta: 'SABR fits · sticky / Bartlett deltas · spot-vol regime' },
   { id: 'eventvol',    group: 'vol',        label: 'Event Vol',      icon: CalendarClock,    meta: 'Event and weekend vol time · forward vols · event moves' },
+  { id: 'variance',    group: 'vol',        label: 'Variance Desk',  icon: SquareSigma,      meta: 'Var / vol swaps (Cboe-DVOL replication) · BKM moments · implied density · VRP' },
 
   { id: 'risk',        group: 'risk',       label: 'Risk Desk',      icon: ShieldCheck,      meta: 'Full-revaluation VaR / ES · stressed window · backtest · P&L explain' },
   { id: 'margin',      group: 'risk',       label: 'Margin Desk',    icon: Landmark,         meta: 'SPAN-style scan risk · portfolio margin · hike shocks · call odds' },

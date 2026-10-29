@@ -10,6 +10,7 @@ const COMPONENTS = {
   vollab:        lazy(() => import('../components/VolLab')),
   volforecast:   lazy(() => import('../components/VolForecast')),
   eventvol:      lazy(() => import('../components/EventVol')),
+  variance:      lazy(() => import('../components/VarianceDesk')),
   positioning:   lazy(() => import('../components/Positioning')),
   rvscan:        lazy(() => import('../components/RvScanner')),
   hedgelab:      lazy(() => import('../components/HedgeLab')),

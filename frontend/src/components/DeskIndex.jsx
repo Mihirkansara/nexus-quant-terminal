@@ -46,7 +46,7 @@ export default function DeskIndex({ onClose, onSelect, active }) {
         <div className="nx-index-search">
           <Search size={17} color="var(--text-muted)" aria-hidden="true" />
           <input autoFocus value={q} onChange={e => { setQ(e.target.value); setCursor(0) }}
-            placeholder="Search 28 desks, models or instruments" aria-label="Search desks"
+            placeholder={`Search ${DESKS.length} desks, models or instruments`} aria-label="Search desks"
             role="combobox" aria-expanded="true" aria-controls="nx-index-list" />
           <span className="nx-kbd">Esc</span>
         </div>
